@@ -1,5 +1,8 @@
 # BobaTalkie - Voice-Controlled Language Learning Game
 
+## Introduction
+Boba Talkie is an innovative way to learn a language, meeting people online in a gamified way. Mostly focusing on voice recognition and voice improvement to execute actions in the game. Boba Talkie's vision is to bring players to learn a language in a fun and interactive way, focusing on Vocabulary, Pronunciation and conversation. Boba Talkie has a multiplayer mode with live video chat and microphone (video can be deactivated) to encourage people to meet and find language exchange partners through playing and interaction.
+
 ## Project Overview
 
 BobaTalkie is a web-based language learning game where players control their character through voice commands instead of traditional input methods. The core innovation is using speech recognition to create an immersive, interactive environment that teaches pronunciation and vocabulary naturally through gameplay.
@@ -190,3 +193,5 @@ npm test --prefix assets   # Frontend tests
 4. **Caching**: Redis for frequently accessed game data
 
 This architecture enables real-time voice-controlled gameplay while maintaining sub-500ms latency requirements essential for immersive language learning experiences.
+
+BobaTalkie is built with Elixir and Phoenix framework.
