@@ -1,0 +1,109 @@
+<div class="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 flex items-center justify-center p-4">
+  <div class="max-w-2xl w-full space-y-8 text-center">
+    <!-- Logo/Title -->
+    <div class="space-y-4">
+      <h1 class="text-6xl font-bold text-white">
+        🧋 BobaTalkie
+      </h1>
+      <p class="text-xl text-blue-200">
+        Learn languages through voice-controlled gaming
+      </p>
+    </div>
+
+    <!-- Game Introduction -->
+    <div class="bg-white/10 backdrop-blur-lg rounded-xl p-8 space-y-6">
+      <div class="space-y-4">
+        <h2 class="text-2xl font-bold text-white">How it works</h2>
+        <div class="grid md:grid-cols-3 gap-6 text-center">
+          <div class="space-y-2">
+            <div class="text-4xl">🎤</div>
+            <h3 class="font-semibold text-blue-200">Speak Commands</h3>
+            <p class="text-sm text-blue-300">Use your voice to control your character</p>
+          </div>
+          <div class="space-y-2">
+            <div class="text-4xl">🎮</div>
+            <h3 class="font-semibold text-blue-200">Navigate World</h3>
+            <p class="text-sm text-blue-300">Move through a 2D grid world</p>
+          </div>
+          <div class="space-y-2">
+            <div class="text-4xl">📈</div>
+            <h3 class="font-semibold text-blue-200">Learn & Improve</h3>
+            <p class="text-sm text-blue-300">Get real-time pronunciation feedback</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Voice Setup Section -->
+      <div class="border-t border-white/20 pt-6 space-y-4">
+        <h3 class="text-xl font-bold text-white">Voice Setup</h3>
+        
+        <!-- Browser Support Check -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-center space-x-2">
+            <%= if @browser_support.media_recorder do %>
+              <div class="w-3 h-3 bg-green-400 rounded-full"></div>
+              <span class="text-green-400 text-sm">Browser supports voice recording</span>
+            <% else %>
+              <div class="w-3 h-3 bg-red-400 rounded-full"></div>
+              <span class="text-red-400 text-sm">Browser doesn't support voice recording</span>
+            <% end %>
+          </div>
+        </div>
+
+        <!-- Microphone Test -->
+        <div class="space-y-4">
+          <%= if @microphone_ready do %>
+            <div class="flex items-center justify-center space-x-2">
+              <div class="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+              <span class="text-green-400">Microphone is ready!</span>
+            </div>
+            
+            <button 
+              phx-click="start_game"
+              class="w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-bold py-4 px-8 rounded-lg transition-all duration-200 transform hover:scale-105"
+            >
+              🚀 Start Solo Adventure
+            </button>
+          <% else %>
+            <button 
+              id="mic-test-btn"
+              phx-hook="MicrophoneTest"
+              phx-click="check_microphone"
+              class="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold py-4 px-8 rounded-lg transition-all duration-200 transform hover:scale-105"
+            >
+              🎤 Test Microphone
+            </button>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Voice Commands Preview -->
+      <div class="border-t border-white/20 pt-6">
+        <h3 class="text-lg font-bold text-white mb-4">Voice Commands You'll Use</h3>
+        <div class="grid grid-cols-2 gap-4 text-sm">
+          <div class="bg-white/5 rounded-lg p-3">
+            <div class="text-blue-200 font-semibold">Movement</div>
+            <div class="text-blue-300 space-y-1">
+              <div>"go north"</div>
+              <div>"move east"</div>
+              <div>"turn around"</div>
+            </div>
+          </div>
+          <div class="bg-white/5 rounded-lg p-3">
+            <div class="text-blue-200 font-semibold">Actions</div>
+            <div class="text-blue-300 space-y-1">
+              <div>"look around"</div>
+              <div>"pick up item"</div>
+              <div>"help"</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="text-center text-blue-400 text-sm">
+      <p>Built with Phoenix LiveView • Real-time voice recognition</p>
+    </div>
+  </div>
+</div>
