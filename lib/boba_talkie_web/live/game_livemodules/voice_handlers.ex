@@ -100,7 +100,7 @@ defmodule BobaTalkieWeb.GameLive.VoiceHandlers do
   @doc """
   Handle Deepgram streaming fallback - shows text input mode
   """
-  def handle_start_deepgram_stream(socket, live_view_pid) do
+  def handle_start_deepgram_stream(socket, _live_view_pid) do
     DebugLogger.voice_debug("Starting text input fallback for voice recognition")
     
     socket

@@ -52,6 +52,15 @@ defmodule BobaTalkieWeb.GameLive do
   end
 
   @impl true
+  def handle_event("voice_audio", audio_params, socket) do
+    # Handle MediaRecorder audio data for Brave browser
+    case VoiceHandlers.handle_voice_audio(socket, audio_params, self()) do
+      {:ok, updated_socket} -> {:noreply, updated_socket}
+      {:error, error_socket} -> {:noreply, error_socket}
+    end
+  end
+
+  @impl true
   def handle_event("start_deepgram_stream", _params, socket) do
     socket = VoiceHandlers.handle_start_deepgram_stream(socket, self())
     {:noreply, socket}
@@ -80,6 +89,13 @@ defmodule BobaTalkieWeb.GameLive do
   end
 
   @impl true
+  def handle_event("select_card", %{"card_id" => card_id}, socket) do
+    new_world = BobaTalkie.Game.World.select_card(socket.assigns.world, card_id)
+    updated_socket = Phoenix.Component.assign(socket, :world, new_world)
+    {:noreply, updated_socket}
+  end
+
+  @impl true
   def handle_info({:voice_result, command, confidence}, socket) do
     socket = VoiceHandlers.handle_voice_result(
       socket, 
@@ -93,6 +109,7 @@ defmodule BobaTalkieWeb.GameLive do
 
   # Template helper functions (delegate to UIHelpers)
   
-  defp cell_class(cell), do: UIHelpers.cell_class(cell)
-  defp cell_icon(cell), do: UIHelpers.cell_icon(cell)
+  defp cell_class(cell, world, position), do: UIHelpers.cell_class(cell, world, position)
+  defp cell_icon(cell, world, position), do: UIHelpers.cell_icon(cell, world, position)
+  defp format_inventory(inventory), do: UIHelpers.format_inventory(inventory)
 end

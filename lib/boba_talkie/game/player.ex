@@ -12,7 +12,8 @@ defmodule BobaTalkie.Game.Player do
     stats: %{
       commands_spoken: integer(),
       pronunciation_score: float(),
-      time_played: integer()
+      time_played: integer(),
+      challenges_completed: integer()
     }
   }
 
@@ -27,7 +28,8 @@ defmodule BobaTalkie.Game.Player do
       stats: %{
         commands_spoken: 0,
         pronunciation_score: 0.0,
-        time_played: 0
+        time_played: 0,
+        challenges_completed: 0
       }
     }
   end
@@ -62,6 +64,14 @@ defmodule BobaTalkie.Game.Player do
   end
 
   @doc """
+  Increment completed challenges count
+  """
+  def increment_completed_challenges(player) do
+    new_stats = Map.update!(player.stats, :challenges_completed, &(&1 + 1))
+    %{player | stats: new_stats}
+  end
+
+  @doc """
   Gets player's current stats for display
   """
   def get_stats(player) do
@@ -70,7 +80,8 @@ defmodule BobaTalkie.Game.Player do
       position: player.position,
       commands_spoken: player.stats.commands_spoken,
       pronunciation_score: Float.round(player.stats.pronunciation_score * 100, 1),
-      items_collected: length(player.inventory)
+      items_collected: length(player.inventory),
+      challenges_completed: player.stats.challenges_completed
     }
   end
 end

@@ -1,221 +1,248 @@
 <div class="min-h-screen bg-gradient-to-br from-green-900 via-teal-900 to-blue-900 p-4">
   <div class="max-w-6xl mx-auto space-y-6">
     
-    <!-- Header -->
-    <div class="flex justify-between items-center">
-      <h1 class="text-3xl font-bold text-white">🧋 BobaTalkie</h1>
-      
-      <!-- Real-time Voice Recognition Display -->
-      <div class="flex-1 mx-8">
-        <%= if @listening do %>
-          <div class="bg-green-500/20 border border-green-400 rounded-lg p-3 text-center">
-            <div class="flex items-center justify-center space-x-2 mb-2">
-              <div class="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
-              <span class="text-green-400 text-sm font-semibold">Listening...</span>
-            </div>
-            <%= if @interim_text do %>
-              <div class="text-white font-mono text-lg">
-                "<%= @interim_text %>"
-              </div>
-            <% else %>
-              <div class="text-gray-400 italic text-sm">Speak a command...</div>
-            <% end %>
-          </div>
-        <% else %>
-          <div class="bg-gray-700/20 border border-gray-600 rounded-lg p-3 text-center">
-            <div class="text-gray-400 text-sm">Voice Recognition Ready</div>
-            <%= if @last_command do %>
-              <div class="text-blue-200 font-mono text-sm mt-1">
-                Last: "<%= @last_command %>"
-              </div>
-            <% end %>
-          </div>
-        <% end %>
+    <!-- Game Completion Screen -->
+    <%= if BobaTalkie.Game.World.game_completed?(@world) do %>
+      <div class="fixed inset-0 bg-black/80 backdrop-blur-lg z-50 flex items-center justify-center">
+        <div class="bg-gradient-to-br from-green-500 to-blue-600 rounded-3xl p-8 text-center max-w-md mx-4">
+          <div class="text-6xl mb-4">🏆</div>
+          <h2 class="text-3xl font-bold text-white mb-4">Congratulations!</h2>
+          <p class="text-white/90 mb-6">
+            You completed all <%= length(@world.cards || []) %> cards! 
+            Your pronunciation score: <%= Float.round(@player.stats.pronunciation_score * 100, 1) %>%
+          </p>
+          <button 
+            onclick="window.location.reload()"
+            class="bg-white text-blue-600 font-bold py-3 px-8 rounded-full hover:bg-blue-50 transition-colors"
+          >
+            🎮 Play Again
+          </button>
+        </div>
       </div>
-      
-      <div class="text-right text-white">
-        <div class="text-sm opacity-75">Player: <%= @player.name %></div>
-        <div class="text-sm opacity-75">Position: <%= elem(@player.position, 0) %>, <%= elem(@player.position, 1) %></div>
+    <% end %>
+    
+    <!-- Compact Header -->
+    <div class="flex justify-between items-center mb-4">
+      <h1 class="text-2xl font-bold text-white">🧋 BobaTalkie</h1>
+      <div class="text-right text-white text-xs">
+        <div>Player: <%= @player.name %> | Pos: <%= elem(@player.position, 0) %>, <%= elem(@player.position, 1) %></div>
+        <div>Cards: <%= @player.stats.challenges_completed %> / <%= length(@world.cards || []) %></div>
       </div>
     </div>
 
-    <!-- Main Game Area -->
-    <div class="grid lg:grid-cols-3 gap-6">
+    <!-- Main Centered Game Layout -->
+    <div class="grid grid-cols-12 gap-4 h-[calc(100vh-8rem)]">
       
-      <!-- Game World (2D Grid) -->
-      <div class="lg:col-span-2 space-y-4">
-        <div class="bg-white/10 backdrop-blur-lg rounded-xl p-6">
-          <h2 class="text-xl font-bold text-white mb-4">Game World</h2>
-          
-          <!-- 2D Grid Display -->
-          <div class="grid grid-cols-10 gap-1 w-fit mx-auto">
-            <%= for {row, y} <- Enum.with_index(@world.grid) do %>
-              <%= for {cell, x} <- Enum.with_index(row) do %>
-                <div class={[
-                  "w-8 h-8 rounded border",
-                  cell_class(cell)
-                ]} title={"(#{x}, #{y})"}>
-                  <%= cell_icon(cell) %>
-                </div>
-              <% end %>
-            <% end %>
-          </div>
-          
-          <!-- Grid Legend -->
-          <div class="mt-4 flex justify-center space-x-6 text-sm text-white">
-            <div class="flex items-center space-x-2">
-              <div class="w-4 h-4 bg-gray-800 rounded"></div>
-              <span>Wall</span>
-            </div>
-            <div class="flex items-center space-x-2">
-              <div class="w-4 h-4 bg-green-500 rounded"></div>
-              <span>Path</span>
-            </div>
-            <div class="flex items-center space-x-2">
-              <div class="w-4 h-4 bg-blue-500 rounded"></div>
-              <span>You</span>
-            </div>
-            <div class="flex items-center space-x-2">
-              <div class="w-4 h-4 bg-yellow-500 rounded"></div>
-              <span>Item</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Voice Control -->
-        <div class="bg-white/10 backdrop-blur-lg rounded-xl p-6">
-          <h3 class="text-lg font-bold text-white mb-4">Voice Control</h3>
-          
-          <div class="space-y-4">
-            <!-- Voice Button with Visual Feedback -->
-            <button 
-              phx-hook="VoiceCapture"
-              id="voice-btn"
-              class={[
-                "w-full font-bold py-3 px-6 rounded-lg transition-all duration-200 relative overflow-hidden",
-                if @listening do
-                  "bg-gradient-to-r from-green-500 to-green-600 text-white animate-pulse"
-                else
-                  "bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white"
-                end
-              ]}
-            >
-              <%= if @listening do %>
-                <div class="flex items-center justify-center space-x-2">
-                  <div class="w-3 h-3 bg-white rounded-full animate-ping"></div>
-                  <span>🎤 Recording...</span>
-                </div>
-              <% else %>
-                🎤 Hold to Speak
-              <% end %>
-            </button>
-
-            <!-- Text Input Fallback -->
-            <%= if assigns[:text_input_mode] do %>
-              <div class="mt-4">
-                <form phx-submit="text_command" class="flex space-x-2">
-                  <input 
-                    type="text" 
-                    name="command" 
-                    placeholder="Type command (e.g., 'go north')"
-                    class="flex-1 px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-blue-400 focus:outline-none"
-                    autocomplete="off"
-                  />
-                  <button 
-                    type="submit"
-                    class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
-                  >
-                    Send
-                  </button>
-                </form>
-                <div class="text-xs text-gray-400 mt-1">
-                  Try: "go north", "go south", "look around", "help"
-                </div>
-              </div>
-            <% end %>
-
-            <!-- Last Command -->
-            <%= if @last_command do %>
-              <div class="text-center text-blue-200 text-sm">
-                Last command: "<span class="font-semibold"><%= @last_command %></span>"
-              </div>
-            <% end %>
-
-            <!-- Test Controls (Development only) -->
-            <div class="border-t border-white/20 pt-4">
-              <div class="text-sm text-white opacity-75 mb-2">Test Controls:</div>
-              <div class="grid grid-cols-4 gap-2">
-                <button phx-click="test_move" phx-value-direction="north" 
-                        class="bg-gray-600 hover:bg-gray-500 text-white py-1 px-2 rounded text-sm">
-                  ↑ North
-                </button>
-                <button phx-click="test_move" phx-value-direction="south" 
-                        class="bg-gray-600 hover:bg-gray-500 text-white py-1 px-2 rounded text-sm">
-                  ↓ South
-                </button>
-                <button phx-click="test_move" phx-value-direction="west" 
-                        class="bg-gray-600 hover:bg-gray-500 text-white py-1 px-2 rounded text-sm">
-                  ← West
-                </button>
-                <button phx-click="test_move" phx-value-direction="east" 
-                        class="bg-gray-600 hover:bg-gray-500 text-white py-1 px-2 rounded text-sm">
-                  → East
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Sidebar -->
-      <div class="space-y-6">
-        
+      <!-- Left Sidebar - Compact Stats -->
+      <div class="col-span-2 space-y-3">
         <!-- Player Stats -->
-        <div class="bg-white/10 backdrop-blur-lg rounded-xl p-6">
-          <h3 class="text-lg font-bold text-white mb-4">Player Stats</h3>
-          <div class="space-y-2 text-sm">
+        <div class="bg-white/10 backdrop-blur-lg rounded-lg p-4">
+          <h3 class="text-sm font-bold text-white mb-2">📊 Stats</h3>
+          <div class="space-y-1 text-xs">
             <div class="flex justify-between text-blue-200">
-              <span>Commands Spoken:</span>
+              <span>Commands:</span>
               <span><%= @player.stats.commands_spoken %></span>
             </div>
             <div class="flex justify-between text-blue-200">
-              <span>Pronunciation Score:</span>
+              <span>Score:</span>
               <span><%= Float.round(@player.stats.pronunciation_score * 100, 1) %>%</span>
-            </div>
-            <div class="flex justify-between text-blue-200">
-              <span>Items Collected:</span>
-              <span><%= length(@player.inventory) %></span>
             </div>
           </div>
         </div>
 
-        <!-- Game Messages -->
-        <div class="bg-white/10 backdrop-blur-lg rounded-xl p-6">
-          <h3 class="text-lg font-bold text-white mb-4">Messages</h3>
-          <div class="space-y-2 text-sm max-h-64 overflow-y-auto">
-            <%= for message <- @game_messages do %>
-              <div class="text-blue-200 leading-relaxed">
+        <!-- Messages - Compact -->
+        <div class="bg-white/10 backdrop-blur-lg rounded-lg p-4">
+          <h3 class="text-sm font-bold text-white mb-2">📝 Messages</h3>
+          <div class="space-y-1 text-xs max-h-32 overflow-y-auto">
+            <%= for message <- Enum.take(@game_messages, 3) do %>
+              <div class="text-blue-200 text-xs leading-tight">
                 <%= message %>
               </div>
             <% end %>
           </div>
         </div>
+      </div>
 
-        <!-- Voice Commands Help -->
-        <div class="bg-white/10 backdrop-blur-lg rounded-xl p-6">
-          <h3 class="text-lg font-bold text-white mb-4">Voice Commands</h3>
-          <div class="space-y-2 text-sm text-blue-200">
-            <div><strong>"go north/south/east/west"</strong></div>
-            <div class="text-blue-300 text-xs ml-2">Move your character</div>
-            
-            <div><strong>"look around"</strong></div>
-            <div class="text-blue-300 text-xs ml-2">Describe surroundings</div>
-            
-            <div><strong>"help"</strong></div>
-            <div class="text-blue-300 text-xs ml-2">Show available commands</div>
+      <!-- Center - Main Game Area -->
+      <div class="col-span-8 flex flex-col">
+        <!-- Voice Recognition Status -->
+        <div class="mb-4">
+          <%= if @listening do %>
+            <div class="bg-green-500/20 border border-green-400 rounded-lg p-4 text-center">
+              <div class="flex items-center justify-center space-x-2 mb-2">
+                <div class="w-4 h-4 bg-green-400 rounded-full animate-pulse"></div>
+                <span class="text-green-400 font-semibold">🎤 Listening...</span>
+              </div>
+              <%= if @interim_text do %>
+                <div class="text-white font-mono text-lg">
+                  "<%= @interim_text %>"
+                </div>
+              <% else %>
+                <div class="text-gray-400 italic">Speak a command...</div>
+              <% end %>
+            </div>
+          <% else %>
+            <div class="bg-gray-700/20 border border-gray-600 rounded-lg p-4 text-center">
+              <div class="text-gray-400">🎤 Voice Recognition Ready</div>
+              <%= if @last_command do %>
+                <div class="text-blue-200 font-mono text-sm mt-1">
+                  Last: "<%= @last_command %>"
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+
+        <!-- Game World Grid -->
+        <div class="bg-white/10 backdrop-blur-lg rounded-xl p-6 flex-1 flex flex-col">
+          <h2 class="text-lg font-bold text-white mb-4 text-center">🎮 Game World</h2>
+          
+          <!-- 2D Grid Display - Larger cells -->
+          <div class="flex-1 flex items-center justify-center">
+            <div class="grid grid-cols-6 gap-2">
+              <%= for {row, y} <- Enum.with_index(@world.grid) do %>
+                <%= for {cell, x} <- Enum.with_index(row) do %>
+                  <div class={[
+                    "w-12 h-12 rounded-lg border-2 flex items-center justify-center text-xl font-bold",
+                    cell_class(cell, @world, {x, y})
+                  ]} title={"(#{x}, #{y})"}>
+                    <%= cell_icon(cell, @world, {x, y}) %>
+                  </div>
+                <% end %>
+              <% end %>
+            </div>
+          </div>
+          
+          <!-- Grid Legend - Compact -->
+          <div class="mt-4 flex justify-center space-x-6 text-sm text-white">
+            <span>⬛ Wall</span>
+            <span>🟢 Path</span>
+            <span>🧑 You</span>
+            <span>🍎🍌🍊🍇 Fruits</span>
           </div>
         </div>
 
+        <!-- Voice Control Button - Prominent -->
+        <div class="mt-4">
+          <button 
+            phx-hook="VoiceCapture"
+            id="voice-btn"
+            class={[
+              "w-full font-bold py-4 px-6 rounded-xl transition-all duration-200 text-xl",
+              if @listening do
+                "bg-gradient-to-r from-green-500 to-green-600 text-white animate-pulse shadow-lg"
+              else
+                "bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white shadow-lg hover:shadow-xl"
+              end
+            ]}
+          >
+            <%= if @listening do %>
+              <div class="flex items-center justify-center space-x-3">
+                <div class="w-4 h-4 bg-white rounded-full animate-ping"></div>
+                <span>🎤 Recording... (Release to stop)</span>
+              </div>
+            <% else %>
+              🎤 Hold to Speak
+            <% end %>
+          </button>
+        </div>
+      </div>
+
+      <!-- Right Sidebar - Challenge Cards -->
+      <div class="col-span-2 space-y-3">
+        <!-- Challenge Cards -->
+        <div class="bg-white/10 backdrop-blur-lg rounded-lg p-4 h-full flex flex-col">
+          <h3 class="text-sm font-bold text-white mb-3 text-center">🃏 Challenges</h3>
+          
+          <!-- Compact Cards Display -->
+          <div class="space-y-2 flex-1 overflow-y-auto">
+            <%= for card <- (@world.cards || []) do %>
+              <div class={[
+                "p-3 rounded-lg border cursor-pointer transition-all text-xs",
+                if card.completed do
+                  "bg-green-800/30 border-green-500 opacity-60"
+                else
+                  if card.selected do
+                    "bg-blue-800/40 border-blue-400 ring-1 ring-blue-300"
+                  else
+                    "bg-gray-800/30 border-gray-600 hover:bg-gray-700/40"
+                  end
+                end
+              ]}
+              phx-click={unless card.completed, do: "select_card"}
+              phx-value-card_id={card.id}
+              >
+                <div class="flex items-center mb-1">
+                  <span class="text-base mr-2">
+                    <%= if card.completed do %>✅<% else %><%= if card.selected, do: "👉", else: "🃏" %><% end %>
+                  </span>
+                  <%= if card.selected do %>
+                    <span class="text-blue-300 text-xs font-bold">ACTIVE</span>
+                  <% end %>
+                </div>
+                <div class="text-white font-semibold text-sm mb-1">
+                  <%= card.template %>
+                </div>
+                <div class="text-gray-400 text-xs">
+                  <%= String.slice(card.description, 0, 40) %>...
+                </div>
+              </div>
+            <% end %>
+          </div>
+          
+          <!-- Active Challenge Status -->
+          <%= case BobaTalkie.Game.Card.get_selected_card(@world.cards || []) do %>
+            <% nil -> %>
+              <div class="mt-3 p-2 bg-yellow-500/20 border border-yellow-400 rounded text-center">
+                <div class="text-yellow-200 text-xs">
+                  💡 Select a card!
+                </div>
+              </div>
+            <% selected_card -> %>
+              <div class="mt-3 p-2 bg-blue-500/20 border border-blue-400 rounded text-center">
+                <div class="text-blue-200 text-xs">
+                  🎯 "<%= selected_card.template %>"
+                </div>
+              </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom - Quick Help & Test Controls -->
+    <div class="mt-4 grid grid-cols-12 gap-4">
+      <!-- Help Commands -->
+      <div class="col-span-6 bg-white/5 backdrop-blur-lg rounded-lg p-3">
+        <h4 class="text-xs font-bold text-white mb-2">Quick Commands:</h4>
+        <div class="text-xs text-blue-200 space-x-4">
+          <span>"2 north"</span>
+          <span>"tree right"</span>
+          <span>"look around"</span>
+          <span>"help"</span>
+        </div>
+      </div>
+
+      <!-- Test Controls -->
+      <div class="col-span-6 bg-white/5 backdrop-blur-lg rounded-lg p-3">
+        <h4 class="text-xs font-bold text-white mb-2">Test Controls:</h4>
+        <div class="grid grid-cols-4 gap-1">
+          <button phx-click="test_move" phx-value-direction="north" 
+                  class="bg-gray-600 hover:bg-gray-500 text-white py-1 px-2 rounded text-xs">
+            ↑
+          </button>
+          <button phx-click="test_move" phx-value-direction="south" 
+                  class="bg-gray-600 hover:bg-gray-500 text-white py-1 px-2 rounded text-xs">
+            ↓
+          </button>
+          <button phx-click="test_move" phx-value-direction="west" 
+                  class="bg-gray-600 hover:bg-gray-500 text-white py-1 px-2 rounded text-xs">
+            ←
+          </button>
+          <button phx-click="test_move" phx-value-direction="east" 
+                  class="bg-gray-600 hover:bg-gray-500 text-white py-1 px-2 rounded text-xs">
+            →
+          </button>
+        </div>
       </div>
     </div>
   </div>

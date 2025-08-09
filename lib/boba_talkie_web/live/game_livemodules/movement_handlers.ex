@@ -18,8 +18,11 @@ defmodule BobaTalkieWeb.GameLive.MovementHandlers do
     
     # Parse and execute command
     case parse_voice_command(command) do
-      {:move, direction} ->
-        handle_movement(world, new_player, direction)
+      {:move, direction, steps} ->
+        handle_movement(world, new_player, direction, steps)
+      
+      {:card_challenge} ->
+        handle_card_challenge(world, new_player, command)
       
       :look ->
         handle_look_around(world, new_player)
@@ -65,15 +68,27 @@ defmodule BobaTalkieWeb.GameLive.MovementHandlers do
 
   # Private functions
 
-  defp handle_movement(world, player, direction) do
-    case World.move_player(world, direction) do
-      {:ok, new_world} ->
+  defp handle_movement(world, player, direction, steps) do
+    DebugLogger.game_debug("Attempting movement", %{direction: direction, steps: steps})
+    
+    case move_multiple_steps(world, direction, steps) do
+      {:ok, new_world, actual_steps} ->
         updated_player = Player.update_position(player, new_world.player_pos)
-        DebugLogger.game_debug("Voice movement successful", %{direction: direction, new_pos: new_world.player_pos})
-        {new_world, updated_player, "You moved #{direction}"}
+        message = if actual_steps == steps do
+          "You moved #{steps} step#{if steps > 1, do: "s"} #{direction}"
+        else
+          "You moved #{actual_steps} step#{if actual_steps > 1, do: "s"} #{direction} (blocked after #{actual_steps})"
+        end
+        DebugLogger.game_debug("Voice movement successful", %{
+          direction: direction, 
+          requested_steps: steps, 
+          actual_steps: actual_steps,
+          new_pos: new_world.player_pos
+        })
+        {new_world, updated_player, message}
       
       {:error, reason} ->
-        DebugLogger.game_debug("Voice movement blocked", %{direction: direction, reason: reason})
+        DebugLogger.game_debug("Voice movement blocked", %{direction: direction, steps: steps, reason: reason})
         {world, player, reason}
     end
   end
@@ -85,10 +100,36 @@ defmodule BobaTalkieWeb.GameLive.MovementHandlers do
     {world, player, message}
   end
 
+  defp handle_card_challenge(world, player, voice_command) do
+    case World.complete_card_challenge(world, voice_command) do
+      {:ok, new_world, completed_card} ->
+        updated_player = Player.increment_completed_challenges(player)
+        message = "🎉 Card completed: '#{completed_card.template}'! #{get_completion_status(new_world)}"
+        DebugLogger.game_debug("Card completed", %{template: completed_card.template})
+        {new_world, updated_player, message}
+      
+      {:error, reason} ->
+        DebugLogger.game_debug("Card challenge failed", %{reason: reason})
+        {world, player, reason}
+    end
+  end
+
   defp handle_help(world, player) do
     help_text = """
-    Voice commands:
-    • "go north/south/east/west" or "go up/down/left/right" - Move around
+    🎮 BobaTalkie Card Challenge Game:
+    
+    Movement Commands:
+    • "north/south/east/west" or "up/down/left/right" - Move 1 step
+    • "2 north", "3 right", "tree left" - Move multiple steps (1-3 max)
+    • "move three times right" - Natural sentences work!
+    
+    Card Challenge System:
+    1. Click a card to select it
+    2. Stand on the correct object
+    3. Say the complete sentence (e.g., "Eat the apple", "The banana is yellow")
+    4. Complete all cards to win!
+    
+    Other Commands:
     • "look around" - Describe surroundings
     • "help" - Show this help
     """
@@ -111,22 +152,96 @@ defmodule BobaTalkieWeb.GameLive.MovementHandlers do
     |> String.trim()
     
     cond do
-      # North/Up movement
-      clean_command in ["go north", "move north", "north", "go up", "move up", "up"] -> {:move, :north}
-      # South/Down movement  
-      clean_command in ["go south", "move south", "south", "go down", "move down", "down"] -> {:move, :south}
-      # East/Right movement
-      clean_command in ["go east", "move east", "east", "go right", "move right", "right"] -> {:move, :east}
-      # West/Left movement
-      clean_command in ["go west", "move west", "west", "go left", "move left", "left"] -> {:move, :west}
+      # Check for numbered movement commands anywhere in sentence (close together)
+      String.match?(clean_command, ~r/(1|one)\s+.{0,20}\s*(north|up)|(north|up)\s+.{0,20}\s*(1|one)/) -> {:move, :north, 1}
+      String.match?(clean_command, ~r/(2|two)\s+.{0,20}\s*(north|up)|(north|up)\s+.{0,20}\s*(2|two)/) -> {:move, :north, 2}
+      String.match?(clean_command, ~r/(3|three|tree)\s+.{0,20}\s*(north|up)|(north|up)\s+.{0,20}\s*(3|three|tree)/) -> {:move, :north, 3}
+      
+      String.match?(clean_command, ~r/(1|one)\s+.{0,20}\s*(south|down)|(south|down)\s+.{0,20}\s*(1|one)/) -> {:move, :south, 1}
+      String.match?(clean_command, ~r/(2|two)\s+.{0,20}\s*(south|down)|(south|down)\s+.{0,20}\s*(2|two)/) -> {:move, :south, 2}
+      String.match?(clean_command, ~r/(3|three|tree)\s+.{0,20}\s*(south|down)|(south|down)\s+.{0,20}\s*(3|three|tree)/) -> {:move, :south, 3}
+      
+      String.match?(clean_command, ~r/(1|one)\s+.{0,20}\s*(east|right)|(east|right)\s+.{0,20}\s*(1|one)/) -> {:move, :east, 1}
+      String.match?(clean_command, ~r/(2|two)\s+.{0,20}\s*(east|right)|(east|right)\s+.{0,20}\s*(2|two)/) -> {:move, :east, 2}
+      String.match?(clean_command, ~r/(3|three|tree)\s+.{0,20}\s*(east|right)|(east|right)\s+.{0,20}\s*(3|three|tree)/) -> {:move, :east, 3}
+      
+      String.match?(clean_command, ~r/(1|one)\s+.{0,20}\s*(west|left)|(west|left)\s+.{0,20}\s*(1|one)/) -> {:move, :west, 1}
+      String.match?(clean_command, ~r/(2|two)\s+.{0,20}\s*(west|left)|(west|left)\s+.{0,20}\s*(2|two)/) -> {:move, :west, 2}
+      String.match?(clean_command, ~r/(3|three|tree)\s+.{0,20}\s*(west|left)|(west|left)\s+.{0,20}\s*(3|three|tree)/) -> {:move, :west, 3}
+      
+      # Check for tight number-direction patterns (original patterns for backward compatibility)
+      String.match?(clean_command, ~r/\b(1|one)\s*(north|up)\b/) -> {:move, :north, 1}
+      String.match?(clean_command, ~r/\b(2|two)\s*(north|up)\b/) -> {:move, :north, 2}
+      String.match?(clean_command, ~r/\b(3|three|tree)\s*(north|up)\b/) -> {:move, :north, 3}
+      String.match?(clean_command, ~r/\b(1|one)\s*(south|down)\b/) -> {:move, :south, 1}
+      String.match?(clean_command, ~r/\b(2|two)\s*(south|down)\b/) -> {:move, :south, 2}
+      String.match?(clean_command, ~r/\b(3|three|tree)\s*(south|down)\b/) -> {:move, :south, 3}
+      String.match?(clean_command, ~r/\b(1|one)\s*(east|right)\b/) -> {:move, :east, 1}
+      String.match?(clean_command, ~r/\b(2|two)\s*(east|right)\b/) -> {:move, :east, 2}
+      String.match?(clean_command, ~r/\b(3|three|tree)\s*(east|right)\b/) -> {:move, :east, 3}
+      String.match?(clean_command, ~r/\b(1|one)\s*(west|left)\b/) -> {:move, :west, 1}
+      String.match?(clean_command, ~r/\b(2|two)\s*(west|left)\b/) -> {:move, :west, 2}
+      String.match?(clean_command, ~r/\b(3|three|tree)\s*(west|left)\b/) -> {:move, :west, 3}
+      
+      # Check for single direction words (default to 1 move)
+      String.contains?(clean_command, ["north", "up"]) -> {:move, :north, 1}
+      String.contains?(clean_command, ["south", "down"]) -> {:move, :south, 1}
+      String.contains?(clean_command, ["east", "right"]) -> {:move, :east, 1}
+      String.contains?(clean_command, ["west", "left"]) -> {:move, :west, 1}
+      
+      # Check for card challenge phrases (full sentences containing fruit names)
+      String.contains?(clean_command, ["apple"]) or 
+      String.contains?(clean_command, ["banana"]) or 
+      String.contains?(clean_command, ["orange"]) or 
+      String.contains?(clean_command, ["grape"]) or
+      String.contains?(clean_command, ["eat"]) or
+      String.contains?(clean_command, ["this is"]) or
+      String.contains?(clean_command, ["yellow"]) or
+      String.contains?(clean_command, ["red"]) or
+      String.contains?(clean_command, ["purple"]) -> {:card_challenge}
+      
       # Other commands
-      clean_command in ["look around", "look", "describe"] -> :look
-      clean_command in ["help", "commands", "what can i say"] -> :help
+      String.contains?(clean_command, ["look around"]) or String.contains?(clean_command, ["look"]) -> :look
+      String.contains?(clean_command, ["help"]) -> :help
       true -> :unknown
     end
   end
 
+  # Move player multiple steps in a direction, stopping on collision
+  defp move_multiple_steps(world, direction, steps) when steps > 0 and steps <= 3 do
+    move_multiple_steps_recursive(world, direction, steps, 0)
+  end
+
+  defp move_multiple_steps_recursive(world, _direction, 0, completed_steps) do
+    {:ok, world, completed_steps}
+  end
+
+  defp move_multiple_steps_recursive(world, direction, remaining_steps, completed_steps) do
+    case World.move_player(world, direction) do
+      {:ok, new_world} ->
+        # Successfully moved one step, continue with remaining
+        move_multiple_steps_recursive(new_world, direction, remaining_steps - 1, completed_steps + 1)
+      
+      {:error, _reason} ->
+        # Blocked, return current state with completed steps
+        if completed_steps == 0 do
+          {:error, "Cannot move #{direction} - blocked"}
+        else
+          {:ok, world, completed_steps}
+        end
+    end
+  end
+
   # Helper functions
+  defp get_completion_status(world) do
+    {completed, total} = World.get_progress(world)
+    if completed == total do
+      "🏆 All cards completed! Game finished!"
+    else
+      "#{completed}/#{total} cards completed"
+    end
+  end
+
   defp assign(socket, key, value) do
     Phoenix.Component.assign(socket, key, value)
   end

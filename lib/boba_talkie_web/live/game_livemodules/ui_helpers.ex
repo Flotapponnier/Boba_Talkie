@@ -7,27 +7,82 @@ defmodule BobaTalkieWeb.GameLive.UIHelpers do
   @doc """
   Returns CSS class for different cell types in the game grid
   """
-  def cell_class(cell) do
-    case cell do
+  def cell_class(cell, world \\ nil, position \\ nil) do
+    # Check if player is on an item for special highlighting
+    player_on_item = world && position && world.player_pos == position && Map.has_key?(world.items, position)
+    
+    base_class = case cell do
       0 -> "bg-gray-800 border-gray-700"      # Wall
       1 -> "bg-green-500 border-green-400"    # Empty walkable
       2 -> "bg-blue-500 border-blue-400"      # Player
       3 -> "bg-yellow-500 border-yellow-400"  # Item
       _ -> "bg-gray-600 border-gray-500"      # Unknown
     end
+    
+    # Add special highlighting when player is on an item
+    if player_on_item do
+      "bg-gradient-to-br from-blue-400 to-yellow-400 border-purple-300 ring-2 ring-purple-400 ring-opacity-50"
+    else
+      base_class
+    end
   end
 
   @doc """
-  Returns emoji icon for different cell types
+  Returns emoji icon for different cell types with player/item overlap handling
   """
-  def cell_icon(cell) do
-    case cell do
-      0 -> "⬛"  # Wall
-      1 -> ""   # Empty
-      2 -> "🧑"  # Player
-      3 -> "💎"  # Item
-      _ -> "?"   # Unknown
+  def cell_icon(cell, world \\ nil, position \\ nil)
+  
+  def cell_icon(cell, world, position) do
+    # Check if player is at this position and there's also an item
+    if world && position && world.player_pos == position do
+      case Map.get(world.items, position) do
+        %{emoji: emoji} -> 
+          # Player is on an item - show both
+          "🧑#{emoji}"
+        _ -> 
+          # Just player
+          "🧑"
+      end
+    else
+      # No player at this position, show normal cell content
+      case cell do
+        0 -> "⬛"  # Wall
+        1 -> ""   # Empty
+        2 -> "🧑"  # Player (shouldn't happen with new logic)
+        3 -> 
+          # Show specific fruit emoji if world and position provided
+          if world && position do
+            case Map.get(world.items, position) do
+              %{emoji: emoji} -> emoji
+              _ -> "🍎"  # Default fruit emoji
+            end
+          else
+            "🍎"  # Default fruit emoji
+          end
+        _ -> "?"   # Unknown
+      end
     end
+  end
+
+  @doc """
+  Get fruit at specific position for display
+  """
+  def get_fruit_at_position(world, {x, y}) do
+    Map.get(world.items, {x, y})
+  end
+
+  @doc """
+  Format inventory for display
+  """
+  def format_inventory(inventory) do
+    inventory
+    |> Enum.group_by(& &1.type)
+    |> Enum.map(fn {_type, items} -> 
+      count = length(items)
+      emoji = List.first(items).emoji
+      "#{emoji} × #{count}"
+    end)
+    |> Enum.join(", ")
   end
 
   @doc """
