@@ -1,0 +1,31 @@
+/* Utility Styles Module */
+
+/* Main content positioning above clouds */
+.main-content {
+  position: relative;
+  z-index: 10;
+}
+
+/* Banner styling */
+.banner-container {
+  filter: drop-shadow(0 8px 16px var(--boba-shadow));
+}
+
+/* Custom scrollbars */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: var(--boba-cream);
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--boba-orange);
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--boba-orange-dark);
+}

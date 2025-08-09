@@ -111,5 +111,4 @@ defmodule BobaTalkieWeb.GameLive do
   
   defp cell_class(cell, world, position), do: UIHelpers.cell_class(cell, world, position)
   defp cell_icon(cell, world, position), do: UIHelpers.cell_icon(cell, world, position)
-  defp format_inventory(inventory), do: UIHelpers.format_inventory(inventory)
 end

@@ -103,3 +103,13 @@
 [data-phx-session], [data-phx-teleported-src] { display: contents }
 
 /* This file is for your main application CSS */
+
+/* Import modular CSS files following CLAUDE.md architecture */
+@import "./modules/variables.css";
+@import "./modules/backgrounds.css";
+@import "./modules/buttons.css";
+@import "./modules/cards.css";
+@import "./modules/animations.css";
+@import "./modules/game.css";
+@import "./modules/typography.css";
+@import "./modules/utilities.css";

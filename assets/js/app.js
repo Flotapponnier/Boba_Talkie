@@ -28,6 +28,7 @@ import topbar from "../vendor/topbar"
 // Import BobaTalkie hooks
 import { MicrophoneTest } from "./hooks/microphone_test.js"
 import { VoiceCapture } from "./hooks/voice_capture.js"
+import FloatingClouds from "./hooks/floating_clouds.js"
 
 const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 const liveSocket = new LiveSocket("/live", Socket, {
@@ -36,7 +37,8 @@ const liveSocket = new LiveSocket("/live", Socket, {
   hooks: {
     ...colocatedHooks,
     MicrophoneTest,
-    VoiceCapture
+    VoiceCapture,
+    FloatingClouds
   },
 })
 

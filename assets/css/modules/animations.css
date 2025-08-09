@@ -1,0 +1,61 @@
+/* Animation Styles Module */
+
+/* Cute animations */
+@keyframes bounce-cute {
+  0%, 100% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(-10px) scale(1.05); }
+}
+
+.bounce-cute {
+  animation: bounce-cute 2s infinite;
+}
+
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-3deg); }
+  75% { transform: rotate(3deg); }
+}
+
+.wiggle {
+  animation: wiggle 0.5s ease-in-out;
+}
+
+/* Floating clouds animation */
+@keyframes float-cloud {
+  from {
+    transform: translateX(-200px);
+  }
+  to {
+    transform: translateX(calc(100vw + 200px));
+  }
+}
+
+.cloud {
+  position: absolute;
+  opacity: 0.7;
+  animation: float-cloud linear infinite;
+  filter: brightness(1.2) contrast(0.8);
+}
+
+/* Cloud variations for different sizes and speeds */
+.cloud-1 { width: 80px; height: 50px; animation-duration: 25s; top: var(--cloud-1-top); }
+.cloud-2 { width: 120px; height: 75px; animation-duration: 35s; top: var(--cloud-2-top); }
+.cloud-3 { width: 100px; height: 60px; animation-duration: 30s; top: var(--cloud-3-top); }
+.cloud-4 { width: 90px; height: 55px; animation-duration: 40s; top: var(--cloud-4-top); }
+.cloud-5 { width: 110px; height: 70px; animation-duration: 28s; top: var(--cloud-5-top); }
+.cloud-6 { width: 85px; height: 52px; animation-duration: 45s; top: var(--cloud-6-top); }
+.cloud-7 { width: 95px; height: 58px; animation-duration: 32s; top: var(--cloud-7-top); }
+.cloud-8 { width: 105px; height: 65px; animation-duration: 38s; top: var(--cloud-8-top); }
+.cloud-9 { width: 88px; height: 54px; animation-duration: 42s; top: var(--cloud-9-top); }
+
+/* Clouds container */
+.clouds-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}

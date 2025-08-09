@@ -1,0 +1,67 @@
+/* Background Styles Module */
+
+/* Wood texture backgrounds */
+.wood-bg {
+  background: linear-gradient(45deg, var(--boba-brown-light) 0%, var(--boba-brown) 50%, var(--boba-brown-light) 100%);
+  background-size: 20px 20px;
+  position: relative;
+}
+
+.wood-bg::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(circle at 20% 50%, rgba(139, 69, 19, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 25%, rgba(139, 69, 19, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 40% 75%, rgba(139, 69, 19, 0.1) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+/* Euphoric gradient backgrounds */
+.bg-euphoric {
+  background: linear-gradient(135deg, 
+    var(--boba-blue) 0%,
+    var(--boba-cream) 40%,
+    var(--boba-orange-light) 70%,
+    var(--boba-orange) 100%);
+  min-height: 100vh;
+}
+
+.bg-game-euphoric {
+  background: linear-gradient(135deg,
+    #FFE5B4 0%,
+    var(--boba-cream) 30%,
+    var(--boba-orange-light) 60%,
+    var(--boba-orange) 100%);
+  min-height: 100vh;
+}
+
+/* Utility background classes */
+.bg-boba-orange-5 {
+  background-color: rgba(255, 140, 66, 0.05);
+}
+
+.bg-boba-orange-10 {
+  background-color: rgba(255, 140, 66, 0.1);
+}
+
+.bg-boba-orange-20 {
+  background-color: rgba(255, 140, 66, 0.2);
+}
+
+.bg-boba-green-20 {
+  background-color: rgba(144, 238, 144, 0.2);
+}
+
+.bg-boba-blue-20 {
+  background-color: rgba(135, 206, 235, 0.2);
+}
+
+/* Color utility classes for templates */
+.text-boba-green {
+  color: var(--boba-green);
+}

@@ -1,19 +1,19 @@
-<div class="min-h-screen bg-gradient-to-br from-green-900 via-teal-900 to-blue-900 p-4">
-  <div class="max-w-6xl mx-auto space-y-6">
+<div class="bg-euphoric h-screen p-2 overflow-hidden" phx-hook="FloatingClouds" id="game-background">
+  <div class="max-w-6xl mx-auto h-full flex flex-col space-y-2 main-content">
     
     <!-- Game Completion Screen -->
     <%= if BobaTalkie.Game.World.game_completed?(@world) do %>
       <div class="fixed inset-0 bg-black/80 backdrop-blur-lg z-50 flex items-center justify-center">
-        <div class="bg-gradient-to-br from-green-500 to-blue-600 rounded-3xl p-8 text-center max-w-md mx-4">
+        <div class="card-cute p-8 text-center max-w-md mx-4 bounce-cute">
           <div class="text-6xl mb-4">🏆</div>
-          <h2 class="text-3xl font-bold text-white mb-4">Congratulations!</h2>
-          <p class="text-white/90 mb-6">
+          <h2 class="text-3xl font-bold text-cute mb-4">Congratulations!</h2>
+          <p class="text-cute mb-6">
             You completed all <%= length(@world.cards || []) %> cards! 
             Your pronunciation score: <%= Float.round(@player.stats.pronunciation_score * 100, 1) %>%
           </p>
           <button 
             onclick="window.location.reload()"
-            class="bg-white text-blue-600 font-bold py-3 px-8 rounded-full hover:bg-blue-50 transition-colors"
+            class="btn-cute py-3 px-8"
           >
             🎮 Play Again
           </button>
@@ -21,41 +21,53 @@
       </div>
     <% end %>
     
-    <!-- Compact Header -->
-    <div class="flex justify-between items-center mb-4">
-      <h1 class="text-2xl font-bold text-white">🧋 BobaTalkie</h1>
-      <div class="text-right text-white text-xs">
-        <div>Player: <%= @player.name %> | Pos: <%= elem(@player.position, 0) %>, <%= elem(@player.position, 1) %></div>
-        <div>Cards: <%= @player.stats.challenges_completed %> / <%= length(@world.cards || []) %></div>
+    <!-- Banner Header -->
+    <div class="flex justify-center items-center mb-3">
+      <div class="banner-container">
+        <img src="/images/logo/bobatalkie_banneer.png" alt="BobaTalkie" class="h-20 md:h-24">
       </div>
     </div>
+    
 
     <!-- Main Centered Game Layout -->
-    <div class="grid grid-cols-12 gap-4 h-[calc(100vh-8rem)]">
+    <div class="grid grid-cols-12 gap-4 flex-1">
       
-      <!-- Left Sidebar - Compact Stats -->
-      <div class="col-span-2 space-y-3">
+      <!-- Left Sidebar - Quick Commands -->
+      <div class="col-span-2 space-y-2">
+        <!-- Quick Commands -->
+        <div class="card-cute p-3">
+          <h4 class="text-sm font-bold text-cute mb-2">Quick Commands:</h4>
+          <div class="space-y-1 text-xs text-cute">
+            <div>"go north"</div>
+            <div>"go south"</div>
+            <div>"go east"</div>
+            <div>"go west"</div>
+            <div>"look around"</div>
+            <div>"help"</div>
+          </div>
+        </div>
+
         <!-- Player Stats -->
-        <div class="bg-white/10 backdrop-blur-lg rounded-lg p-4">
-          <h3 class="text-sm font-bold text-white mb-2">📊 Stats</h3>
-          <div class="space-y-1 text-xs">
-            <div class="flex justify-between text-blue-200">
+        <div class="card-cute p-3">
+          <h3 class="text-sm font-bold text-cute mb-2">📊 Stats</h3>
+          <div class="space-y-2 text-xs">
+            <div class="flex justify-between text-cute">
               <span>Commands:</span>
-              <span><%= @player.stats.commands_spoken %></span>
+              <span class="font-bold"><%= @player.stats.commands_spoken %></span>
             </div>
-            <div class="flex justify-between text-blue-200">
+            <div class="flex justify-between text-cute">
               <span>Score:</span>
-              <span><%= Float.round(@player.stats.pronunciation_score * 100, 1) %>%</span>
+              <span class="font-bold text-boba-orange"><%= Float.round(@player.stats.pronunciation_score * 100, 1) %>%</span>
             </div>
           </div>
         </div>
 
-        <!-- Messages - Compact -->
-        <div class="bg-white/10 backdrop-blur-lg rounded-lg p-4">
-          <h3 class="text-sm font-bold text-white mb-2">📝 Messages</h3>
-          <div class="space-y-1 text-xs max-h-32 overflow-y-auto">
-            <%= for message <- Enum.take(@game_messages, 3) do %>
-              <div class="text-blue-200 text-xs leading-tight">
+        <!-- Messages -->
+        <div class="card-cute p-3">
+          <h3 class="text-sm font-bold text-cute mb-2">📝 Messages</h3>
+          <div class="space-y-1 text-xs max-h-24 overflow-y-auto custom-scrollbar">
+            <%= for message <- Enum.take(@game_messages, 2) do %>
+              <div class="text-cute text-xs leading-tight">
                 <%= message %>
               </div>
             <% end %>
@@ -64,28 +76,28 @@
       </div>
 
       <!-- Center - Main Game Area -->
-      <div class="col-span-8 flex flex-col">
-        <!-- Voice Recognition Status -->
+      <div class="col-span-6 flex flex-col">
+        <!-- Voice Recognition Status - Speech Bubble -->
         <div class="mb-4">
           <%= if @listening do %>
-            <div class="bg-green-500/20 border border-green-400 rounded-lg p-4 text-center">
+            <div class="speech-bubble p-4 text-center">
               <div class="flex items-center justify-center space-x-2 mb-2">
-                <div class="w-4 h-4 bg-green-400 rounded-full animate-pulse"></div>
-                <span class="text-green-400 font-semibold">🎤 Listening...</span>
+                <div class="w-4 h-4 bg-boba-orange rounded-full animate-pulse"></div>
+                <span class="text-boba-orange font-semibold">🎤 Listening...</span>
               </div>
               <%= if @interim_text do %>
-                <div class="text-white font-mono text-lg">
+                <div class="text-cute font-mono text-lg">
                   "<%= @interim_text %>"
                 </div>
               <% else %>
-                <div class="text-gray-400 italic">Speak a command...</div>
+                <div class="text-cute opacity-60 italic">Speak a command...</div>
               <% end %>
             </div>
           <% else %>
-            <div class="bg-gray-700/20 border border-gray-600 rounded-lg p-4 text-center">
-              <div class="text-gray-400">🎤 Voice Recognition Ready</div>
+            <div class="speech-bubble p-4 text-center">
+              <div class="text-cute">🎤 Voice Recognition Ready</div>
               <%= if @last_command do %>
-                <div class="text-blue-200 font-mono text-sm mt-1">
+                <div class="text-boba-orange font-mono text-sm mt-1">
                   Last: "<%= @last_command %>"
                 </div>
               <% end %>
@@ -94,8 +106,8 @@
         </div>
 
         <!-- Game World Grid -->
-        <div class="bg-white/10 backdrop-blur-lg rounded-xl p-6 flex-1 flex flex-col">
-          <h2 class="text-lg font-bold text-white mb-4 text-center">🎮 Game World</h2>
+        <div class="wood-bg rounded-xl p-6 flex-1 flex flex-col">
+          <h2 class="text-lg font-bold text-cute-white mb-4 text-center">🎮 Game World</h2>
           
           <!-- 2D Grid Display - Larger cells -->
           <div class="flex-1 flex items-center justify-center">
@@ -103,36 +115,40 @@
               <%= for {row, y} <- Enum.with_index(@world.grid) do %>
                 <%= for {cell, x} <- Enum.with_index(row) do %>
                   <div class={[
-                    "w-12 h-12 rounded-lg border-2 flex items-center justify-center text-xl font-bold",
+                    "grid-cell w-12 h-12 flex items-center justify-center text-xl font-bold",
                     cell_class(cell, @world, {x, y})
                   ]} title={"(#{x}, #{y})"}>
-                    <%= cell_icon(cell, @world, {x, y}) %>
+                    <%= if {x, y} == @player.position do %>
+                      <img src="/images/character/boba.png" alt="Player" class="character-sprite w-10 h-10">
+                    <% else %>
+                      <%= cell_icon(cell, @world, {x, y}) %>
+                    <% end %>
                   </div>
                 <% end %>
               <% end %>
             </div>
           </div>
           
-          <!-- Grid Legend - Compact -->
-          <div class="mt-4 flex justify-center space-x-6 text-sm text-white">
+          <!-- Grid Legend - Cute -->
+          <div class="mt-4 flex justify-center space-x-6 text-sm text-cute-white">
             <span>⬛ Wall</span>
             <span>🟢 Path</span>
-            <span>🧑 You</span>
-            <span>🍎🍌🍊🍇 Fruits</span>
+            <span>👤 You</span>
+            <span>🍎🍌🍇 Fruits</span>
           </div>
         </div>
 
-        <!-- Voice Control Button - Prominent -->
+        <!-- Voice Control Button - Cute Style -->
         <div class="mt-4">
           <button 
             phx-hook="VoiceCapture"
             id="voice-btn"
             class={[
-              "w-full font-bold py-4 px-6 rounded-xl transition-all duration-200 text-xl",
+              "btn-cute w-full py-3 px-4 transition-all duration-200 text-lg",
               if @listening do
-                "bg-gradient-to-r from-green-500 to-green-600 text-white animate-pulse shadow-lg"
+                "animate-pulse wiggle"
               else
-                "bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white shadow-lg hover:shadow-xl"
+                "bounce-cute"
               end
             ]}
           >
@@ -149,23 +165,23 @@
       </div>
 
       <!-- Right Sidebar - Challenge Cards -->
-      <div class="col-span-2 space-y-3">
+      <div class="col-span-4 space-y-2">
         <!-- Challenge Cards -->
-        <div class="bg-white/10 backdrop-blur-lg rounded-lg p-4 h-full flex flex-col">
-          <h3 class="text-sm font-bold text-white mb-3 text-center">🃏 Challenges</h3>
+        <div class="card-cute p-4 h-full flex flex-col">
+          <h3 class="text-sm font-bold text-cute mb-3 text-center">🃏 Challenges</h3>
           
           <!-- Compact Cards Display -->
           <div class="space-y-2 flex-1 overflow-y-auto">
             <%= for card <- (@world.cards || []) do %>
               <div class={[
-                "p-3 rounded-lg border cursor-pointer transition-all text-xs",
+                "card-cute p-3 cursor-pointer transition-all text-xs",
                 if card.completed do
-                  "bg-green-800/30 border-green-500 opacity-60"
+                  "opacity-60 bg-boba-green/20"
                 else
                   if card.selected do
-                    "bg-blue-800/40 border-blue-400 ring-1 ring-blue-300"
+                    "ring-2 ring-boba-orange bg-boba-orange/10"
                   else
-                    "bg-gray-800/30 border-gray-600 hover:bg-gray-700/40"
+                    "hover:bg-boba-orange/5"
                   end
                 end
               ]}
@@ -180,10 +196,10 @@
                     <span class="text-blue-300 text-xs font-bold">ACTIVE</span>
                   <% end %>
                 </div>
-                <div class="text-white font-semibold text-sm mb-1">
+                <div class="text-cute font-semibold text-sm mb-1">
                   <%= card.template %>
                 </div>
-                <div class="text-gray-400 text-xs">
+                <div class="text-cute opacity-70 text-xs">
                   <%= String.slice(card.description, 0, 40) %>...
                 </div>
               </div>
@@ -193,14 +209,14 @@
           <!-- Active Challenge Status -->
           <%= case BobaTalkie.Game.Card.get_selected_card(@world.cards || []) do %>
             <% nil -> %>
-              <div class="mt-3 p-2 bg-yellow-500/20 border border-yellow-400 rounded text-center">
-                <div class="text-yellow-200 text-xs">
+              <div class="mt-3 p-2 bg-boba-orange/20 border border-boba-orange rounded-lg text-center">
+                <div class="text-boba-orange text-xs font-bold">
                   💡 Select a card!
                 </div>
               </div>
             <% selected_card -> %>
-              <div class="mt-3 p-2 bg-blue-500/20 border border-blue-400 rounded text-center">
-                <div class="text-blue-200 text-xs">
+              <div class="mt-3 p-2 bg-boba-blue/20 border border-boba-blue rounded-lg text-center">
+                <div class="text-cute text-xs font-bold">
                   🎯 "<%= selected_card.template %>"
                 </div>
               </div>
@@ -209,41 +225,5 @@
       </div>
     </div>
 
-    <!-- Bottom - Quick Help & Test Controls -->
-    <div class="mt-4 grid grid-cols-12 gap-4">
-      <!-- Help Commands -->
-      <div class="col-span-6 bg-white/5 backdrop-blur-lg rounded-lg p-3">
-        <h4 class="text-xs font-bold text-white mb-2">Quick Commands:</h4>
-        <div class="text-xs text-blue-200 space-x-4">
-          <span>"2 north"</span>
-          <span>"tree right"</span>
-          <span>"look around"</span>
-          <span>"help"</span>
-        </div>
-      </div>
-
-      <!-- Test Controls -->
-      <div class="col-span-6 bg-white/5 backdrop-blur-lg rounded-lg p-3">
-        <h4 class="text-xs font-bold text-white mb-2">Test Controls:</h4>
-        <div class="grid grid-cols-4 gap-1">
-          <button phx-click="test_move" phx-value-direction="north" 
-                  class="bg-gray-600 hover:bg-gray-500 text-white py-1 px-2 rounded text-xs">
-            ↑
-          </button>
-          <button phx-click="test_move" phx-value-direction="south" 
-                  class="bg-gray-600 hover:bg-gray-500 text-white py-1 px-2 rounded text-xs">
-            ↓
-          </button>
-          <button phx-click="test_move" phx-value-direction="west" 
-                  class="bg-gray-600 hover:bg-gray-500 text-white py-1 px-2 rounded text-xs">
-            ←
-          </button>
-          <button phx-click="test_move" phx-value-direction="east" 
-                  class="bg-gray-600 hover:bg-gray-500 text-white py-1 px-2 rounded text-xs">
-            →
-          </button>
-        </div>
-      </div>
-    </div>
   </div>
 </div>

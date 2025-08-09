@@ -1,0 +1,25 @@
+/* Game-specific Styles Module */
+
+/* Game grid enhancements */
+.grid-cell {
+  background: var(--boba-cream);
+  border: 2px solid var(--boba-orange);
+  border-radius: 12px;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+  transition: all 0.2s ease;
+}
+
+.grid-cell:hover {
+  transform: scale(1.05);
+}
+
+/* Character styling */
+.character-sprite {
+  filter: drop-shadow(2px 2px 4px var(--boba-shadow));
+  transition: all 0.3s ease;
+}
+
+.character-sprite:hover {
+  transform: scale(1.1);
+  filter: drop-shadow(3px 3px 6px var(--boba-shadow)) brightness(1.1);
+}

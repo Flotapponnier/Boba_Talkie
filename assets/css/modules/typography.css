@@ -1,0 +1,31 @@
+/* Typography Styles Module */
+
+/* Text styles */
+.text-cute {
+  color: var(--boba-brown);
+  text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+  font-weight: bold;
+}
+
+.text-cute-white {
+  color: var(--boba-white);
+  text-shadow: 1px 1px 2px var(--boba-shadow);
+  font-weight: bold;
+}
+
+/* Color utilities */
+.text-boba-orange {
+  color: var(--boba-orange);
+}
+
+.border-boba-orange {
+  border-color: var(--boba-orange);
+}
+
+.border-boba-blue {
+  border-color: var(--boba-blue);
+}
+
+.ring-boba-orange {
+  --tw-ring-color: var(--boba-orange);
+}

@@ -1,0 +1,26 @@
+/* Animal Crossing Inspired Design Variables */
+:root {
+  --boba-orange: #FF8C42;
+  --boba-orange-light: #FFB084; 
+  --boba-orange-dark: #E67435;
+  --boba-cream: #FFF8F0;
+  --boba-white: #FFFFFF;
+  --boba-brown: #8B4513;
+  --boba-brown-light: #CD853F;
+  --boba-green: #90EE90;
+  --boba-blue: #87CEEB;
+  --boba-shadow: rgba(139, 69, 19, 0.2);
+}
+
+/* Cloud positioning variables for JavaScript hook */
+:root {
+  --cloud-1-top: 5%;
+  --cloud-2-top: 15%;
+  --cloud-3-top: 25%;
+  --cloud-4-top: 35%;
+  --cloud-5-top: 45%;
+  --cloud-6-top: 55%;
+  --cloud-7-top: 65%;
+  --cloud-8-top: 75%;
+  --cloud-9-top: 85%;
+}
