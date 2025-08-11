@@ -25,12 +25,16 @@ defmodule BobaTalkieWeb.GameLive.StateManager do
     topic_title = case topic do
       "introduction" -> "Self-Introduction"
       "fruits" -> "Fruits & Food"
+      "numbers" -> "Numbers"
+      "colors" -> "Colors"
       _ -> "Game"
     end
     
     welcome_message = case topic do
       "introduction" -> "Welcome to Self-Introduction! Practice greeting phrases and introducing yourself."
       "fruits" -> "Welcome to Fruits & Food! Learn about delicious fruits and food vocabulary."
+      "numbers" -> "Welcome to Numbers! Master counting and number vocabulary through practice."
+      "colors" -> "Welcome to Colors! Explore vibrant colors and learn color descriptions."
       _ -> "Welcome to BobaTalkie! Say 'help' for commands."
     end
 

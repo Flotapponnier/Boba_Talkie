@@ -24,7 +24,19 @@ defmodule BobaTalkieWeb.MapSelectionLive do
         {:noreply, push_navigate(socket, to: ~p"/tutorial/fruits")}
       
       {"fruits", "play"} ->
-        {:noreply, push_navigate(socket, to: ~p"/game")}
+        {:noreply, push_navigate(socket, to: ~p"/game/fruits")}
+      
+      {"numbers", "tutorial"} ->
+        {:noreply, push_navigate(socket, to: ~p"/tutorial/numbers")}
+      
+      {"numbers", "play"} ->
+        {:noreply, push_navigate(socket, to: ~p"/game/numbers")}
+      
+      {"colors", "tutorial"} ->
+        {:noreply, push_navigate(socket, to: ~p"/tutorial/colors")}
+      
+      {"colors", "play"} ->
+        {:noreply, push_navigate(socket, to: ~p"/game/colors")}
       
       _ ->
         {:noreply, put_flash(socket, :error, "Invalid selection")}
@@ -57,6 +69,26 @@ defmodule BobaTalkieWeb.MapSelectionLive do
         vocabulary_count: 20,
         color: "bg-green-100 border-green-300",
         text_color: "text-green-800"
+      },
+      %{
+        id: "numbers",
+        title: "Numbers",
+        emoji: "1️⃣",
+        description: "Practice counting and number vocabulary",
+        difficulty: "Beginner",
+        vocabulary_count: 12,
+        color: "bg-purple-100 border-purple-300",
+        text_color: "text-purple-800"
+      },
+      %{
+        id: "colors",
+        title: "Colors",
+        emoji: "🌈",
+        description: "Learn colors and color descriptions",
+        difficulty: "Beginner",
+        vocabulary_count: 16,
+        color: "bg-yellow-100 border-yellow-300",
+        text_color: "text-yellow-800"
       }
     ]
   end

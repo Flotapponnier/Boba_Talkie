@@ -39,6 +39,22 @@ defmodule BobaTalkie.Game.World do
     %{type: :thank_you, name: "thank you", emoji: "🙏", voice_commands: ["thank you", "thanks", "thank you very much"]}
   ]
 
+  # Available numbers items
+  @numbers_items [
+    %{type: :one, name: "one", emoji: "1️⃣", voice_commands: ["one", "number one", "first"]},
+    %{type: :two, name: "two", emoji: "2️⃣", voice_commands: ["two", "number two", "second"]},
+    %{type: :three, name: "three", emoji: "3️⃣", voice_commands: ["three", "number three", "third"]},
+    %{type: :four, name: "four", emoji: "4️⃣", voice_commands: ["four", "number four", "fourth"]}
+  ]
+
+  # Available colors items
+  @colors_items [
+    %{type: :red, name: "red", emoji: "🔴", voice_commands: ["red", "red color", "the color red"]},
+    %{type: :blue, name: "blue", emoji: "🔵", voice_commands: ["blue", "blue color", "the color blue"]},
+    %{type: :green, name: "green", emoji: "🟢", voice_commands: ["green", "green color", "the color green"]},
+    %{type: :yellow, name: "yellow", emoji: "🟡", voice_commands: ["yellow", "yellow color", "the color yellow"]}
+  ]
+
   @doc """
   Creates a new world with default 6x6 grid
   """
@@ -50,6 +66,8 @@ defmodule BobaTalkie.Game.World do
     {grid_with_items, items} = case topic do
       "introduction" -> place_random_items(grid, width, height, player_pos, @introduction_items)
       "fruits" -> place_random_items(grid, width, height, player_pos, @fruits)
+      "numbers" -> place_random_items(grid, width, height, player_pos, @numbers_items)
+      "colors" -> place_random_items(grid, width, height, player_pos, @colors_items)
       _ -> place_random_items(grid, width, height, player_pos, @fruits)  # Default to fruits
     end
     
@@ -239,9 +257,21 @@ defmodule BobaTalkie.Game.World do
     case topic do
       "introduction" -> @introduction_items
       "fruits" -> @fruits
+      "numbers" -> @numbers_items
+      "colors" -> @colors_items
       _ -> @fruits
     end
   end
+
+  @doc """
+  Gets all available numbers items (for reference)
+  """
+  def get_available_numbers_items(), do: @numbers_items
+
+  @doc """
+  Gets all available colors items (for reference)
+  """
+  def get_available_colors_items(), do: @colors_items
 
   # Private functions
 

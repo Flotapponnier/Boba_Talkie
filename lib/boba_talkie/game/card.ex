@@ -83,6 +83,66 @@ defmodule BobaTalkie.Game.Card do
     }
   ]
 
+  @numbers_card_templates [
+    %{
+      template: "Count to _",
+      description: "Complete by saying 'Count to [number]' while standing on a number",
+      applicable_objects: [:one, :two, :three, :four],
+      type: :counting_action
+    },
+    %{
+      template: "I have _ apples",
+      description: "Complete by saying 'I have [number] apples' while on a number",
+      applicable_objects: [:one, :two, :three, :four],
+      type: :quantity_expression
+    },
+    %{
+      template: "The number _ is my favorite",
+      description: "Complete by saying 'The number [number] is my favorite' while on a number",
+      applicable_objects: [:one, :two, :three, :four],
+      type: :preference_number
+    },
+    %{
+      template: "Step _ forward",
+      description: "Complete by saying 'Step [number] forward' while on a number",
+      applicable_objects: [:one, :two, :three, :four],
+      type: :instruction_number
+    }
+  ]
+
+  @colors_card_templates [
+    %{
+      template: "The sky is _",
+      description: "Complete by saying 'The sky is [color]' while standing on a color",
+      applicable_objects: [:blue],
+      type: :nature_color
+    },
+    %{
+      template: "My shirt is _",
+      description: "Complete by saying 'My shirt is [color]' while on a color",
+      applicable_objects: [:red, :blue, :green, :yellow],
+      type: :clothing_color
+    },
+    %{
+      template: "I like the color _",
+      description: "Complete by saying 'I like the color [color]' while on a color",
+      applicable_objects: [:red, :blue, :green, :yellow],
+      type: :color_preference
+    },
+    %{
+      template: "The grass is _",
+      description: "Complete by saying 'The grass is [color]' while standing on green",
+      applicable_objects: [:green],
+      type: :nature_green
+    },
+    %{
+      template: "The sun is _",
+      description: "Complete by saying 'The sun is [color]' while standing on yellow",
+      applicable_objects: [:yellow],
+      type: :nature_yellow
+    }
+  ]
+
   @doc """
   Generate a deck of cards based on the actual objects in the world
   """
@@ -97,6 +157,8 @@ defmodule BobaTalkie.Game.Card do
     card_templates = case topic do
       "introduction" -> @introduction_card_templates
       "fruits" -> @fruit_card_templates
+      "numbers" -> @numbers_card_templates
+      "colors" -> @colors_card_templates
       _ -> @fruit_card_templates
     end
     
@@ -222,6 +284,16 @@ defmodule BobaTalkie.Game.Card do
       :name -> "name"
       :nice_to_meet -> "nice to meet you"
       :thank_you -> "thank you"
+      # Numbers
+      :one -> "one"
+      :two -> "two"
+      :three -> "three"
+      :four -> "four"
+      # Colors
+      :red -> "red"
+      :blue -> "blue"
+      :green -> "green"
+      :yellow -> "yellow"
     end
   end
 end
