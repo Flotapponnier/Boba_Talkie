@@ -8,20 +8,35 @@ This project uses Claude Code with automatic CLAUDE.md loading:
 - ✅ **Phoenix integration**: Understands Elixir/Phoenix toolchain
 - 🔄 **Self-updating**: This file evolves with the codebase
 
-## Current Status: VOICE-CONTROLLED GAME FUNCTIONAL ✅
-**Phase 1 MVP Complete**: Full voice-controlled 2D grid navigation  
-**Ready for Production**: Deepgram API integration for all browsers
+## Current Status: MULTI-LEVEL LANGUAGE LEARNING GAME ✅
+**Phase 2 Complete**: 4-Level Voice-Controlled Learning System
+**Ready for Production**: Complete tutorial and gameplay system with topic-aware content
 
 ## Project Summary
-Voice-controlled language learning game built with Phoenix LiveView. Players speak commands to navigate a 2D grid world, learning pronunciation and vocabulary through immersive gameplay.
+Voice-controlled language learning game built with Phoenix LiveView. Players choose from 4 different learning topics, complete tutorials, and play voice-controlled games where they navigate a 2D grid world to complete sentence challenges using proper pronunciation.
 
-## Development Focus
-**Phase 1 - Current Sprint**: Solo mode with 2D grid navigation
-- ✅ Project setup and architecture
-- 🔄 Index/landing page with voice setup  
-- 🔄 2D grid map system (0s=walls, 1s=walkable)
-- ⏳ Player movement via voice commands
-- ⏳ Voice pipeline integration (<500ms target)
+## Game Levels & Content
+**4 Complete Learning Topics**:
+
+### 1. 👋 Self-Introduction
+- **Tutorial**: 15 greeting/introduction phrases
+- **Game Objects**: Hello (👋), Name (📛), Nice to meet you (🤝), Thank you (🙏)
+- **Card Challenges**: "Say _ to greet someone", "My _ is Sarah", etc.
+
+### 2. 🍎 Fruits & Food  
+- **Tutorial**: 20 fruit and food vocabulary items
+- **Game Objects**: Apple (🍎), Banana (🍌), Orange (🍊), Grape (🍇)
+- **Card Challenges**: "Eat the _", "This is a _", "The _ is yellow", etc.
+
+### 3. 1️⃣ Numbers
+- **Tutorial**: 12 counting and number vocabulary
+- **Game Objects**: One (1️⃣), Two (2️⃣), Three (3️⃣), Four (4️⃣)
+- **Card Challenges**: "Count to _", "I have _ apples", "Step _ forward", etc.
+
+### 4. 🌈 Colors
+- **Tutorial**: 16 color vocabulary and descriptions
+- **Game Objects**: Red (🔴), Blue (🔵), Green (🟢), Yellow (🟡)
+- **Card Challenges**: "The sky is _", "My shirt is _", "The grass is _", etc.
 
 ## Tech Stack
 - **Backend**: Elixir/Phoenix with LiveView
@@ -30,65 +45,86 @@ Voice-controlled language learning game built with Phoenix LiveView. Players spe
 - **Frontend**: LiveView + PWA capabilities
 - **Deployment**: Fly.io
 
-## Game Architecture (2D Grid System)
+## Game Architecture (Topic-Aware System)
+
+### Navigation Flow
+```
+Index Page → Map Selection → Tutorial (optional) → Game Play
+     ↓              ↓               ↓                ↓
+Mic Setup    Choose Topic    Learn Vocabulary   Voice Challenges
+```
 
 ### Map Structure
 ```
-Grid: 10x10 2D array
+Grid: 6x6 2D array (topic-specific objects)
 0 = wall/obstacle (black)
 1 = walkable space (white/green)  
 2 = player position (blue)
-3 = interactive objects (yellow)
+3 = interactive objects (topic-specific emojis)
 
-Example:
-[1,1,1,0,0,0,1,1,1,1]
-[1,2,1,0,3,0,1,1,1,1]  # 2=player, 3=item
-[1,1,1,0,0,0,1,1,1,1]
+Example - Colors Level:
+[1,1,1,0,0,1]
+[1,2,1,0,3,1]  # 2=player, 3=🔴 (red object)
+[1,1,1,0,0,1]
 ```
 
 ### Code Architecture
 ```
 lib/boba_talkie/
 ├── game/
-│   ├── world.ex        # 2D grid state management
+│   ├── world.ex        # Topic-aware 2D grid system
 │   ├── player.ex       # Player position and actions  
-│   ├── commands.ex     # Voice command parsing
-│   └── map_loader.ex   # Load/generate grid maps
-├── voice/
-│   ├── recognizer.ex   # Deepgram integration
-│   └── processor.ex    # Command validation
+│   └── card.ex         # Challenge card system with topic templates
 └── application.ex
 
 lib/boba_talkie_web/
 ├── live/
-│   ├── game_live.ex    # Main game LiveView
-│   └── index_live.ex   # Landing page LiveView  
-└── components/
-    └── grid_component.ex # 2D grid renderer
+│   ├── index_live.ex           # Landing page with mic setup
+│   ├── map_selection_live.ex   # 4-level topic selection
+│   ├── tutorial_live.ex        # Interactive vocabulary tutorials
+│   ├── game_live.ex            # Topic-aware gameplay
+│   └── game_livemodules/       # Modular game components
+│       ├── state_manager.ex    # Topic-aware state management
+│       ├── voice_handlers.ex   # Voice event processing
+│       ├── movement_handlers.ex # Grid navigation logic
+│       └── ui_helpers.ex       # Template utilities
+└── router.ex                   # Multi-topic routing
 ```
 
-### Voice Commands (Grid Navigation)
+### Voice Commands & Gameplay
+**Movement Commands:**
 - "go north" → player.y -= 1
 - "go south" → player.y += 1  
 - "go east" → player.x += 1
 - "go west" → player.x -= 1
 - "look around" → describe surrounding cells
 
+**Challenge Commands (Topic-Specific):**
+- Stand on object + speak card sentence
+- Example: Stand on 🍎 + say "Eat the apple"
+- Cards completed → pronunciation score + progress tracking
+
 ## Current Implementation Status
-- ✅ Phoenix project with LiveView setup
-- ✅ Folder structure and comprehensive documentation
-- ✅ Index page with microphone test and game intro
-- ✅ 2D grid world system (10x10 with walls, paths, items)
-- ✅ Player movement logic with collision detection
-- ✅ Game LiveView with real-time grid display
-- ✅ Test controls for movement (arrow buttons)
-- 🔄 Next: Voice capture integration
-- ⏳ Pending: Deepgram ASR for voice recognition
+- ✅ **Complete 4-Level Learning System**
+- ✅ Index page with microphone setup and voice testing
+- ✅ Map selection with 4 beautifully designed level cards
+- ✅ Interactive tutorials with pronunciation guides
+- ✅ Topic-aware 2D grid world system (6x6 with topic-specific objects)
+- ✅ Challenge card system with topic-specific sentence templates
+- ✅ Player movement with collision detection and voice commands
+- ✅ Real-time LiveView updates and state management
+- ✅ Complete navigation flow: Index → Maps → Tutorial → Game
+- 🔄 **Ready for Voice Integration**: Deepgram ASR integration
+- ⏳ **Future**: Multiplayer modes and additional topics
 
 ## Ready to Test
 Run `mix phx.server` and visit:
-- http://localhost:4000 → Landing page with mic test
-- http://localhost:4000/game → 2D grid game (use test buttons to move)
+- **http://localhost:4000** → Landing page with microphone setup
+- **http://localhost:4000/maps** → Choose from 4 learning topics
+- **http://localhost:4000/tutorial/[topic]** → Interactive vocabulary tutorials
+- **http://localhost:4000/game/[topic]** → Voice-controlled gameplay
+
+**Available Topics**: introduction, fruits, numbers, colors
 
 ## Development Commands (Makefile)
 ```bash
@@ -200,9 +236,16 @@ GAME_DEBUG=true             # Game logic debugging
 - Production-safe error handling with optional detailed output
 - Performance-conscious debug statements
 
-## Next Steps
-1. Set up Deepgram integration for voice recognition
-2. Create basic game engine structure
-3. Implement voice command processing pipeline
-4. Configure PWA for mobile-first experience
-5. Set up development environment with testingyour_deepgram_api_key_here
+## Next Development Priorities
+1. **Voice Integration**: Complete Deepgram ASR integration for real voice commands
+2. **Advanced Features**: Add pronunciation scoring and feedback system
+3. **Additional Topics**: Expand to more learning categories (animals, actions, etc.)
+4. **Multiplayer Mode**: Real-time collaborative learning sessions
+5. **PWA Enhancement**: Optimize for mobile-first offline experience
+6. **Analytics**: Track learning progress and pronunciation improvement
+
+## Recent Achievements
+- ✅ **Multi-Level System**: Expanded from single fruit level to 4 complete topics
+- ✅ **Tutorial System**: Interactive vocabulary learning with pronunciations
+- ✅ **Topic-Aware Architecture**: Modular system supporting unlimited topics
+- ✅ **Card Challenge System**: Dynamic sentence completion challenges per topic

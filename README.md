@@ -1,11 +1,11 @@
 # BobaTalkie - Voice-Controlled Language Learning Game
 
 ## Introduction
-Boba Talkie is an innovative way to learn a language, meeting people online in a gamified way. Mostly focusing on voice recognition and voice improvement to execute actions in the game. Boba Talkie's vision is to bring players to learn a language in a fun and interactive way, focusing on Vocabulary, Pronunciation and conversation. Boba Talkie has a multiplayer mode with live video chat and microphone (video can be deactivated) to encourage people to meet and find language exchange partners through playing and interaction.
+BobaTalkie is a voice-controlled language learning game that transforms vocabulary acquisition into an interactive gaming experience. Players navigate through different learning topics by speaking commands and completing pronunciation challenges. The game combines 2D grid navigation with topic-specific vocabulary learning, making language acquisition engaging and effective.
 
 ## Project Overview
 
-BobaTalkie is a web-based language learning game where players control their character through voice commands instead of traditional input methods. The core innovation is using speech recognition to create an immersive, interactive environment that teaches pronunciation and vocabulary naturally through gameplay.
+BobaTalkie features a **4-level learning system** where players choose from different topics (Self-Introduction, Fruits & Food, Numbers, Colors), complete interactive tutorials, and then play voice-controlled games. Each level includes topic-specific vocabulary, pronunciation guides, and challenge cards that players complete by standing on objects and speaking sentences correctly.
 
 ## Architecture
 
@@ -21,15 +21,20 @@ BobaTalkie is a web-based language learning game where players control their cha
 #### Backend Architecture (lib/)
 ```
 lib/boba_talkie/
-├── game/               # Game logic and state management
+├── game/               # Topic-aware game logic
+│   ├── world.ex       # Topic-specific 2D grid system  
 │   ├── player.ex      # Player state and actions
-│   ├── world.ex       # Game world and mechanics
-│   └── commands.ex    # Voice command processing
-├── voice/             # Voice processing pipeline
-│   ├── recognizer.ex  # Deepgram ASR integration
-│   ├── processor.ex   # Command parsing and validation
-│   └── feedback.ex    # Pronunciation feedback system
+│   └── card.ex        # Challenge card system with topic templates
 └── application.ex     # Application supervision tree
+
+lib/boba_talkie_web/
+├── live/
+│   ├── index_live.ex           # Landing page with mic setup
+│   ├── map_selection_live.ex   # 4-level topic selection
+│   ├── tutorial_live.ex        # Interactive vocabulary tutorials
+│   ├── game_live.ex            # Topic-aware gameplay
+│   └── game_livemodules/       # Modular game components
+└── router.ex                   # Multi-topic routing system
 ```
 
 #### Frontend Architecture (assets/)
@@ -54,12 +59,30 @@ priv/static/
 
 ## Core Workflow
 
-1. **Voice Capture**: Browser captures audio via WebRTC MediaRecorder
-2. **Streaming**: Audio chunks stream to Phoenix via WebSocket channels
-3. **Recognition**: Deepgram processes audio and returns transcription
-4. **Command Processing**: Backend parses voice commands and validates pronunciation
-5. **Game State Update**: LiveView updates game state in real-time
-6. **Feedback**: Visual and audio feedback sent back to player
+1. **Topic Selection**: Players choose from 4 learning topics on the map selection screen
+2. **Tutorial (Optional)**: Interactive vocabulary learning with pronunciations and examples
+3. **Game Setup**: Topic-specific 2D grid world generated with appropriate objects
+4. **Voice Navigation**: Players move through the grid using voice commands ("go north", etc.)
+5. **Challenge Cards**: Complete sentence templates by speaking while standing on objects
+6. **Progress Tracking**: Real-time feedback, pronunciation scoring, and completion tracking
+
+## Learning Topics
+
+### 1. 👋 Self-Introduction (15 vocabulary items)
+- **Objects**: Hello, Name, Nice to meet you, Thank you
+- **Challenges**: "Say hello to greet someone", "My name is Sarah"
+
+### 2. 🍎 Fruits & Food (20 vocabulary items)  
+- **Objects**: Apple, Banana, Orange, Grape
+- **Challenges**: "Eat the apple", "This is a banana", "The banana is yellow"
+
+### 3. 1️⃣ Numbers (12 vocabulary items)
+- **Objects**: One, Two, Three, Four
+- **Challenges**: "Count to three", "I have two apples", "Step one forward"
+
+### 4. 🌈 Colors (16 vocabulary items)
+- **Objects**: Red, Blue, Green, Yellow
+- **Challenges**: "The sky is blue", "My shirt is red", "The grass is green"
 
 ## Real-time Architecture
 
@@ -151,6 +174,16 @@ mix deps.get
 mix assets.setup
 mix phx.server
 ```
+
+Visit http://localhost:4000 to start playing!
+
+### Available Routes
+- **/** - Landing page with microphone setup
+- **/maps** - Choose from 4 learning topics  
+- **/tutorial/[topic]** - Interactive vocabulary tutorials
+- **/game/[topic]** - Voice-controlled gameplay
+
+**Topics**: introduction, fruits, numbers, colors
 
 ### Testing
 ```bash
