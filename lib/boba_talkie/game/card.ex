@@ -17,7 +17,7 @@ defmodule BobaTalkie.Game.Card do
   }
 
   # Card templates with their applicable objects
-  @card_templates [
+  @fruit_card_templates [
     %{
       template: "Eat the _",
       description: "Complete by saying 'Eat the [fruit]' while standing on a fruit",
@@ -56,18 +56,52 @@ defmodule BobaTalkie.Game.Card do
     }
   ]
 
+  @introduction_card_templates [
+    %{
+      template: "Say _ to greet someone",
+      description: "Complete by saying 'Say [greeting] to greet someone' while on a greeting",
+      applicable_objects: [:hello],
+      type: :greeting_action
+    },
+    %{
+      template: "My _ is Sarah",
+      description: "Complete by saying 'My [name] is Sarah' while standing on name",
+      applicable_objects: [:name],
+      type: :introduce_name
+    },
+    %{
+      template: "_ for helping me",
+      description: "Complete by saying '[Thank you] for helping me' while on thank you",
+      applicable_objects: [:thank_you],
+      type: :gratitude_expression
+    },
+    %{
+      template: "_ to meet you",
+      description: "Complete by saying '[Nice to meet you] to meet you' while on nice to meet you",
+      applicable_objects: [:nice_to_meet],
+      type: :meeting_expression
+    }
+  ]
+
   @doc """
   Generate a deck of cards based on the actual objects in the world
   """
-  def generate_deck(fruit_items) do
+  def generate_deck(items, topic \\ "fruits") do
     # Get unique object types from the world
-    object_types = fruit_items
+    object_types = items
     |> Map.values()
     |> Enum.map(& &1.type)
     |> Enum.uniq()
     
+    # Get appropriate card templates based on topic
+    card_templates = case topic do
+      "introduction" -> @introduction_card_templates
+      "fruits" -> @fruit_card_templates
+      _ -> @fruit_card_templates
+    end
+    
     # Create cards that match the available objects
-    available_cards = @card_templates
+    available_cards = card_templates
     |> Enum.filter(fn template ->
       # Only include cards that can be completed with available objects
       Enum.any?(template.applicable_objects, fn obj_type ->
@@ -178,10 +212,16 @@ defmodule BobaTalkie.Game.Card do
 
   defp get_object_name(object_type) do
     case object_type do
+      # Fruits
       :apple -> "apple"
       :banana -> "banana" 
       :orange -> "orange"
       :grape -> "grape"
+      # Introduction objects
+      :hello -> "hello"
+      :name -> "name"
+      :nice_to_meet -> "nice to meet you"
+      :thank_you -> "thank you"
     end
   end
 end

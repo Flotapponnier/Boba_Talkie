@@ -1,0 +1,109 @@
+<div class="bg-euphoric h-screen flex items-center justify-center p-2 overflow-hidden" phx-hook="FloatingClouds" id="tutorial-background">
+  <div class="max-w-3xl w-full space-y-6 main-content">
+    <!-- Header -->
+    <div class="text-center space-y-3">
+      <div class="text-5xl"><%= @content.emoji %></div>
+      <h1 class="text-2xl font-bold text-cute">Tutorial: <%= @content.title %></h1>
+      <p class="text-cute opacity-80"><%= @content.description %></p>
+    </div>
+
+    <!-- Vocabulary Card -->
+    <div class="card-cute p-6 space-y-6">
+      <% current_item = current_vocabulary_item(@content, @current_item) %>
+      
+      <!-- Progress Bar -->
+      <div class="space-y-2">
+        <div class="flex justify-between text-sm text-cute opacity-70">
+          <span>Progress</span>
+          <span><%= @current_item + 1 %> / <%= length(@content.vocabulary) %></span>
+        </div>
+        <div class="w-full bg-boba-cream rounded-full h-2">
+          <div class="bg-boba-orange h-2 rounded-full transition-all duration-300" 
+               style={"width: #{((@current_item + 1) / length(@content.vocabulary)) * 100}%"}></div>
+        </div>
+      </div>
+
+      <!-- Current Vocabulary Item -->
+      <div class="text-center space-y-4">
+        <div class="text-8xl"><%= current_item.emoji %></div>
+        <div class="space-y-2">
+          <h2 class="text-3xl font-bold text-cute"><%= current_item.word %></h2>
+          
+          <!-- Pronunciation Toggle -->
+          <button 
+            phx-click="toggle_pronunciation"
+            class="btn-cute text-sm bg-boba-cream hover:bg-boba-orange-10 text-boba-orange border-boba-orange"
+          >
+            <%= if @show_pronunciation do %>
+              🔊 Hide Pronunciation
+            <% else %>
+              🔊 Show Pronunciation
+            <% end %>
+          </button>
+          
+          <%= if @show_pronunciation do %>
+            <div class="bg-boba-orange-10 rounded-lg p-3 text-boba-orange font-mono text-lg">
+              /<%= current_item.pronunciation %>/
+            </div>
+          <% end %>
+        </div>
+
+        <!-- Example Usage -->
+        <div class="bg-blue-50 rounded-lg p-4 border-2 border-blue-200">
+          <h3 class="text-sm font-semibold text-blue-800 mb-2">Example Usage:</h3>
+          <p class="text-blue-700 italic">"<%= current_item.example %>"</p>
+        </div>
+      </div>
+
+      <!-- Navigation Controls -->
+      <div class="flex justify-between items-center">
+        <button 
+          phx-click="prev_item"
+          disabled={@current_item == 0}
+          class="btn-cute px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed bg-gray-200 hover:bg-gray-300 text-gray-700"
+        >
+          ← Previous
+        </button>
+
+        <div class="flex space-x-2">
+          <%= for i <- 0..(length(@content.vocabulary) - 1) do %>
+            <div class={"w-2 h-2 rounded-full #{if i == @current_item, do: "bg-boba-orange", else: "bg-boba-cream"}"}></div>
+          <% end %>
+        </div>
+
+        <button 
+          phx-click="next_item"
+          disabled={@current_item == length(@content.vocabulary) - 1}
+          class="btn-cute px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Next →
+        </button>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex space-x-4">
+      <button 
+        phx-click="back_to_maps"
+        class="btn-cute flex-1 bg-white hover:bg-gray-50 border-2 border-boba-orange text-boba-orange py-3 px-6"
+      >
+        ← Back to Maps
+      </button>
+      <button 
+        phx-click="start_game"
+        class="btn-cute flex-1 py-3 px-6 bounce-cute"
+      >
+        🎮 Start Playing
+      </button>
+    </div>
+
+    <!-- Tutorial Tips -->
+    <div class="text-center space-y-2">
+      <div class="bg-yellow-50 border-2 border-yellow-200 rounded-lg p-3">
+        <p class="text-sm text-yellow-800">
+          💡 <strong>Tip:</strong> Practice saying each word out loud to improve your pronunciation!
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

@@ -6,7 +6,7 @@ defmodule BobaTalkie.Game.World do
   - 0: Wall/obstacle (impassable)
   - 1: Empty walkable space
   - 2: Player position
-  - 3: Interactive item/object (fruit)
+  - 3: Interactive item/object
   """
 
   defstruct [:grid, :width, :height, :player_pos, :items, :cards]
@@ -31,25 +31,37 @@ defmodule BobaTalkie.Game.World do
     %{type: :grape, name: "grape", emoji: "🍇", voice_commands: ["grape", "grapes", "purple grape"]}
   ]
 
+  # Available introduction items/concepts
+  @introduction_items [
+    %{type: :hello, name: "hello", emoji: "👋", voice_commands: ["hello", "hi", "hey there"]},
+    %{type: :name, name: "name", emoji: "📛", voice_commands: ["name", "my name", "called"]},
+    %{type: :nice_to_meet, name: "nice to meet you", emoji: "🤝", voice_commands: ["nice to meet", "pleased to meet", "good to meet"]},
+    %{type: :thank_you, name: "thank you", emoji: "🙏", voice_commands: ["thank you", "thanks", "thank you very much"]}
+  ]
+
   @doc """
   Creates a new world with default 6x6 grid
   """
-  def new(width \\ 6, height \\ 6) do
+  def new(width \\ 6, height \\ 6, topic \\ "fruits") do
     grid = generate_default_map(width, height)
     player_pos = {1, 1}  # Start at position (1,1)
     
-    # Generate fruits and place them on the map
-    {grid_with_fruits, fruit_items} = place_random_fruits(grid, width, height, player_pos)
+    # Generate items based on topic
+    {grid_with_items, items} = case topic do
+      "introduction" -> place_random_items(grid, width, height, player_pos, @introduction_items)
+      "fruits" -> place_random_items(grid, width, height, player_pos, @fruits)
+      _ -> place_random_items(grid, width, height, player_pos, @fruits)  # Default to fruits
+    end
     
     # Generate cards based on actual items in world
-    cards = BobaTalkie.Game.Card.generate_deck(fruit_items)
+    cards = BobaTalkie.Game.Card.generate_deck(items, topic)
     
     %__MODULE__{
-      grid: grid_with_fruits,
+      grid: grid_with_items,
       width: width,
       height: height,
       player_pos: player_pos,
-      items: fruit_items,
+      items: items,
       cards: cards
     }
   end
@@ -128,7 +140,7 @@ defmodule BobaTalkie.Game.World do
         0 -> "wall"
         1 -> "open path"
         3 -> 
-          # Check if there's a fruit at this position
+          # Check if there's an item at this position
           pos = case dir do
             :north -> {x, y - 1}
             :south -> {x, y + 1} 
@@ -157,7 +169,7 @@ defmodule BobaTalkie.Game.World do
       nil -> 
         {:error, "No object here to interact with"}
       
-      fruit_item ->
+      item ->
         # Get the currently selected card
         case BobaTalkie.Game.Card.get_selected_card(world.cards) do
           nil ->
@@ -165,8 +177,8 @@ defmodule BobaTalkie.Game.World do
           
           selected_card ->
             # Check if voice command matches the card template for this object
-            if BobaTalkie.Game.Card.matches_card?(selected_card, voice_command, fruit_item.type) do
-              # Complete the card and remove the fruit
+            if BobaTalkie.Game.Card.matches_card?(selected_card, voice_command, item.type) do
+              # Complete the card and remove the item
               new_cards = BobaTalkie.Game.Card.complete_card(world.cards, selected_card.id)
               new_grid = set_cell(world.grid, current_pos, 1)  # Set back to walkable
               new_items = Map.delete(world.items, current_pos)
@@ -174,8 +186,8 @@ defmodule BobaTalkie.Game.World do
               new_world = %{world | grid: new_grid, items: new_items, cards: new_cards}
               {:ok, new_world, selected_card}
             else
-              expected = String.replace(selected_card.template, "_", fruit_item.name)
-              {:error, "Try saying: '#{expected}' while standing on the #{fruit_item.name}"}
+              expected = String.replace(selected_card.template, "_", item.name)
+              {:error, "Try saying: '#{expected}' while standing on the #{item.name}"}
             end
         end
     end
@@ -204,9 +216,9 @@ defmodule BobaTalkie.Game.World do
   end
 
   @doc """
-  Gets fruit at current player position, if any
+  Gets item at current player position, if any
   """
-  def get_current_fruit(world) do
+  def get_current_item(world) do
     Map.get(world.items, world.player_pos)
   end
 
@@ -214,6 +226,22 @@ defmodule BobaTalkie.Game.World do
   Gets all available fruits (for reference)
   """
   def get_available_fruits(), do: @fruits
+
+  @doc """
+  Gets all available introduction items (for reference)
+  """
+  def get_available_introduction_items(), do: @introduction_items
+
+  @doc """
+  Gets available items for a given topic
+  """
+  def get_available_items_for_topic(topic) do
+    case topic do
+      "introduction" -> @introduction_items
+      "fruits" -> @fruits
+      _ -> @fruits
+    end
+  end
 
   # Private functions
 
@@ -237,7 +265,7 @@ defmodule BobaTalkie.Game.World do
     end)
   end
 
-  defp place_random_fruits(grid, width, height, player_pos) do
+  defp place_random_items(grid, width, height, player_pos, item_templates) do
     # Find all walkable positions (excluding player start)
     walkable_positions = for y <- 1..(height - 2),
                              x <- 1..(width - 2),
@@ -245,26 +273,26 @@ defmodule BobaTalkie.Game.World do
                              {x, y} != player_pos,
                              do: {x, y}
     
-    # Randomly select positions for fruits (3-4 fruits for 6x6 grid)
-    num_fruits = Enum.random(3..4)
-    fruit_positions = walkable_positions
+    # Randomly select positions for items (3-4 items for 6x6 grid)
+    num_items = Enum.random(3..4)
+    item_positions = walkable_positions
                      |> Enum.shuffle()
-                     |> Enum.take(num_fruits)
+                     |> Enum.take(num_items)
     
-    # Place fruits on grid and create items map
+    # Place items on grid and create items map
     {new_grid, items_map} = 
-      fruit_positions
+      item_positions
       |> Enum.with_index()
       |> Enum.reduce({grid, %{}}, fn {{x, y}, index}, {acc_grid, acc_items} ->
-        # Pick a random fruit type
-        fruit_template = Enum.at(@fruits, rem(index, length(@fruits)))
+        # Pick a random item type from templates
+        item_template = Enum.at(item_templates, rem(index, length(item_templates)))
         
-        # Create fruit item
-        fruit_item = Map.put(fruit_template, :id, "#{fruit_template.type}_#{x}_#{y}")
+        # Create item
+        item = Map.put(item_template, :id, "#{item_template.type}_#{x}_#{y}")
         
         # Place on grid and add to items
         updated_grid = set_cell(acc_grid, {x, y}, 3)
-        updated_items = Map.put(acc_items, {x, y}, fruit_item)
+        updated_items = Map.put(acc_items, {x, y}, item)
         
         {updated_grid, updated_items}
       end)

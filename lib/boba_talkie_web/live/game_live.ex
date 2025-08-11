@@ -9,8 +9,14 @@ defmodule BobaTalkieWeb.GameLive do
   alias BobaTalkieWeb.GameLive.{VoiceHandlers, MovementHandlers, UIHelpers, StateManager}
 
   @impl true
+  def mount(%{"topic" => topic}, _session, socket) do
+    socket = StateManager.initialize_game_state(socket, topic)
+    {:ok, socket}
+  end
+
   def mount(_params, _session, socket) do
-    socket = StateManager.initialize_game_state(socket)
+    # Default to fruits level for backward compatibility
+    socket = StateManager.initialize_game_state(socket, "fruits")
     {:ok, socket}
   end
 

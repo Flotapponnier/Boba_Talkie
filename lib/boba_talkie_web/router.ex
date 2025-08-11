@@ -18,7 +18,10 @@ defmodule BobaTalkieWeb.Router do
     pipe_through :browser
 
     live "/", IndexLive, :index
+    live "/maps", MapSelectionLive, :index
+    live "/tutorial/:topic", TutorialLive, :show
     live "/game", GameLive, :show
+    live "/game/:topic", GameLive, :show
     get "/health", PageController, :home
   end
 

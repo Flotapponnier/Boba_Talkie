@@ -10,11 +10,11 @@ defmodule BobaTalkieWeb.GameLive.StateManager do
   @doc """
   Initialize game state for a new session
   """
-  def initialize_game_state(socket) do
-    DebugLogger.live_debug("GameLive mounting")
+  def initialize_game_state(socket, topic \\ "fruits") do
+    DebugLogger.live_debug("GameLive mounting with topic: #{topic}")
     
-    # Initialize game state
-    world = World.new()
+    # Initialize game state with topic-specific content
+    world = World.new(6, 6, topic)
     player = Player.new()
     
     DebugLogger.game_debug("Game initialized", %{
@@ -22,11 +22,24 @@ defmodule BobaTalkieWeb.GameLive.StateManager do
       player_pos: player.position
     })
     
+    topic_title = case topic do
+      "introduction" -> "Self-Introduction"
+      "fruits" -> "Fruits & Food"
+      _ -> "Game"
+    end
+    
+    welcome_message = case topic do
+      "introduction" -> "Welcome to Self-Introduction! Practice greeting phrases and introducing yourself."
+      "fruits" -> "Welcome to Fruits & Food! Learn about delicious fruits and food vocabulary."
+      _ -> "Welcome to BobaTalkie! Say 'help' for commands."
+    end
+
     socket
-    |> assign(:page_title, "BobaTalkie - Game")
+    |> assign(:page_title, "BobaTalkie - #{topic_title}")
+    |> assign(:topic, topic)
     |> assign(:world, world)
     |> assign(:player, player)
-    |> assign(:game_messages, ["Welcome to BobaTalkie! Say 'help' for commands."])
+    |> assign(:game_messages, [welcome_message])
     |> assign(:listening, false)
     |> assign(:last_command, nil)
     |> assign(:interim_text, nil)

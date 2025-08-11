@@ -20,7 +20,7 @@ defmodule BobaTalkieWeb.IndexLive do
 
   @impl true
   def handle_event("start_game", _params, socket) do
-    {:noreply, push_navigate(socket, to: ~p"/game")}
+    {:noreply, push_navigate(socket, to: ~p"/maps")}
   end
 
   @impl true
