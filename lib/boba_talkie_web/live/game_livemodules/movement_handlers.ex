@@ -196,6 +196,22 @@ defmodule BobaTalkieWeb.GameLive.MovementHandlers do
       String.contains?(clean_command, ["banana"]) or 
       String.contains?(clean_command, ["orange"]) or 
       String.contains?(clean_command, ["grape"]) or
+      String.contains?(clean_command, ["strawberry"]) or
+      String.contains?(clean_command, ["cherry"]) or
+      String.contains?(clean_command, ["peach"]) or
+      String.contains?(clean_command, ["pineapple"]) or
+      String.contains?(clean_command, ["watermelon"]) or
+      String.contains?(clean_command, ["lemon"]) or
+      String.contains?(clean_command, ["avocado"]) or
+      String.contains?(clean_command, ["coconut"]) or
+      String.contains?(clean_command, ["mango"]) or
+      String.contains?(clean_command, ["kiwi"]) or
+      String.contains?(clean_command, ["tomato"]) or
+      String.contains?(clean_command, ["carrot"]) or
+      String.contains?(clean_command, ["bread"]) or
+      String.contains?(clean_command, ["milk"]) or
+      String.contains?(clean_command, ["cheese"]) or
+      String.contains?(clean_command, ["egg"]) or
       String.contains?(clean_command, ["eat"]) or
       String.contains?(clean_command, ["this is"]) or
       # Colors
@@ -234,17 +250,37 @@ defmodule BobaTalkieWeb.GameLive.MovementHandlers do
       String.contains?(clean_command, ["two"]) or
       String.contains?(clean_command, ["three"]) or
       String.contains?(clean_command, ["four"]) or
+      String.contains?(clean_command, ["five"]) or
+      String.contains?(clean_command, ["six"]) or
+      String.contains?(clean_command, ["seven"]) or
+      String.contains?(clean_command, ["eight"]) or
+      String.contains?(clean_command, ["nine"]) or
+      String.contains?(clean_command, ["ten"]) or
+      String.contains?(clean_command, ["first"]) or
+      String.contains?(clean_command, ["second"]) or
       String.contains?(clean_command, ["apples"]) or
       String.contains?(clean_command, ["favorite"]) or
       String.contains?(clean_command, ["forward"]) or
       # Introduction/greetings
       String.contains?(clean_command, ["hello"]) or
+      String.contains?(clean_command, ["goodbye"]) or
       String.contains?(clean_command, ["my name"]) or
       String.contains?(clean_command, ["thank you"]) or
+      String.contains?(clean_command, ["please"]) or
+      String.contains?(clean_command, ["excuse me"]) or
+      String.contains?(clean_command, ["sorry"]) or
       String.contains?(clean_command, ["nice to meet"]) or
+      String.contains?(clean_command, ["how are you"]) or
+      String.contains?(clean_command, ["i am fine"]) or
+      String.contains?(clean_command, ["yes"]) or
+      String.contains?(clean_command, ["no"]) or
+      String.contains?(clean_command, ["see you later"]) or
+      String.contains?(clean_command, ["where are you"]) or
+      String.contains?(clean_command, ["come from"]) or
       String.contains?(clean_command, ["greet someone"]) or
       String.contains?(clean_command, ["helping me"]) or
       String.contains?(clean_command, ["sarah"]) or
+      String.contains?(clean_command, ["answer is"]) or
       String.contains?(clean_command, ["meet you"]) -> {:card_challenge}
       
       # Other commands

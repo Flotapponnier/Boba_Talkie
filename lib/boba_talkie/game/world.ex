@@ -24,27 +24,61 @@ defmodule BobaTalkie.Game.World do
   }
 
   # Available fruits in the game
-  @fruits [
-    %{type: :apple, name: "apple", emoji: "🍎", voice_commands: ["apple", "red apple"]},
-    %{type: :banana, name: "banana", emoji: "🍌", voice_commands: ["banana", "yellow banana"]},
-    %{type: :orange, name: "orange", emoji: "🍊", voice_commands: ["orange", "orange fruit"]},
-    %{type: :grape, name: "grape", emoji: "🍇", voice_commands: ["grape", "grapes", "purple grape"]}
+  # All available fruit and food items (matching tutorial vocabulary)
+  @all_fruits_items [
+    %{type: :apple, name: "apple", emoji: "🍎", voice_commands: ["apple", "red apple", "green apple"]},
+    %{type: :banana, name: "banana", emoji: "🍌", voice_commands: ["banana", "yellow banana", "ripe banana"]},
+    %{type: :orange, name: "orange", emoji: "🍊", voice_commands: ["orange", "orange fruit", "juicy orange"]},
+    %{type: :grape, name: "grape", emoji: "🍇", voice_commands: ["grape", "grapes", "purple grape"]},
+    %{type: :strawberry, name: "strawberry", emoji: "🍓", voice_commands: ["strawberry", "strawberries", "red strawberry"]},
+    %{type: :cherry, name: "cherry", emoji: "🍒", voice_commands: ["cherry", "cherries", "red cherry"]},
+    %{type: :peach, name: "peach", emoji: "🍑", voice_commands: ["peach", "peaches", "juicy peach"]},
+    %{type: :pineapple, name: "pineapple", emoji: "🍍", voice_commands: ["pineapple", "tropical pineapple"]},
+    %{type: :watermelon, name: "watermelon", emoji: "🍉", voice_commands: ["watermelon", "water melon", "summer melon"]},
+    %{type: :lemon, name: "lemon", emoji: "🍋", voice_commands: ["lemon", "lemons", "yellow lemon"]},
+    %{type: :avocado, name: "avocado", emoji: "🥑", voice_commands: ["avocado", "avocados", "green avocado"]},
+    %{type: :coconut, name: "coconut", emoji: "🥥", voice_commands: ["coconut", "coconuts", "tropical coconut"]},
+    %{type: :mango, name: "mango", emoji: "🥭", voice_commands: ["mango", "mangos", "tropical mango"]},
+    %{type: :kiwi, name: "kiwi", emoji: "🥝", voice_commands: ["kiwi", "kiwis", "kiwi fruit"]},
+    %{type: :tomato, name: "tomato", emoji: "🍅", voice_commands: ["tomato", "tomatoes", "red tomato"]},
+    %{type: :carrot, name: "carrot", emoji: "🥕", voice_commands: ["carrot", "carrots", "orange carrot"]},
+    %{type: :bread, name: "bread", emoji: "🍞", voice_commands: ["bread", "loaf", "fresh bread"]},
+    %{type: :milk, name: "milk", emoji: "🥛", voice_commands: ["milk", "glass of milk", "white milk"]},
+    %{type: :cheese, name: "cheese", emoji: "🧀", voice_commands: ["cheese", "yellow cheese", "block of cheese"]},
+    %{type: :egg, name: "egg", emoji: "🥚", voice_commands: ["egg", "eggs", "white egg"]}
   ]
 
-  # Available introduction items/concepts
-  @introduction_items [
+  # All available introduction items/concepts (matching tutorial vocabulary)
+  @all_introduction_items [
     %{type: :hello, name: "hello", emoji: "👋", voice_commands: ["hello", "hi", "hey there"]},
     %{type: :name, name: "name", emoji: "📛", voice_commands: ["name", "my name", "called"]},
     %{type: :nice_to_meet, name: "nice to meet you", emoji: "🤝", voice_commands: ["nice to meet", "pleased to meet", "good to meet"]},
-    %{type: :thank_you, name: "thank you", emoji: "🙏", voice_commands: ["thank you", "thanks", "thank you very much"]}
+    %{type: :how_are_you, name: "how are you", emoji: "😊", voice_commands: ["how are you", "how you doing", "how's it going"]},
+    %{type: :fine, name: "fine", emoji: "👌", voice_commands: ["fine", "good", "im fine", "doing well"]},
+    %{type: :thank_you, name: "thank you", emoji: "🙏", voice_commands: ["thank you", "thanks", "thank you very much"]},
+    %{type: :please, name: "please", emoji: "🥺", voice_commands: ["please", "if you please", "kindly"]},
+    %{type: :excuse_me, name: "excuse me", emoji: "🙋", voice_commands: ["excuse me", "pardon me", "sorry to bother"]},
+    %{type: :sorry, name: "sorry", emoji: "😔", voice_commands: ["sorry", "im sorry", "apologize"]},
+    %{type: :yes, name: "yes", emoji: "✅", voice_commands: ["yes", "yeah", "yep", "correct"]},
+    %{type: :no, name: "no", emoji: "❌", voice_commands: ["no", "nope", "not really", "incorrect"]},
+    %{type: :goodbye, name: "goodbye", emoji: "👋", voice_commands: ["goodbye", "bye", "farewell"]},
+    %{type: :see_you_later, name: "see you later", emoji: "🔄", voice_commands: ["see you later", "catch you later", "talk soon"]},
+    %{type: :where, name: "where", emoji: "📍", voice_commands: ["where", "where is", "location"]},
+    %{type: :from, name: "from", emoji: "🏠", voice_commands: ["from", "come from", "originally from"]}
   ]
 
-  # Available numbers items
-  @numbers_items [
+  # All available numbers items (matching tutorial vocabulary)
+  @all_numbers_items [
     %{type: :one, name: "one", emoji: "1️⃣", voice_commands: ["one", "number one", "first"]},
     %{type: :two, name: "two", emoji: "2️⃣", voice_commands: ["two", "number two", "second"]},
     %{type: :three, name: "three", emoji: "3️⃣", voice_commands: ["three", "number three", "third"]},
-    %{type: :four, name: "four", emoji: "4️⃣", voice_commands: ["four", "number four", "fourth"]}
+    %{type: :four, name: "four", emoji: "4️⃣", voice_commands: ["four", "number four", "fourth"]},
+    %{type: :five, name: "five", emoji: "5️⃣", voice_commands: ["five", "number five", "fifth"]},
+    %{type: :six, name: "six", emoji: "6️⃣", voice_commands: ["six", "number six", "sixth"]},
+    %{type: :seven, name: "seven", emoji: "7️⃣", voice_commands: ["seven", "number seven", "seventh"]},
+    %{type: :eight, name: "eight", emoji: "8️⃣", voice_commands: ["eight", "number eight", "eighth"]},
+    %{type: :nine, name: "nine", emoji: "9️⃣", voice_commands: ["nine", "number nine", "ninth"]},
+    %{type: :ten, name: "ten", emoji: "🔟", voice_commands: ["ten", "number ten", "tenth"]}
   ]
 
   # All available color items (matching tutorial vocabulary)
@@ -71,15 +105,27 @@ defmodule BobaTalkie.Game.World do
     
     # Generate items based on topic
     {grid_with_items, items} = case topic do
-      "introduction" -> place_random_items(grid, width, height, player_pos, @introduction_items)
-      "fruits" -> place_random_items(grid, width, height, player_pos, @fruits)
-      "numbers" -> place_random_items(grid, width, height, player_pos, @numbers_items)
+      "introduction" -> 
+        # Randomly select 4-7 introduction concepts from all available items
+        num_concepts = Enum.random(4..7)
+        selected_concepts = @all_introduction_items |> Enum.shuffle() |> Enum.take(num_concepts)
+        place_random_items(grid, width, height, player_pos, selected_concepts)
+      "fruits" -> 
+        # Randomly select 4-8 fruits/foods from all available items
+        num_fruits = Enum.random(4..8)
+        selected_fruits = @all_fruits_items |> Enum.shuffle() |> Enum.take(num_fruits)
+        place_random_items(grid, width, height, player_pos, selected_fruits)
+      "numbers" -> 
+        # Randomly select 3-6 numbers from all available numbers
+        num_numbers = Enum.random(3..6)
+        selected_numbers = @all_numbers_items |> Enum.shuffle() |> Enum.take(num_numbers)
+        place_random_items(grid, width, height, player_pos, selected_numbers)
       "colors" -> 
         # Randomly select 3-8 colors from all available colors
         num_colors = Enum.random(3..8)
         selected_colors = @all_colors_items |> Enum.shuffle() |> Enum.take(num_colors)
         place_random_items(grid, width, height, player_pos, selected_colors)
-      _ -> place_random_items(grid, width, height, player_pos, @fruits)  # Default to fruits
+      _ -> place_random_items(grid, width, height, player_pos, @all_fruits_items)  # Default to fruits
     end
     
     # Generate cards based on actual items in world
@@ -254,7 +300,7 @@ defmodule BobaTalkie.Game.World do
   @doc """
   Gets all available fruits (for reference)
   """
-  def get_available_fruits(), do: @fruits
+  def get_available_fruits(), do: @all_fruits_items
 
   @doc """
   Gets all available introduction items (for reference)
@@ -266,18 +312,18 @@ defmodule BobaTalkie.Game.World do
   """
   def get_available_items_for_topic(topic) do
     case topic do
-      "introduction" -> @introduction_items
-      "fruits" -> @fruits
-      "numbers" -> @numbers_items
+      "introduction" -> @all_introduction_items
+      "fruits" -> @all_fruits_items
+      "numbers" -> @all_numbers_items
       "colors" -> @all_colors_items
-      _ -> @fruits
+      _ -> @all_fruits_items
     end
   end
 
   @doc """
   Gets all available numbers items (for reference)
   """
-  def get_available_numbers_items(), do: @numbers_items
+  def get_available_numbers_items(), do: @all_numbers_items
 
   @doc """
   Gets all available colors items (for reference)

@@ -21,13 +21,13 @@ defmodule BobaTalkie.Game.Card do
     %{
       template: "Eat the _",
       description: "Complete by saying 'Eat the [fruit]' while standing on a fruit",
-      applicable_objects: [:apple, :banana, :orange, :grape],
+      applicable_objects: [:apple, :banana, :orange, :grape, :strawberry, :cherry, :peach, :pineapple, :watermelon, :lemon, :avocado, :coconut, :mango, :kiwi, :tomato, :carrot, :bread, :milk, :cheese, :egg],
       type: :action_food
     },
     %{
       template: "This is a _", 
       description: "Complete by saying 'This is a [object]' while standing on any object",
-      applicable_objects: [:apple, :banana, :orange, :grape],
+      applicable_objects: [:apple, :banana, :orange, :grape, :strawberry, :cherry, :peach, :pineapple, :watermelon, :lemon, :avocado, :coconut, :mango, :kiwi, :tomato, :carrot, :bread, :milk, :cheese, :egg],
       type: :identify_any
     },
     %{
@@ -60,26 +60,56 @@ defmodule BobaTalkie.Game.Card do
     %{
       template: "Say _ to greet someone",
       description: "Complete by saying 'Say [greeting] to greet someone' while on a greeting",
-      applicable_objects: [:hello],
+      applicable_objects: [:hello, :goodbye, :excuse_me],
       type: :greeting_action
     },
     %{
       template: "My _ is Sarah",
       description: "Complete by saying 'My [name] is Sarah' while standing on name",
-      applicable_objects: [:name],
+      applicable_objects: [:name, :where, :from],
       type: :introduce_name
     },
     %{
       template: "_ for helping me",
       description: "Complete by saying '[Thank you] for helping me' while on thank you",
-      applicable_objects: [:thank_you],
+      applicable_objects: [:thank_you, :please, :sorry],
       type: :gratitude_expression
     },
     %{
       template: "_ to meet you",
       description: "Complete by saying '[Nice to meet you] to meet you' while on nice to meet you",
-      applicable_objects: [:nice_to_meet],
+      applicable_objects: [:nice_to_meet, :how_are_you, :fine, :yes, :no, :see_you_later],
       type: :meeting_expression
+    },
+    %{
+      template: "I am _",
+      description: "Complete by saying 'I am [fine]' while standing on fine",
+      applicable_objects: [:fine],
+      type: :state_expression
+    },
+    %{
+      template: "_ me",
+      description: "Complete by saying '[Excuse me]' while standing on excuse me",
+      applicable_objects: [:excuse_me],
+      type: :polite_expression
+    },
+    %{
+      template: "The answer is _",
+      description: "Complete by saying 'The answer is [yes/no]' while on yes or no",
+      applicable_objects: [:yes, :no],
+      type: :response_expression
+    },
+    %{
+      template: "_ are you from",
+      description: "Complete by saying '[Where] are you from' while standing on where",
+      applicable_objects: [:where],
+      type: :question_expression
+    },
+    %{
+      template: "I come _ Canada",
+      description: "Complete by saying 'I come [from] Canada' while standing on from",
+      applicable_objects: [:from],
+      type: :origin_expression
     }
   ]
 
@@ -87,25 +117,25 @@ defmodule BobaTalkie.Game.Card do
     %{
       template: "Count to _",
       description: "Complete by saying 'Count to [number]' while standing on a number",
-      applicable_objects: [:one, :two, :three, :four],
+      applicable_objects: [:one, :two, :three, :four, :five, :six, :seven, :eight, :nine, :ten],
       type: :counting_action
     },
     %{
       template: "I have _ apples",
       description: "Complete by saying 'I have [number] apples' while on a number",
-      applicable_objects: [:one, :two, :three, :four],
+      applicable_objects: [:one, :two, :three, :four, :five, :six, :seven, :eight, :nine, :ten],
       type: :quantity_expression
     },
     %{
       template: "The number _ is my favorite",
       description: "Complete by saying 'The number [number] is my favorite' while on a number",
-      applicable_objects: [:one, :two, :three, :four],
+      applicable_objects: [:one, :two, :three, :four, :five, :six, :seven, :eight, :nine, :ten],
       type: :preference_number
     },
     %{
       template: "Step _ forward",
       description: "Complete by saying 'Step [number] forward' while on a number",
-      applicable_objects: [:one, :two, :three, :four],
+      applicable_objects: [:one, :two, :three, :four, :five, :six, :seven, :eight, :nine, :ten],
       type: :instruction_number
     }
   ]
@@ -234,13 +264,28 @@ defmodule BobaTalkie.Game.Card do
     if object_type not in card.applicable_objects do
       false
     else
-      # Clean the voice command and normalize spelling variations
+      # Clean the voice command and normalize spelling variations (British -> American)
       clean_command = voice_command
       |> String.downcase()
       |> String.trim()
       |> String.replace(~r/[^\w\s]/, "")
-      |> String.replace("colour", "color")  # Normalize British spelling to American
-      |> String.replace("favourite", "favorite")  # Normalize British spelling to American
+      |> String.replace("colour", "color")
+      |> String.replace("favourite", "favorite") 
+      |> String.replace("centre", "center")
+      |> String.replace("grey", "gray")
+      |> String.replace("realise", "realize")
+      |> String.replace("organised", "organized")
+      # Normalize digit numbers to word numbers for consistency
+      |> String.replace(~r/\b1\b/, "one")
+      |> String.replace(~r/\b2\b/, "two")
+      |> String.replace(~r/\b3\b/, "three")
+      |> String.replace(~r/\b4\b/, "four")
+      |> String.replace(~r/\b5\b/, "five")
+      |> String.replace(~r/\b6\b/, "six")
+      |> String.replace(~r/\b7\b/, "seven")
+      |> String.replace(~r/\b8\b/, "eight")
+      |> String.replace(~r/\b9\b/, "nine")
+      |> String.replace(~r/\b10\b/, "ten")
       
       # Get object name for matching
       object_name = get_object_name(object_type)
@@ -317,16 +362,49 @@ defmodule BobaTalkie.Game.Card do
       :banana -> "banana" 
       :orange -> "orange"
       :grape -> "grape"
+      :strawberry -> "strawberry"
+      :cherry -> "cherry"
+      :peach -> "peach"
+      :pineapple -> "pineapple"
+      :watermelon -> "watermelon"
+      :lemon -> "lemon"
+      :avocado -> "avocado"
+      :coconut -> "coconut"
+      :mango -> "mango"
+      :kiwi -> "kiwi"
+      :tomato -> "tomato"
+      :carrot -> "carrot"
+      :bread -> "bread"
+      :milk -> "milk"
+      :cheese -> "cheese"
+      :egg -> "egg"
       # Introduction objects
       :hello -> "hello"
       :name -> "name"
       :nice_to_meet -> "nice to meet you"
+      :how_are_you -> "how are you"
+      :fine -> "fine"
       :thank_you -> "thank you"
+      :please -> "please"
+      :excuse_me -> "excuse me"
+      :sorry -> "sorry"
+      :yes -> "yes"
+      :no -> "no"
+      :goodbye -> "goodbye"
+      :see_you_later -> "see you later"
+      :where -> "where"
+      :from -> "from"
       # Numbers
       :one -> "one"
       :two -> "two"
       :three -> "three"
       :four -> "four"
+      :five -> "five"
+      :six -> "six"
+      :seven -> "seven"
+      :eight -> "eight"
+      :nine -> "nine"
+      :ten -> "ten"
       # Colors
       :red -> "red"
       :blue -> "blue"
