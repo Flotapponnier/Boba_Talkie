@@ -5,7 +5,7 @@ BobaTalkie is a voice-controlled language learning game that transforms vocabula
 
 ## Project Overview
 
-BobaTalkie features a **4-level learning system** where players choose from different topics (Self-Introduction, Fruits & Food, Numbers, Colors), complete interactive tutorials, and then play voice-controlled games. Each level includes topic-specific vocabulary, pronunciation guides, and challenge cards that players complete by standing on objects and speaking sentences correctly.
+BobaTalkie features a **9-level learning system** where players choose from different topics (Self-Introduction, Fruits & Food, Numbers, Colors, Bakery, Animals, Restaurant, Family, Countries), complete interactive tutorials, and then play voice-controlled games. Each level includes topic-specific vocabulary, pronunciation guides, and challenge cards that players complete by standing on objects and speaking sentences correctly.
 
 ## Architecture
 
@@ -59,30 +59,50 @@ priv/static/
 
 ## Core Workflow
 
-1. **Topic Selection**: Players choose from 4 learning topics on the map selection screen
+1. **Topic Selection**: Players choose from 9 learning topics on the map selection screen
 2. **Tutorial (Optional)**: Interactive vocabulary learning with pronunciations and examples
-3. **Game Setup**: Topic-specific 2D grid world generated with appropriate objects
-4. **Voice Navigation**: Players move through the grid using voice commands ("go north", etc.)
+3. **Game Setup**: Topic-specific 2D grid world generated with appropriate objects (3-8 random items per topic)
+4. **Voice Navigation**: Players move through the grid using voice commands ("go north", "move two steps left", etc.)
 5. **Challenge Cards**: Complete sentence templates by speaking while standing on objects
 6. **Progress Tracking**: Real-time feedback, pronunciation scoring, and completion tracking
 
 ## Learning Topics
 
-### 1. 👋 Self-Introduction (15 vocabulary items)
-- **Objects**: Hello, Name, Nice to meet you, Thank you
-- **Challenges**: "Say hello to greet someone", "My name is Sarah"
+### 1. 👋 Self-Introduction (15 vocabulary items, 4-7 random objects per game)
+- **Objects**: Hello 👋, Name 📛, Nice to meet you 🤝, How are you 😊, Fine 👌, Thank you 🙏, Please 🥺, Excuse me 🙋, Sorry 😔, Yes ✅, No ❌, Goodbye 👋, See you later 🔄, Where 📍, From 🏠
+- **Challenges**: "Say _ to greet someone", "My _ is Sarah", "I am _", "The answer is _"
 
-### 2. 🍎 Fruits & Food (20 vocabulary items)  
-- **Objects**: Apple, Banana, Orange, Grape
-- **Challenges**: "Eat the apple", "This is a banana", "The banana is yellow"
+### 2. 🍎 Fruits & Food (20 vocabulary items, 4-8 random objects per game)  
+- **Objects**: Apple 🍎, Banana 🍌, Orange 🍊, Grape 🍇, Strawberry 🍓, Cherry 🍒, Peach 🍑, Pineapple 🍍, Watermelon 🍉, Lemon 🍋, Avocado 🥑, Coconut 🥥, Mango 🥭, Kiwi 🥝, Tomato 🍅, Carrot 🥕, Bread 🍞, Milk 🥛, Cheese 🧀, Egg 🥚
+- **Challenges**: "Eat the _", "This is a _", "The _ is yellow", "I like _"
 
-### 3. 1️⃣ Numbers (12 vocabulary items)
-- **Objects**: One, Two, Three, Four
-- **Challenges**: "Count to three", "I have two apples", "Step one forward"
+### 3. 1️⃣ Numbers (10 vocabulary items, 3-6 random objects per game)
+- **Objects**: One 1️⃣, Two 2️⃣, Three 3️⃣, Four 4️⃣, Five 5️⃣, Six 6️⃣, Seven 7️⃣, Eight 8️⃣, Nine 9️⃣, Ten 🔟
+- **Challenges**: "Count to _", "I have _ apples", "Step _ forward", "The number _ is my favorite"
 
-### 4. 🌈 Colors (16 vocabulary items)
-- **Objects**: Red, Blue, Green, Yellow
-- **Challenges**: "The sky is blue", "My shirt is red", "The grass is green"
+### 4. 🌈 Colors (11 vocabulary items, 3-8 random objects per game)
+- **Objects**: Red 🔴, Blue 🔵, Green 🟢, Yellow 🟡, Orange 🟠, Purple 🟣, Pink 🩷, Brown 🤎, Black ⚫, White ⚪, Gray 🩶
+- **Challenges**: "The sky is _", "My shirt is _", "I like the color _", "The grass is _"
+
+### 5. 🥐 Bakery (10 vocabulary items, 4-7 random objects per game)
+- **Objects**: Bread 🍞, Croissant 🥐, Bagel 🥯, Pretzel 🥨, Baguette 🥖, Cake 🎂, Cupcake 🧁, Donut 🍩, Cookie 🍪, Pie 🥧
+- **Challenges**: "I want a _", "This _ is delicious", "How much is the _", "I'll take two _"
+
+### 6. 🐶 Animals (12 vocabulary items, 4-8 random objects per game)
+- **Objects**: Dog 🐶, Cat 🐱, Rabbit 🐰, Bear 🐻, Panda 🐼, Lion 🦁, Tiger 🐯, Elephant 🐘, Monkey 🐵, Horse 🐴, Cow 🐄, Pig 🐷
+- **Challenges**: "The _ is cute", "I have a pet _", "The _ lives in the jungle", "I saw a _ at the zoo"
+
+### 7. 🍕 Restaurant (10 vocabulary items, 4-7 random objects per game)
+- **Objects**: Menu 📋, Pizza 🍕, Burger 🍔, Fries 🍟, Pasta 🍝, Salad 🥗, Soup 🍲, Coffee ☕, Water 💧, Bill 🧾
+- **Challenges**: "I'd like to order _", "Can I have the _", "I'll drink _", "The _ is ready"
+
+### 8. 👨‍👩‍👧‍👦 Family (10 vocabulary items, 4-7 random objects per game)
+- **Objects**: Mother 👩, Father 👨, Sister 👧, Brother 👦, Grandmother 👵, Grandfather 👴, Baby 👶, Family 👨‍👩‍👧‍👦, Aunt 👸, Uncle 🤴
+- **Challenges**: "This is my _", "I have two _", "My _ is kind", "I love my _"
+
+### 9. 🇹🇼 Countries (10 vocabulary items, 4-8 random objects per game)
+- **Objects**: Taiwan 🇹🇼, France 🇫🇷, Germany 🇩🇪, Japan 🇯🇵, USA 🇺🇸, UK 🇬🇧, Italy 🇮🇹, Spain 🇪🇸, China 🇨🇳, Canada 🇨🇦
+- **Challenges**: "I am from _", "He is _", "I eat bretzel in _", "I visited _"
 
 ## Real-time Architecture
 
@@ -179,11 +199,11 @@ Visit http://localhost:4000 to start playing!
 
 ### Available Routes
 - **/** - Landing page with microphone setup
-- **/maps** - Choose from 4 learning topics  
+- **/maps** - Choose from 9 learning topics  
 - **/tutorial/[topic]** - Interactive vocabulary tutorials
 - **/game/[topic]** - Voice-controlled gameplay
 
-**Topics**: introduction, fruits, numbers, colors
+**Topics**: introduction, fruits, numbers, colors, bakery, animals, restaurant, family, countries
 
 ### Testing
 ```bash

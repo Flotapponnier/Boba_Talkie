@@ -9,14 +9,14 @@ This project uses Claude Code with automatic CLAUDE.md loading:
 - 🔄 **Self-updating**: This file evolves with the codebase
 
 ## Current Status: MULTI-LEVEL LANGUAGE LEARNING GAME ✅
-**Phase 2 Complete**: 4-Level Voice-Controlled Learning System
-**Ready for Production**: Complete tutorial and gameplay system with topic-aware content
+**Phase 3 Complete**: 9-Level Voice-Controlled Learning System
+**Ready for Production**: Complete tutorial and gameplay system with expanded topic-aware content
 
 ## Project Summary
-Voice-controlled language learning game built with Phoenix LiveView. Players choose from 4 different learning topics, complete tutorials, and play voice-controlled games where they navigate a 2D grid world to complete sentence challenges using proper pronunciation.
+Voice-controlled language learning game built with Phoenix LiveView. Players choose from 9 different learning topics, complete tutorials, and play voice-controlled games where they navigate a 2D grid world to complete sentence challenges using proper pronunciation.
 
 ## Game Levels & Content
-**4 Complete Learning Topics**:
+**9 Complete Learning Topics**:
 
 ### 1. 👋 Self-Introduction
 - **Tutorial**: 15 greeting/introduction phrases
@@ -35,8 +35,33 @@ Voice-controlled language learning game built with Phoenix LiveView. Players cho
 
 ### 4. 🌈 Colors
 - **Tutorial**: 16 color vocabulary and descriptions
-- **Game Objects**: Red (🔴), Blue (🔵), Green (🟢), Yellow (🟡)
-- **Card Challenges**: "The sky is _", "My shirt is _", "The grass is _", etc.
+- **Game Objects**: Red (🔴), Blue (🔵), Green (🟢), Yellow (🟡), Orange (🟠), Purple (🟣), Pink (🩷), Brown (🤎), Black (⚫), White (⚪), Gray (🩶)
+- **Card Challenges**: "The sky is _", "My shirt is _", "The grass is _", "I like the color _", etc.
+
+### 5. 🥐 Bakery
+- **Tutorial**: Bakery and ordering vocabulary
+- **Game Objects**: Bread (🍞), Croissant (🥐), Bagel (🥯), Pretzel (🥨), Baguette (🥖), Cake (🎂), Cupcake (🧁), Donut (🍩), Cookie (🍪), Pie (🥧)
+- **Card Challenges**: "I want a _", "This _ is delicious", "How much is the _", "I'll take two _", etc.
+
+### 6. 🐶 Animals
+- **Tutorial**: Animal vocabulary and descriptions
+- **Game Objects**: Dog (🐶), Cat (🐱), Rabbit (🐰), Bear (🐻), Panda (🐼), Lion (🦁), Tiger (🐯), Elephant (🐘), Monkey (🐵), Horse (🐴), Cow (🐄), Pig (🐷)
+- **Card Challenges**: "The _ is cute", "I have a pet _", "The _ lives in the jungle", "I saw a _ at the zoo", etc.
+
+### 7. 🍕 Restaurant
+- **Tutorial**: Restaurant and ordering vocabulary
+- **Game Objects**: Menu (📋), Pizza (🍕), Burger (🍔), Fries (🍟), Pasta (🍝), Salad (🥗), Soup (🍲), Coffee (☕), Water (💧), Bill (🧾)
+- **Card Challenges**: "I'd like to order _", "Can I have the _", "I'll drink _", "The _ is ready", etc.
+
+### 8. 👨‍👩‍👧‍👦 Family
+- **Tutorial**: Family relationships and descriptions
+- **Game Objects**: Mother (👩), Father (👨), Sister (👧), Brother (👦), Grandmother (👵), Grandfather (👴), Baby (👶), Family (👨‍👩‍👧‍👦), Aunt (👸), Uncle (🤴)
+- **Card Challenges**: "This is my _", "I have two _", "My _ is kind", "I love my _", etc.
+
+### 9. 🇹🇼 Countries
+- **Tutorial**: Countries, nationalities, and cultural expressions
+- **Game Objects**: Taiwan (🇹🇼), France (🇫🇷), Germany (🇩🇪), Japan (🇯🇵), USA (🇺🇸), UK (🇬🇧), Italy (🇮🇹), Spain (🇪🇸), China (🇨🇳), Canada (🇨🇦)
+- **Card Challenges**: "I am from _", "He is _", "I eat bretzel in _", "I visited _", etc.
 
 ## Tech Stack
 - **Backend**: Elixir/Phoenix with LiveView
@@ -120,11 +145,11 @@ lib/boba_talkie_web/
 ## Ready to Test
 Run `mix phx.server` and visit:
 - **http://localhost:4000** → Landing page with microphone setup
-- **http://localhost:4000/maps** → Choose from 4 learning topics
+- **http://localhost:4000/maps** → Choose from 9 learning topics
 - **http://localhost:4000/tutorial/[topic]** → Interactive vocabulary tutorials
 - **http://localhost:4000/game/[topic]** → Voice-controlled gameplay
 
-**Available Topics**: introduction, fruits, numbers, colors
+**Available Topics**: introduction, fruits, numbers, colors, bakery, animals, restaurant, family, countries
 
 ## Development Commands (Makefile)
 ```bash

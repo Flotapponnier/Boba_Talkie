@@ -140,6 +140,141 @@ defmodule BobaTalkie.Game.Card do
     }
   ]
 
+  @bakery_card_templates [
+    %{
+      template: "I want a _",
+      description: "Complete by saying 'I want a [bakery item]' while standing on a bakery item",
+      applicable_objects: [:bread, :croissant, :bagel, :pretzel, :baguette, :cake, :cupcake, :donut, :cookie, :pie],
+      type: :bakery_order
+    },
+    %{
+      template: "This _ is delicious",
+      description: "Complete by saying 'This [bakery item] is delicious' while on a bakery item",
+      applicable_objects: [:bread, :croissant, :bagel, :pretzel, :baguette, :cake, :cupcake, :donut, :cookie, :pie],
+      type: :bakery_taste
+    },
+    %{
+      template: "How much is the _",
+      description: "Complete by saying 'How much is the [bakery item]' while on a bakery item",
+      applicable_objects: [:bread, :croissant, :bagel, :pretzel, :baguette, :cake, :cupcake, :donut, :cookie, :pie],
+      type: :bakery_price
+    },
+    %{
+      template: "I'll take two _",
+      description: "Complete by saying 'I'll take two [bakery items]' while on a bakery item",
+      applicable_objects: [:croissant, :bagel, :donut, :cookie],
+      type: :bakery_quantity
+    }
+  ]
+
+  @animals_card_templates [
+    %{
+      template: "The _ is cute",
+      description: "Complete by saying 'The [animal] is cute' while standing on an animal",
+      applicable_objects: [:dog, :cat, :rabbit, :bear, :panda, :lion, :tiger, :elephant, :monkey, :horse, :cow, :pig],
+      type: :animal_description
+    },
+    %{
+      template: "I have a pet _",
+      description: "Complete by saying 'I have a pet [animal]' while on an animal",
+      applicable_objects: [:dog, :cat, :rabbit, :bear, :panda],
+      type: :pet_ownership
+    },
+    %{
+      template: "The _ lives in the jungle",
+      description: "Complete by saying 'The [animal] lives in the jungle' while on wild animals",
+      applicable_objects: [:lion, :tiger, :elephant, :monkey],
+      type: :animal_habitat
+    },
+    %{
+      template: "I saw a _ at the zoo",
+      description: "Complete by saying 'I saw a [animal] at the zoo' while on an animal",
+      applicable_objects: [:lion, :tiger, :elephant, :monkey, :bear, :panda],
+      type: :zoo_experience
+    }
+  ]
+
+  @restaurant_card_templates [
+    %{
+      template: "I'd like to order _",
+      description: "Complete by saying 'I'd like to order [food]' while standing on food",
+      applicable_objects: [:pizza, :burger, :pasta, :salad, :soup],
+      type: :restaurant_order
+    },
+    %{
+      template: "Can I have the _",
+      description: "Complete by saying 'Can I have the [item]' while on restaurant item",
+      applicable_objects: [:menu, :pizza, :burger, :fries, :pasta, :salad, :soup, :bill],
+      type: :restaurant_request
+    },
+    %{
+      template: "I'll drink _",
+      description: "Complete by saying 'I'll drink [beverage]' while on drinks",
+      applicable_objects: [:coffee, :water],
+      type: :drink_order
+    },
+    %{
+      template: "The _ is ready",
+      description: "Complete by saying 'The [food] is ready' while on food items",
+      applicable_objects: [:pizza, :burger, :pasta, :soup],
+      type: :food_ready
+    }
+  ]
+
+  @family_card_templates [
+    %{
+      template: "This is my _",
+      description: "Complete by saying 'This is my [family member]' while on family member",
+      applicable_objects: [:mother, :father, :sister, :brother, :grandmother, :grandfather, :aunt, :uncle],
+      type: :family_introduction
+    },
+    %{
+      template: "I have two _",
+      description: "Complete by saying 'I have two [family members]' while on family member",
+      applicable_objects: [:sister, :brother],
+      type: :family_quantity
+    },
+    %{
+      template: "My _ is kind",
+      description: "Complete by saying 'My [family member] is kind' while on family member",
+      applicable_objects: [:mother, :father, :grandmother, :grandfather, :aunt, :uncle],
+      type: :family_description
+    },
+    %{
+      template: "I love my _",
+      description: "Complete by saying 'I love my [family member/family]' while on family",
+      applicable_objects: [:mother, :father, :sister, :brother, :grandmother, :grandfather, :baby, :family],
+      type: :family_love
+    }
+  ]
+
+  @countries_card_templates [
+    %{
+      template: "I am from _",
+      description: "Complete by saying 'I am from [country]' while standing on country flag",
+      applicable_objects: [:taiwan, :france, :germany, :japan, :usa, :uk, :italy, :spain, :china, :canada],
+      type: :nationality
+    },
+    %{
+      template: "He is _",
+      description: "Complete by saying 'He is [nationality]' while on country flag",
+      applicable_objects: [:france, :germany, :japan, :usa, :uk, :italy, :spain, :china, :canada],
+      type: :person_nationality
+    },
+    %{
+      template: "I eat bretzel in _",
+      description: "Complete by saying 'I eat bretzel in [Germany]' while on Germany",
+      applicable_objects: [:germany],
+      type: :cultural_food
+    },
+    %{
+      template: "I visited _",
+      description: "Complete by saying 'I visited [country]' while on country flag",
+      applicable_objects: [:taiwan, :france, :germany, :japan, :usa, :uk, :italy, :spain, :china, :canada],
+      type: :travel_experience
+    }
+  ]
+
   @colors_card_templates [
     %{
       template: "The sky is _",
@@ -225,6 +360,11 @@ defmodule BobaTalkie.Game.Card do
       "fruits" -> @fruit_card_templates
       "numbers" -> @numbers_card_templates
       "colors" -> @colors_card_templates
+      "bakery" -> @bakery_card_templates
+      "animals" -> @animals_card_templates
+      "restaurant" -> @restaurant_card_templates
+      "family" -> @family_card_templates
+      "countries" -> @countries_card_templates
       _ -> @fruit_card_templates
     end
     
@@ -298,8 +438,26 @@ defmodule BobaTalkie.Game.Card do
       essential_words = String.split(expected_sentence, " ")
       
       # All essential words must be present (allows for extra words/mistakes)
+      # Handle common plural/singular variations
       Enum.all?(essential_words, fn word ->
-        String.contains?(clean_command, word)
+        String.contains?(clean_command, word) or
+        # Handle plural/singular variations
+        (word == "apples" and String.contains?(clean_command, "apple")) or
+        (word == "apple" and String.contains?(clean_command, "apples")) or
+        (word == "grapes" and String.contains?(clean_command, "grape")) or
+        (word == "grape" and String.contains?(clean_command, "grapes")) or
+        (word == "cherries" and String.contains?(clean_command, "cherry")) or
+        (word == "cherry" and String.contains?(clean_command, "cherries")) or
+        (word == "strawberries" and String.contains?(clean_command, "strawberry")) or
+        (word == "strawberry" and String.contains?(clean_command, "strawberries")) or
+        (word == "tomatoes" and String.contains?(clean_command, "tomato")) or
+        (word == "tomato" and String.contains?(clean_command, "tomatoes")) or
+        (word == "carrots" and String.contains?(clean_command, "carrot")) or
+        (word == "carrot" and String.contains?(clean_command, "carrots")) or
+        (word == "lemons" and String.contains?(clean_command, "lemon")) or
+        (word == "lemon" and String.contains?(clean_command, "lemons")) or
+        (word == "eggs" and String.contains?(clean_command, "egg")) or
+        (word == "egg" and String.contains?(clean_command, "eggs"))
       end)
     end
   end
@@ -417,6 +575,62 @@ defmodule BobaTalkie.Game.Card do
       :black -> "black"
       :white -> "white"
       :gray -> "gray"
+      # Bakery items
+      :croissant -> "croissant"
+      :bagel -> "bagel"
+      :pretzel -> "pretzel"
+      :baguette -> "baguette"
+      :cake -> "cake"
+      :cupcake -> "cupcake"
+      :donut -> "donut"
+      :cookie -> "cookie"
+      :pie -> "pie"
+      # Animals
+      :dog -> "dog"
+      :cat -> "cat"
+      :rabbit -> "rabbit"
+      :bear -> "bear"
+      :panda -> "panda"
+      :lion -> "lion"
+      :tiger -> "tiger"
+      :elephant -> "elephant"
+      :monkey -> "monkey"
+      :horse -> "horse"
+      :cow -> "cow"
+      :pig -> "pig"
+      # Restaurant items
+      :menu -> "menu"
+      :pizza -> "pizza"
+      :burger -> "burger"
+      :fries -> "fries"
+      :pasta -> "pasta"
+      :salad -> "salad"
+      :soup -> "soup"
+      :coffee -> "coffee"
+      :water -> "water"
+      :bill -> "bill"
+      # Family members
+      :mother -> "mother"
+      :father -> "father"
+      :sister -> "sister"
+      :brother -> "brother"
+      :grandmother -> "grandmother"
+      :grandfather -> "grandfather"
+      :baby -> "baby"
+      :family -> "family"
+      :aunt -> "aunt"
+      :uncle -> "uncle"
+      # Countries
+      :taiwan -> "taiwan"
+      :france -> "france"
+      :germany -> "germany"
+      :japan -> "japan"
+      :usa -> "usa"
+      :uk -> "uk"
+      :italy -> "italy"
+      :spain -> "spain"
+      :china -> "china"
+      :canada -> "canada"
     end
   end
 end

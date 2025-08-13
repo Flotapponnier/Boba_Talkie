@@ -48,6 +48,11 @@ defmodule BobaTalkieWeb.TutorialLive do
       "fruits" -> ~p"/game/fruits"
       "numbers" -> ~p"/game/numbers"
       "colors" -> ~p"/game/colors"
+      "bakery" -> ~p"/game/bakery"
+      "animals" -> ~p"/game/animals"
+      "restaurant" -> ~p"/game/restaurant"
+      "family" -> ~p"/game/family"
+      "countries" -> ~p"/game/countries"
       _ -> ~p"/maps"
     end
     {:noreply, push_navigate(socket, to: game_path)}
@@ -157,6 +162,108 @@ defmodule BobaTalkieWeb.TutorialLive do
         %{word: "Dark", emoji: "🌑", pronunciation: "DARK", example: "Dark colors look elegant"},
         %{word: "Light", emoji: "💡", pronunciation: "LYHT", example: "Light blue like the morning sky"},
         %{word: "Colorful", emoji: "🎨", pronunciation: "KUL-er-ful", example: "The painting is very colorful"}
+      ]
+    }
+  end
+
+  defp get_tutorial_content("bakery") do
+    %{
+      title: "Bakery",
+      emoji: "🥐",
+      description: "Learn essential bakery vocabulary and ordering phrases",
+      vocabulary: [
+        %{word: "Bread", emoji: "🍞", pronunciation: "BRED", example: "Fresh bread smells amazing"},
+        %{word: "Croissant", emoji: "🥐", pronunciation: "kwah-SAHN", example: "A buttery French croissant"},
+        %{word: "Bagel", emoji: "🥯", pronunciation: "BAY-gul", example: "Toasted bagel with cream cheese"},
+        %{word: "Pretzel", emoji: "🥨", pronunciation: "PRET-zul", example: "Salty twisted pretzel"},
+        %{word: "Baguette", emoji: "🥖", pronunciation: "ba-GET", example: "Long French baguette"},
+        %{word: "Cake", emoji: "🎂", pronunciation: "KAYK", example: "Birthday cake with candles"},
+        %{word: "Cupcake", emoji: "🧁", pronunciation: "KUP-kayk", example: "Sweet chocolate cupcake"},
+        %{word: "Donut", emoji: "🍩", pronunciation: "DOH-nut", example: "Glazed donut for breakfast"},
+        %{word: "Cookie", emoji: "🍪", pronunciation: "KUK-ee", example: "Chocolate chip cookie"},
+        %{word: "Pie", emoji: "🥧", pronunciation: "PYE", example: "Apple pie for dessert"}
+      ]
+    }
+  end
+
+  defp get_tutorial_content("animals") do
+    %{
+      title: "Animals",
+      emoji: "🐶",
+      description: "Discover animal vocabulary and their characteristics",
+      vocabulary: [
+        %{word: "Dog", emoji: "🐶", pronunciation: "DAWG", example: "The dog is man's best friend"},
+        %{word: "Cat", emoji: "🐱", pronunciation: "KAT", example: "The cat sleeps in the sun"},
+        %{word: "Rabbit", emoji: "🐰", pronunciation: "RAB-it", example: "The rabbit hops quickly"},
+        %{word: "Bear", emoji: "🐻", pronunciation: "BAIR", example: "The brown bear is strong"},
+        %{word: "Panda", emoji: "🐼", pronunciation: "PAN-da", example: "Giant panda eats bamboo"},
+        %{word: "Lion", emoji: "🦁", pronunciation: "LYE-un", example: "The lion is king of jungle"},
+        %{word: "Tiger", emoji: "🐯", pronunciation: "TYE-gur", example: "The tiger has stripes"},
+        %{word: "Elephant", emoji: "🐘", pronunciation: "EL-uh-fant", example: "The elephant is very big"},
+        %{word: "Monkey", emoji: "🐵", pronunciation: "MUNG-kee", example: "The monkey swings on trees"},
+        %{word: "Horse", emoji: "🐴", pronunciation: "HORS", example: "The horse runs fast"},
+        %{word: "Cow", emoji: "🐄", pronunciation: "KOW", example: "The cow gives milk"},
+        %{word: "Pig", emoji: "🐷", pronunciation: "PIG", example: "The pig rolls in mud"}
+      ]
+    }
+  end
+
+  defp get_tutorial_content("restaurant") do
+    %{
+      title: "Restaurant",
+      emoji: "🍕",
+      description: "Master restaurant vocabulary and ordering phrases",
+      vocabulary: [
+        %{word: "Menu", emoji: "📋", pronunciation: "MEN-yoo", example: "Can I see the menu please?"},
+        %{word: "Pizza", emoji: "🍕", pronunciation: "PEET-za", example: "I'll have a slice of pizza"},
+        %{word: "Burger", emoji: "🍔", pronunciation: "BUR-gur", example: "Cheeseburger with fries"},
+        %{word: "Fries", emoji: "🍟", pronunciation: "FRYZ", example: "French fries are crispy"},
+        %{word: "Pasta", emoji: "🍝", pronunciation: "PAHS-ta", example: "Spaghetti pasta with sauce"},
+        %{word: "Salad", emoji: "🥗", pronunciation: "SAL-ad", example: "Fresh green salad"},
+        %{word: "Soup", emoji: "🍲", pronunciation: "SOOP", example: "Hot chicken soup"},
+        %{word: "Coffee", emoji: "☕", pronunciation: "KAW-fee", example: "Hot black coffee"},
+        %{word: "Water", emoji: "💧", pronunciation: "WAW-tur", example: "Glass of cold water"},
+        %{word: "Bill", emoji: "🧾", pronunciation: "BIL", example: "Can I have the bill?"}
+      ]
+    }
+  end
+
+  defp get_tutorial_content("family") do
+    %{
+      title: "Family",
+      emoji: "👨‍👩‍👧‍👦",
+      description: "Learn family relationships and descriptions",
+      vocabulary: [
+        %{word: "Mother", emoji: "👩", pronunciation: "MUTH-ur", example: "My mother is very kind"},
+        %{word: "Father", emoji: "👨", pronunciation: "FAH-thur", example: "My father works hard"},
+        %{word: "Sister", emoji: "👧", pronunciation: "SIS-tur", example: "I have two sisters"},
+        %{word: "Brother", emoji: "👦", pronunciation: "BRUTH-ur", example: "My brother is younger"},
+        %{word: "Grandmother", emoji: "👵", pronunciation: "GRAND-muth-ur", example: "Grandmother tells great stories"},
+        %{word: "Grandfather", emoji: "👴", pronunciation: "GRAND-fah-thur", example: "Grandfather is very wise"},
+        %{word: "Baby", emoji: "👶", pronunciation: "BAY-bee", example: "The baby is sleeping"},
+        %{word: "Family", emoji: "👨‍👩‍👧‍👦", pronunciation: "FAM-uh-lee", example: "I love my family"},
+        %{word: "Aunt", emoji: "👸", pronunciation: "ANT", example: "My aunt lives nearby"},
+        %{word: "Uncle", emoji: "🤴", pronunciation: "UNG-kul", example: "Uncle visits on weekends"}
+      ]
+    }
+  end
+
+  defp get_tutorial_content("countries") do
+    %{
+      title: "Countries",
+      emoji: "🇹🇼",
+      description: "Explore countries, nationalities, and cultural expressions",
+      vocabulary: [
+        %{word: "Taiwan", emoji: "🇹🇼", pronunciation: "TYE-wahn", example: "Taiwan is a beautiful island"},
+        %{word: "France", emoji: "🇫🇷", pronunciation: "FRANS", example: "France is famous for cuisine"},
+        %{word: "Germany", emoji: "🇩🇪", pronunciation: "JUR-man-ee", example: "Germany has great beer"},
+        %{word: "Japan", emoji: "🇯🇵", pronunciation: "juh-PAN", example: "Japan has beautiful cherry blossoms"},
+        %{word: "USA", emoji: "🇺🇸", pronunciation: "yoo-es-AY", example: "USA is very diverse"},
+        %{word: "UK", emoji: "🇬🇧", pronunciation: "yoo-KAY", example: "UK has a rich history"},
+        %{word: "Italy", emoji: "🇮🇹", pronunciation: "IT-uh-lee", example: "Italy makes great pasta"},
+        %{word: "Spain", emoji: "🇪🇸", pronunciation: "SPAYN", example: "Spain has flamenco dancing"},
+        %{word: "China", emoji: "🇨🇳", pronunciation: "CHY-na", example: "China has a long history"},
+        %{word: "Canada", emoji: "🇨🇦", pronunciation: "KAN-uh-da", example: "Canada is known for maple syrup"}
       ]
     }
   end

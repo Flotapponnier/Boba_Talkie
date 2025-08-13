@@ -81,6 +81,78 @@ defmodule BobaTalkie.Game.World do
     %{type: :ten, name: "ten", emoji: "🔟", voice_commands: ["ten", "number ten", "tenth"]}
   ]
 
+  # All available bakery items
+  @all_bakery_items [
+    %{type: :bread, name: "bread", emoji: "🍞", voice_commands: ["bread", "loaf", "fresh bread"]},
+    %{type: :croissant, name: "croissant", emoji: "🥐", voice_commands: ["croissant", "french croissant", "buttery croissant"]},
+    %{type: :bagel, name: "bagel", emoji: "🥯", voice_commands: ["bagel", "sesame bagel", "toasted bagel"]},
+    %{type: :pretzel, name: "pretzel", emoji: "🥨", voice_commands: ["pretzel", "twisted pretzel", "salty pretzel"]},
+    %{type: :baguette, name: "baguette", emoji: "🥖", voice_commands: ["baguette", "french baguette", "long bread"]},
+    %{type: :cake, name: "cake", emoji: "🎂", voice_commands: ["cake", "birthday cake", "chocolate cake"]},
+    %{type: :cupcake, name: "cupcake", emoji: "🧁", voice_commands: ["cupcake", "muffin", "small cake"]},
+    %{type: :donut, name: "donut", emoji: "🍩", voice_commands: ["donut", "doughnut", "glazed donut"]},
+    %{type: :cookie, name: "cookie", emoji: "🍪", voice_commands: ["cookie", "chocolate chip cookie", "biscuit"]},
+    %{type: :pie, name: "pie", emoji: "🥧", voice_commands: ["pie", "apple pie", "fruit pie"]}
+  ]
+
+  # All available animal items
+  @all_animal_items [
+    %{type: :dog, name: "dog", emoji: "🐶", voice_commands: ["dog", "puppy", "canine"]},
+    %{type: :cat, name: "cat", emoji: "🐱", voice_commands: ["cat", "kitten", "feline"]},
+    %{type: :rabbit, name: "rabbit", emoji: "🐰", voice_commands: ["rabbit", "bunny", "hare"]},
+    %{type: :bear, name: "bear", emoji: "🐻", voice_commands: ["bear", "teddy bear", "brown bear"]},
+    %{type: :panda, name: "panda", emoji: "🐼", voice_commands: ["panda", "giant panda", "bamboo bear"]},
+    %{type: :lion, name: "lion", emoji: "🦁", voice_commands: ["lion", "king of jungle", "big cat"]},
+    %{type: :tiger, name: "tiger", emoji: "🐯", voice_commands: ["tiger", "striped cat", "wild cat"]},
+    %{type: :elephant, name: "elephant", emoji: "🐘", voice_commands: ["elephant", "big elephant", "gray elephant"]},
+    %{type: :monkey, name: "monkey", emoji: "🐵", voice_commands: ["monkey", "ape", "primate"]},
+    %{type: :horse, name: "horse", emoji: "🐴", voice_commands: ["horse", "stallion", "pony"]},
+    %{type: :cow, name: "cow", emoji: "🐄", voice_commands: ["cow", "cattle", "dairy cow"]},
+    %{type: :pig, name: "pig", emoji: "🐷", voice_commands: ["pig", "piglet", "swine"]}
+  ]
+
+  # All available restaurant items
+  @all_restaurant_items [
+    %{type: :menu, name: "menu", emoji: "📋", voice_commands: ["menu", "food menu", "restaurant menu"]},
+    %{type: :pizza, name: "pizza", emoji: "🍕", voice_commands: ["pizza", "slice of pizza", "italian pizza"]},
+    %{type: :burger, name: "burger", emoji: "🍔", voice_commands: ["burger", "hamburger", "cheeseburger"]},
+    %{type: :fries, name: "fries", emoji: "🍟", voice_commands: ["fries", "french fries", "chips"]},
+    %{type: :pasta, name: "pasta", emoji: "🍝", voice_commands: ["pasta", "spaghetti", "noodles"]},
+    %{type: :salad, name: "salad", emoji: "🥗", voice_commands: ["salad", "green salad", "fresh salad"]},
+    %{type: :soup, name: "soup", emoji: "🍲", voice_commands: ["soup", "hot soup", "bowl of soup"]},
+    %{type: :coffee, name: "coffee", emoji: "☕", voice_commands: ["coffee", "hot coffee", "cup of coffee"]},
+    %{type: :water, name: "water", emoji: "💧", voice_commands: ["water", "glass of water", "drinking water"]},
+    %{type: :bill, name: "bill", emoji: "🧾", voice_commands: ["bill", "check", "receipt"]}
+  ]
+
+  # All available family items
+  @all_family_items [
+    %{type: :mother, name: "mother", emoji: "👩", voice_commands: ["mother", "mom", "mama"]},
+    %{type: :father, name: "father", emoji: "👨", voice_commands: ["father", "dad", "papa"]},
+    %{type: :sister, name: "sister", emoji: "👧", voice_commands: ["sister", "big sister", "little sister"]},
+    %{type: :brother, name: "brother", emoji: "👦", voice_commands: ["brother", "big brother", "little brother"]},
+    %{type: :grandmother, name: "grandmother", emoji: "👵", voice_commands: ["grandmother", "grandma", "granny"]},
+    %{type: :grandfather, name: "grandfather", emoji: "👴", voice_commands: ["grandfather", "grandpa", "granddad"]},
+    %{type: :baby, name: "baby", emoji: "👶", voice_commands: ["baby", "infant", "little one"]},
+    %{type: :family, name: "family", emoji: "👨‍👩‍👧‍👦", voice_commands: ["family", "my family", "our family"]},
+    %{type: :aunt, name: "aunt", emoji: "👸", voice_commands: ["aunt", "auntie", "fathers sister"]},
+    %{type: :uncle, name: "uncle", emoji: "🤴", voice_commands: ["uncle", "mothers brother", "fathers brother"]}
+  ]
+
+  # All available countries items
+  @all_countries_items [
+    %{type: :taiwan, name: "taiwan", emoji: "🇹🇼", voice_commands: ["taiwan", "taiwanese", "republic of china"]},
+    %{type: :france, name: "france", emoji: "🇫🇷", voice_commands: ["france", "french", "paris"]},
+    %{type: :germany, name: "germany", emoji: "🇩🇪", voice_commands: ["germany", "german", "deutschland"]},
+    %{type: :japan, name: "japan", emoji: "🇯🇵", voice_commands: ["japan", "japanese", "tokyo"]},
+    %{type: :usa, name: "usa", emoji: "🇺🇸", voice_commands: ["usa", "america", "united states"]},
+    %{type: :uk, name: "uk", emoji: "🇬🇧", voice_commands: ["uk", "britain", "england"]},
+    %{type: :italy, name: "italy", emoji: "🇮🇹", voice_commands: ["italy", "italian", "rome"]},
+    %{type: :spain, name: "spain", emoji: "🇪🇸", voice_commands: ["spain", "spanish", "madrid"]},
+    %{type: :china, name: "china", emoji: "🇨🇳", voice_commands: ["china", "chinese", "beijing"]},
+    %{type: :canada, name: "canada", emoji: "🇨🇦", voice_commands: ["canada", "canadian", "ottawa"]}
+  ]
+
   # All available color items (matching tutorial vocabulary)
   @all_colors_items [
     %{type: :red, name: "red", emoji: "🔴", voice_commands: ["red", "red color", "the color red"]},
@@ -125,6 +197,31 @@ defmodule BobaTalkie.Game.World do
         num_colors = Enum.random(3..8)
         selected_colors = @all_colors_items |> Enum.shuffle() |> Enum.take(num_colors)
         place_random_items(grid, width, height, player_pos, selected_colors)
+      "bakery" ->
+        # Randomly select 4-7 bakery items from all available items
+        num_bakery = Enum.random(4..7)
+        selected_bakery = @all_bakery_items |> Enum.shuffle() |> Enum.take(num_bakery)
+        place_random_items(grid, width, height, player_pos, selected_bakery)
+      "animals" ->
+        # Randomly select 4-8 animals from all available animals
+        num_animals = Enum.random(4..8)
+        selected_animals = @all_animal_items |> Enum.shuffle() |> Enum.take(num_animals)
+        place_random_items(grid, width, height, player_pos, selected_animals)
+      "restaurant" ->
+        # Randomly select 4-7 restaurant items from all available items
+        num_restaurant = Enum.random(4..7)
+        selected_restaurant = @all_restaurant_items |> Enum.shuffle() |> Enum.take(num_restaurant)
+        place_random_items(grid, width, height, player_pos, selected_restaurant)
+      "family" ->
+        # Randomly select 4-7 family members from all available family
+        num_family = Enum.random(4..7)
+        selected_family = @all_family_items |> Enum.shuffle() |> Enum.take(num_family)
+        place_random_items(grid, width, height, player_pos, selected_family)
+      "countries" ->
+        # Randomly select 4-8 countries from all available countries
+        num_countries = Enum.random(4..8)
+        selected_countries = @all_countries_items |> Enum.shuffle() |> Enum.take(num_countries)
+        place_random_items(grid, width, height, player_pos, selected_countries)
       _ -> place_random_items(grid, width, height, player_pos, @all_fruits_items)  # Default to fruits
     end
     
@@ -305,7 +402,7 @@ defmodule BobaTalkie.Game.World do
   @doc """
   Gets all available introduction items (for reference)
   """
-  def get_available_introduction_items(), do: @introduction_items
+  def get_available_introduction_items(), do: @all_introduction_items
 
   @doc """
   Gets available items for a given topic
@@ -316,6 +413,11 @@ defmodule BobaTalkie.Game.World do
       "fruits" -> @all_fruits_items
       "numbers" -> @all_numbers_items
       "colors" -> @all_colors_items
+      "bakery" -> @all_bakery_items
+      "animals" -> @all_animal_items
+      "restaurant" -> @all_restaurant_items
+      "family" -> @all_family_items
+      "countries" -> @all_countries_items
       _ -> @all_fruits_items
     end
   end
