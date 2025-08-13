@@ -120,13 +120,13 @@ defmodule BobaTalkie.Game.Card do
     %{
       template: "My shirt is _",
       description: "Complete by saying 'My shirt is [color]' while on a color",
-      applicable_objects: [:red, :blue, :green, :yellow],
+      applicable_objects: [:red, :blue, :green, :yellow, :orange, :purple, :pink, :brown, :black, :white, :gray],
       type: :clothing_color
     },
     %{
       template: "I like the color _",
       description: "Complete by saying 'I like the color [color]' while on a color",
-      applicable_objects: [:red, :blue, :green, :yellow],
+      applicable_objects: [:red, :blue, :green, :yellow, :orange, :purple, :pink, :brown, :black, :white, :gray],
       type: :color_preference
     },
     %{
@@ -140,6 +140,42 @@ defmodule BobaTalkie.Game.Card do
       description: "Complete by saying 'The sun is [color]' while standing on yellow",
       applicable_objects: [:yellow],
       type: :nature_yellow
+    },
+    %{
+      template: "The rose is _",
+      description: "Complete by saying 'The rose is [color]' while standing on red or pink",
+      applicable_objects: [:red, :pink],
+      type: :nature_flower
+    },
+    %{
+      template: "The night is _",
+      description: "Complete by saying 'The night is [color]' while standing on black",
+      applicable_objects: [:black],
+      type: :nature_night
+    },
+    %{
+      template: "The snow is _",
+      description: "Complete by saying 'The snow is [color]' while standing on white",
+      applicable_objects: [:white],
+      type: :nature_snow
+    },
+    %{
+      template: "The pumpkin is _",
+      description: "Complete by saying 'The pumpkin is [color]' while standing on orange",
+      applicable_objects: [:orange],
+      type: :nature_pumpkin
+    },
+    %{
+      template: "The elephant is _",
+      description: "Complete by saying 'The elephant is [color]' while standing on gray",
+      applicable_objects: [:gray],
+      type: :animal_color
+    },
+    %{
+      template: "My favorite color is _",
+      description: "Complete by saying 'My favorite color is [color]' while on any color",
+      applicable_objects: [:red, :blue, :green, :yellow, :orange, :purple, :pink, :brown, :black, :white, :gray],
+      type: :personal_preference
     }
   ]
 
@@ -198,11 +234,13 @@ defmodule BobaTalkie.Game.Card do
     if object_type not in card.applicable_objects do
       false
     else
-      # Clean the voice command
+      # Clean the voice command and normalize spelling variations
       clean_command = voice_command
       |> String.downcase()
       |> String.trim()
       |> String.replace(~r/[^\w\s]/, "")
+      |> String.replace("colour", "color")  # Normalize British spelling to American
+      |> String.replace("favourite", "favorite")  # Normalize British spelling to American
       
       # Get object name for matching
       object_name = get_object_name(object_type)
@@ -294,6 +332,13 @@ defmodule BobaTalkie.Game.Card do
       :blue -> "blue"
       :green -> "green"
       :yellow -> "yellow"
+      :orange -> "orange"
+      :purple -> "purple"
+      :pink -> "pink"
+      :brown -> "brown"
+      :black -> "black"
+      :white -> "white"
+      :gray -> "gray"
     end
   end
 end

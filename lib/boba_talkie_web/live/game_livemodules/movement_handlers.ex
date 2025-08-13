@@ -144,11 +144,12 @@ defmodule BobaTalkieWeb.GameLive.MovementHandlers do
   end
 
   defp parse_voice_command(command) do
-    # Clean the command: lowercase, trim, remove punctuation
+    # Clean the command: lowercase, trim, remove punctuation, normalize common speech recognition mistakes
     clean_command = command
     |> String.downcase()
     |> String.trim()
     |> String.replace(~r/[^\w\s]/, "")  # Remove punctuation
+    |> String.replace(~r/\bto\b/, "two")  # Normalize "to" to "two" for numbers
     |> String.trim()
     
     cond do
@@ -189,16 +190,62 @@ defmodule BobaTalkieWeb.GameLive.MovementHandlers do
       String.contains?(clean_command, ["east", "right"]) -> {:move, :east, 1}
       String.contains?(clean_command, ["west", "left"]) -> {:move, :west, 1}
       
-      # Check for card challenge phrases (full sentences containing fruit names)
+      # Check for card challenge phrases (full sentences containing topic-specific words)
+      # Fruits and food
       String.contains?(clean_command, ["apple"]) or 
       String.contains?(clean_command, ["banana"]) or 
       String.contains?(clean_command, ["orange"]) or 
       String.contains?(clean_command, ["grape"]) or
       String.contains?(clean_command, ["eat"]) or
       String.contains?(clean_command, ["this is"]) or
-      String.contains?(clean_command, ["yellow"]) or
+      # Colors
+      String.contains?(clean_command, ["blue"]) or
       String.contains?(clean_command, ["red"]) or
-      String.contains?(clean_command, ["purple"]) -> {:card_challenge}
+      String.contains?(clean_command, ["green"]) or
+      String.contains?(clean_command, ["yellow"]) or
+      String.contains?(clean_command, ["purple"]) or
+      String.contains?(clean_command, ["orange"]) or
+      String.contains?(clean_command, ["pink"]) or
+      String.contains?(clean_command, ["brown"]) or
+      String.contains?(clean_command, ["black"]) or
+      String.contains?(clean_command, ["white"]) or
+      String.contains?(clean_command, ["gray"]) or
+      String.contains?(clean_command, ["sky is"]) or
+      String.contains?(clean_command, ["shirt is"]) or
+      String.contains?(clean_command, ["grass is"]) or
+      String.contains?(clean_command, ["sun is"]) or
+      String.contains?(clean_command, ["rose is"]) or
+      String.contains?(clean_command, ["night is"]) or
+      String.contains?(clean_command, ["snow is"]) or
+      String.contains?(clean_command, ["pumpkin is"]) or
+      String.contains?(clean_command, ["elephant is"]) or
+      String.contains?(clean_command, ["elephants are"]) or
+      String.contains?(clean_command, ["elephants is"]) or
+      String.contains?(clean_command, ["like the color"]) or
+      String.contains?(clean_command, ["like the colour"]) or
+      String.contains?(clean_command, ["favorite color"]) or
+      String.contains?(clean_command, ["favourite color"]) or
+      # Numbers
+      String.contains?(clean_command, ["count to"]) or
+      String.contains?(clean_command, ["i have"]) or
+      String.contains?(clean_command, ["step"]) or
+      String.contains?(clean_command, ["number"]) or
+      String.contains?(clean_command, ["one"]) or
+      String.contains?(clean_command, ["two"]) or
+      String.contains?(clean_command, ["three"]) or
+      String.contains?(clean_command, ["four"]) or
+      String.contains?(clean_command, ["apples"]) or
+      String.contains?(clean_command, ["favorite"]) or
+      String.contains?(clean_command, ["forward"]) or
+      # Introduction/greetings
+      String.contains?(clean_command, ["hello"]) or
+      String.contains?(clean_command, ["my name"]) or
+      String.contains?(clean_command, ["thank you"]) or
+      String.contains?(clean_command, ["nice to meet"]) or
+      String.contains?(clean_command, ["greet someone"]) or
+      String.contains?(clean_command, ["helping me"]) or
+      String.contains?(clean_command, ["sarah"]) or
+      String.contains?(clean_command, ["meet you"]) -> {:card_challenge}
       
       # Other commands
       String.contains?(clean_command, ["look around"]) or String.contains?(clean_command, ["look"]) -> :look

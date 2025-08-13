@@ -47,12 +47,19 @@ defmodule BobaTalkie.Game.World do
     %{type: :four, name: "four", emoji: "4️⃣", voice_commands: ["four", "number four", "fourth"]}
   ]
 
-  # Available colors items
-  @colors_items [
+  # All available color items (matching tutorial vocabulary)
+  @all_colors_items [
     %{type: :red, name: "red", emoji: "🔴", voice_commands: ["red", "red color", "the color red"]},
     %{type: :blue, name: "blue", emoji: "🔵", voice_commands: ["blue", "blue color", "the color blue"]},
     %{type: :green, name: "green", emoji: "🟢", voice_commands: ["green", "green color", "the color green"]},
-    %{type: :yellow, name: "yellow", emoji: "🟡", voice_commands: ["yellow", "yellow color", "the color yellow"]}
+    %{type: :yellow, name: "yellow", emoji: "🟡", voice_commands: ["yellow", "yellow color", "the color yellow"]},
+    %{type: :orange, name: "orange", emoji: "🟠", voice_commands: ["orange", "orange color", "the color orange"]},
+    %{type: :purple, name: "purple", emoji: "🟣", voice_commands: ["purple", "purple color", "the color purple"]},
+    %{type: :pink, name: "pink", emoji: "🩷", voice_commands: ["pink", "pink color", "the color pink"]},
+    %{type: :brown, name: "brown", emoji: "🤎", voice_commands: ["brown", "brown color", "the color brown"]},
+    %{type: :black, name: "black", emoji: "⚫", voice_commands: ["black", "black color", "the color black"]},
+    %{type: :white, name: "white", emoji: "⚪", voice_commands: ["white", "white color", "the color white"]},
+    %{type: :gray, name: "gray", emoji: "🩶", voice_commands: ["gray", "gray color", "the color gray"]}
   ]
 
   @doc """
@@ -67,7 +74,11 @@ defmodule BobaTalkie.Game.World do
       "introduction" -> place_random_items(grid, width, height, player_pos, @introduction_items)
       "fruits" -> place_random_items(grid, width, height, player_pos, @fruits)
       "numbers" -> place_random_items(grid, width, height, player_pos, @numbers_items)
-      "colors" -> place_random_items(grid, width, height, player_pos, @colors_items)
+      "colors" -> 
+        # Randomly select 3-8 colors from all available colors
+        num_colors = Enum.random(3..8)
+        selected_colors = @all_colors_items |> Enum.shuffle() |> Enum.take(num_colors)
+        place_random_items(grid, width, height, player_pos, selected_colors)
       _ -> place_random_items(grid, width, height, player_pos, @fruits)  # Default to fruits
     end
     
@@ -258,7 +269,7 @@ defmodule BobaTalkie.Game.World do
       "introduction" -> @introduction_items
       "fruits" -> @fruits
       "numbers" -> @numbers_items
-      "colors" -> @colors_items
+      "colors" -> @all_colors_items
       _ -> @fruits
     end
   end
@@ -271,7 +282,7 @@ defmodule BobaTalkie.Game.World do
   @doc """
   Gets all available colors items (for reference)
   """
-  def get_available_colors_items(), do: @colors_items
+  def get_available_colors_items(), do: @all_colors_items
 
   # Private functions
 
