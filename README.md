@@ -41,10 +41,17 @@ lib/boba_talkie_web/
 ```
 assets/
 ├── js/
-│   ├── voice/         # Voice capture and streaming
-│   ├── game/          # Game UI interactions
-│   └── app.js         # Main application entry
-├── css/               # Tailwind CSS styling
+│   ├── hooks/
+│   │   ├── voice_capture.js           # Main voice capture hook
+│   │   ├── voice_capturemodules/      # Modular voice components
+│   │   │   ├── keyboard_handler.js    # R key press-to-talk
+│   │   │   ├── button_state_manager.js # UI state management
+│   │   │   ├── web_speech_handler.js   # Web Speech API integration
+│   │   │   └── media_recorder_handler.js # MediaRecorder fallback
+│   │   ├── floating_clouds.js         # Background animations
+│   │   └── microphone_test.js         # Mic permission testing
+│   └── app.js                         # Main application entry
+├── css/               # Tailwind CSS styling with game-specific modules
 ├── images/            # Game sprites and UI assets
 └── audio/             # Sound effects and audio feedback
 ```
@@ -155,23 +162,31 @@ Collaborative language learning:
 
 ## Game Mechanics
 
+### Voice Input Methods
+**Mouse/Touch Input**:
+- **Hold button**: Press and hold the "Hold to Speak" button to activate voice recording
+- **Release**: Release button to stop recording and process voice command
+
+**Keyboard Input** (NEW):
+- **Hold R key**: Press and hold the "R" key to activate voice recording
+- **Release R**: Release the R key to stop recording and process voice command
+- **Cross-platform**: Works on desktop, tablet, and mobile devices with keyboard
+
 ### Voice Commands (Solo Mode Priority)
 **Movement Commands**:
 - "go north/south/east/west"
-- "move forward/backward"
+- "move forward/backward"  
 - "turn left/right"
+- "move two steps east" (numbered movement)
 
-**Interaction Commands**:
-- "pick up [item]"
-- "use [item]"
-- "look at [object]"
-- "open [door/chest]"
+**Challenge Commands**:
+- Stand on object + speak sentence from challenge card
+- "Eat the apple", "The sky is blue", "My name is Sarah"
+- Topic-specific vocabulary challenges
 
 **System Commands**:
-- "inventory"
-- "help"
-- "repeat"
-- "pause"
+- "look around" - Describe surroundings
+- "help" - Show available commands
 
 ### Learning System
 - Real-time pronunciation feedback with visual indicators
@@ -179,6 +194,20 @@ Collaborative language learning:
 - Adaptive difficulty based on pronunciation accuracy
 - Vocabulary progression through contextual gameplay
 - Achievement system for pronunciation milestones
+
+### Visual Game Features
+**Grid-based World**:
+- 6x6 game grid with topic-specific objects
+- **Player highlighting**: Orange border around player position
+- **Object highlighting**: Green borders around collectible objects 
+- **Discovery notifications**: "You found a 🍎 (apple)!" when stepping on objects
+- **Custom wallpaper**: Topic-themed backgrounds for immersive experience
+
+**UI Enhancements**:
+- Clean, emoji-free interface for professional appearance
+- Responsive design for mobile, tablet, and desktop
+- Real-time visual feedback for voice commands
+- Topic-specific character images and color schemes
 
 ## Development Setup
 
