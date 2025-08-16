@@ -5,7 +5,7 @@
     <%= if BobaTalkie.Game.World.game_completed?(@world) do %>
       <div class="fixed inset-0 bg-black/80 backdrop-blur-lg z-50 flex items-center justify-center">
         <div class="card-cute p-8 text-center max-w-md mx-4 bounce-cute">
-          <div class="text-6xl mb-4">🏆</div>
+          <div class="text-6xl mb-4">Trophy</div>
           <h2 class="text-3xl font-bold text-cute mb-4">Congratulations!</h2>
           <p class="text-cute mb-6">
             You completed all <%= length(@world.cards || []) %> cards! 
@@ -15,7 +15,7 @@
             onclick="window.location.reload()"
             class="btn-cute py-3 px-8"
           >
-            🎮 Play Again
+            Play Again
           </button>
         </div>
       </div>
@@ -49,7 +49,7 @@
 
         <!-- Player Stats -->
         <div class="card-cute p-3">
-          <h3 class="text-sm font-bold text-cute mb-2">📊 Stats</h3>
+          <h3 class="text-sm font-bold text-cute mb-2">Stats</h3>
           <div class="space-y-2 text-xs">
             <div class="flex justify-between text-cute">
               <span>Commands:</span>
@@ -64,7 +64,7 @@
 
         <!-- Messages -->
         <div class="card-cute p-3">
-          <h3 class="text-sm font-bold text-cute mb-2">📝 Messages</h3>
+          <h3 class="text-sm font-bold text-cute mb-2">Messages</h3>
           <div class="space-y-1 text-xs max-h-24 overflow-y-auto custom-scrollbar">
             <%= for message <- Enum.take(@game_messages, 2) do %>
               <div class="text-cute text-xs leading-tight">
@@ -83,7 +83,7 @@
             <div class="speech-bubble p-4 text-center">
               <div class="flex items-center justify-center space-x-2 mb-2">
                 <div class="w-4 h-4 bg-boba-orange rounded-full animate-pulse"></div>
-                <span class="text-boba-orange font-semibold">🎤 Listening...</span>
+                <span class="text-boba-orange font-semibold">Listening...</span>
               </div>
               <%= if @interim_text do %>
                 <div class="text-cute font-mono text-lg">
@@ -95,7 +95,7 @@
             </div>
           <% else %>
             <div class="speech-bubble p-4 text-center">
-              <div class="text-cute">🎤 Voice Recognition Ready</div>
+              <div class="text-cute">Voice Recognition Ready</div>
               <%= if @last_command do %>
                 <div class="text-boba-orange font-mono text-sm mt-1">
                   Last: "<%= @last_command %>"
@@ -106,8 +106,18 @@
         </div>
 
         <!-- Game World Grid -->
-        <div class="wood-bg rounded-xl p-6 flex-1 flex flex-col">
-          <h2 class="text-lg font-bold text-cute-white mb-4 text-center">🎮 Game World</h2>
+        <div class="rounded-xl p-6 flex-1 flex flex-col border-4 border-orange-500" style="background-image: url('/images/game/boba_wallpaper.png'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+          <!-- Discovery Message -->
+          <%= case UIHelpers.get_discovery_message(@world) do %>
+            <% nil -> %>
+              <div class="text-center mb-4 h-6"></div>
+            <% discovery_msg -> %>
+              <div class="text-center mb-4 h-6">
+                <span class="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm font-bold animate-bounce">
+                  <%= discovery_msg %>
+                </span>
+              </div>
+          <% end %>
           
           <!-- 2D Grid Display - Larger cells -->
           <div class="flex-1 flex items-center justify-center">
@@ -115,13 +125,13 @@
               <%= for {row, y} <- Enum.with_index(@world.grid) do %>
                 <%= for {cell, x} <- Enum.with_index(row) do %>
                   <div class={[
-                    "grid-cell w-12 h-12 flex items-center justify-center text-xl font-bold",
+                    "grid-cell w-12 h-12 flex items-center justify-center text-xl font-bold rounded-lg",
                     cell_class(cell, @world, {x, y})
                   ]} title={"(#{x}, #{y})"}>
                     <%= if {x, y} == @player.position do %>
                       <img src="/images/character/boba.png" alt="Player" class="character-sprite w-10 h-10">
                     <% else %>
-                      <%= cell_icon(cell, @world, {x, y}) %>
+                      <span class="text-2xl"><%= cell_icon(cell, @world, {x, y}) %></span>
                     <% end %>
                   </div>
                 <% end %>
@@ -129,13 +139,6 @@
             </div>
           </div>
           
-          <!-- Grid Legend - Cute -->
-          <div class="mt-4 flex justify-center space-x-6 text-sm text-cute-white">
-            <span>⬛ Wall</span>
-            <span>🟢 Path</span>
-            <span>👤 You</span>
-            <span>🍎🍌🍇 Fruits</span>
-          </div>
         </div>
 
         <!-- Voice Control Button - Cute Style -->
@@ -155,10 +158,10 @@
             <%= if @listening do %>
               <div class="flex items-center justify-center space-x-3">
                 <div class="w-4 h-4 bg-white rounded-full animate-ping"></div>
-                <span>🎤 Recording... (Release to stop)</span>
+                <span>Recording... (Release to stop)</span>
               </div>
             <% else %>
-              🎤 Hold to Speak
+              Hold to Speak
             <% end %>
           </button>
         </div>
@@ -168,7 +171,7 @@
       <div class="col-span-4 space-y-2">
         <!-- Challenge Cards -->
         <div class="card-cute p-4 h-full flex flex-col">
-          <h3 class="text-sm font-bold text-cute mb-3 text-center">🃏 Challenges</h3>
+          <h3 class="text-sm font-bold text-cute mb-3 text-center">Challenges</h3>
           
           <!-- Compact Cards Display -->
           <div class="space-y-2 flex-1 overflow-y-auto">
@@ -190,7 +193,7 @@
               >
                 <div class="flex items-center mb-1">
                   <span class="text-base mr-2">
-                    <%= if card.completed do %>✅<% else %><%= if card.selected, do: "👉", else: "🃏" %><% end %>
+                    <%= if card.completed do %>[✓]<% else %><%= if card.selected, do: "[▶]", else: "[◯]" %><% end %>
                   </span>
                   <%= if card.selected do %>
                     <span class="text-blue-300 text-xs font-bold">ACTIVE</span>
@@ -211,13 +214,13 @@
             <% nil -> %>
               <div class="mt-3 p-2 bg-boba-orange/20 border border-boba-orange rounded-lg text-center">
                 <div class="text-boba-orange text-xs font-bold">
-                  💡 Select a card!
+                  Select a card!
                 </div>
               </div>
             <% selected_card -> %>
               <div class="mt-3 p-2 bg-boba-blue/20 border border-boba-blue rounded-lg text-center">
                 <div class="text-cute text-xs font-bold">
-                  🎯 "<%= selected_card.template %>"
+                  "<%= selected_card.template %>"
                 </div>
               </div>
           <% end %>

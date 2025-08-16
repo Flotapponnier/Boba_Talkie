@@ -35,9 +35,9 @@
             class="btn-cute text-sm bg-boba-cream hover:bg-boba-orange-10 text-boba-orange border-boba-orange"
           >
             <%= if @show_pronunciation do %>
-              🔊 Hide Pronunciation
+              Hide Pronunciation
             <% else %>
-              🔊 Show Pronunciation
+              Show Pronunciation
             <% end %>
           </button>
           
@@ -62,7 +62,7 @@
           disabled={@current_item == 0}
           class="btn-cute px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed bg-gray-200 hover:bg-gray-300 text-gray-700"
         >
-          ← Previous
+          Previous
         </button>
 
         <div class="flex space-x-2">
@@ -76,7 +76,7 @@
           disabled={@current_item == length(@content.vocabulary) - 1}
           class="btn-cute px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Next →
+          Next
         </button>
       </div>
     </div>
@@ -87,13 +87,13 @@
         phx-click="back_to_maps"
         class="btn-cute flex-1 bg-white hover:bg-gray-50 border-2 border-boba-orange text-boba-orange py-3 px-6"
       >
-        ← Back to Maps
+        Back to Maps
       </button>
       <button 
         phx-click="start_game"
         class="btn-cute flex-1 py-3 px-6 bounce-cute"
       >
-        🎮 Start Playing
+        Start Playing
       </button>
     </div>
 
@@ -101,7 +101,7 @@
     <div class="text-center space-y-2">
       <div class="bg-yellow-50 border-2 border-yellow-200 rounded-lg p-3">
         <p class="text-sm text-yellow-800">
-          💡 <strong>Tip:</strong> Practice saying each word out loud to improve your pronunciation!
+          <strong>Tip:</strong> Practice saying each word out loud to improve your pronunciation!
         </p>
       </div>
     </div>

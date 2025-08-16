@@ -383,13 +383,13 @@ export const VoiceCapture = {
       this.el.innerHTML = `
         <div class="flex items-center justify-center space-x-2">
           <div class="w-3 h-3 bg-white rounded-full animate-ping"></div>
-          <span>🎤 Recording...</span>
+          <span>Recording...</span>
         </div>
       `;
     } else {
       this.el.classList.remove('from-green-500', 'to-green-600', 'animate-pulse');
       this.el.classList.add('from-blue-500', 'to-purple-500', 'hover:from-blue-600', 'hover:to-purple-600');
-      this.el.innerHTML = '🎤 Hold to Speak';
+      this.el.innerHTML = 'Hold to Speak';
     }
   },
 

@@ -15,7 +15,9 @@
         <div class={"card-cute p-4 space-y-3 #{level.color} hover:scale-105 transition-transform duration-200"}>
           <!-- Level Header -->
           <div class="space-y-2">
-            <div class="text-4xl"><%= level.emoji %></div>
+            <div class="flex justify-center items-center">
+              <img src={level.character_image} alt={"#{level.title} Character"} class="w-16 h-16 object-cover rounded-full">
+            </div>
             <h2 class={"text-lg font-bold #{level.text_color}"}><%= level.title %></h2>
             <p class={"text-xs #{level.text_color} opacity-80 line-clamp-2"}><%= level.description %></p>
           </div>
@@ -23,11 +25,11 @@
           <!-- Level Stats -->
           <div class={"flex justify-center space-x-4 text-xs #{level.text_color} opacity-70"}>
             <div class="flex items-center space-x-1">
-              <span>📚</span>
+              <span>Level:</span>
               <span><%= level.difficulty %></span>
             </div>
             <div class="flex items-center space-x-1">
-              <span>🔤</span>
+              <span>Words:</span>
               <span><%= level.vocabulary_count %></span>
             </div>
           </div>
@@ -40,7 +42,7 @@
               phx-value-mode="tutorial"
               class="btn-cute flex-1 bg-white hover:bg-gray-50 border-2 border-current text-current py-2 px-3 text-xs transition-colors"
             >
-              📖 Learn
+              Learn
             </button>
             <button 
               phx-click="select_level"
@@ -48,7 +50,7 @@
               phx-value-mode="play"
               class="btn-cute flex-1 py-2 px-3 text-xs bounce-cute"
             >
-              🎮 Play
+              Play
             </button>
           </div>
         </div>
@@ -61,7 +63,7 @@
         phx-click="back_to_home"
         class="btn-cute bg-white hover:bg-gray-50 border-2 border-boba-orange text-boba-orange py-2 px-6 text-sm"
       >
-        ← Back to Home
+        Back to Home
       </button>
     </div>
 

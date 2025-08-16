@@ -104,7 +104,7 @@ defmodule BobaTalkieWeb.GameLive.MovementHandlers do
     case World.complete_card_challenge(world, voice_command) do
       {:ok, new_world, completed_card} ->
         updated_player = Player.increment_completed_challenges(player)
-        message = "🎉 Card completed: '#{completed_card.template}'! #{get_completion_status(new_world)}"
+        message = "Card completed: '#{completed_card.template}'! #{get_completion_status(new_world)}"
         DebugLogger.game_debug("Card completed", %{template: completed_card.template})
         {new_world, updated_player, message}
       
@@ -116,7 +116,7 @@ defmodule BobaTalkieWeb.GameLive.MovementHandlers do
 
   defp handle_help(world, player) do
     help_text = """
-    🎮 BobaTalkie Card Challenge Game:
+    BobaTalkie Card Challenge Game:
     
     Movement Commands:
     • "north/south/east/west" or "up/down/left/right" - Move 1 step
@@ -319,7 +319,7 @@ defmodule BobaTalkieWeb.GameLive.MovementHandlers do
   defp get_completion_status(world) do
     {completed, total} = World.get_progress(world)
     if completed == total do
-      "🏆 All cards completed! Game finished!"
+      "All cards completed! Game finished!"
     else
       "#{completed}/#{total} cards completed"
     end

@@ -39,48 +39,16 @@
         </div>
       </div>
 
-      <!-- Voice Setup Section -->
+      <!-- Game Selection Section -->
       <div class="border-t border-boba-orange pt-6 space-y-4">
-        <h3 class="text-lg font-bold text-cute">Voice Setup</h3>
+        <h3 class="text-lg font-bold text-cute">Ready to Start Learning?</h3>
         
-        <!-- Browser Support Check -->
-        <div class="space-y-2">
-          <div class="flex items-center justify-center space-x-2">
-            <%= if @browser_support.media_recorder do %>
-              <div class="w-3 h-3 bg-green-400 rounded-full"></div>
-              <span class="text-boba-green text-sm font-bold">Browser supports voice recording</span>
-            <% else %>
-              <div class="w-3 h-3 bg-red-400 rounded-full"></div>
-              <span class="text-red-400 text-sm font-bold">Browser doesn't support voice recording</span>
-            <% end %>
-          </div>
-        </div>
-
-        <!-- Microphone Test -->
-        <div class="space-y-4">
-          <%= if @microphone_ready do %>
-            <div class="flex items-center justify-center space-x-2">
-              <div class="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
-              <span class="text-boba-green font-bold">Microphone is ready!</span>
-            </div>
-            
-            <button 
-              phx-click="start_game"
-              class="btn-cute w-full py-3 px-6 text-base bounce-cute"
-            >
-              🚀 Start Solo Adventure
-            </button>
-          <% else %>
-            <button 
-              id="mic-test-btn"
-              phx-hook="MicrophoneTest"
-              phx-click="check_microphone"
-              class="btn-cute w-full py-3 px-6 text-base"
-            >
-              🎤 Test Microphone
-            </button>
-          <% end %>
-        </div>
+        <a 
+          href="/maps"
+          class="btn-cute w-full py-3 px-6 text-base bounce-cute block text-center"
+        >
+          🗺️ Select Map & Play
+        </a>
       </div>
 
       <!-- Voice Commands Preview -->

@@ -8,22 +8,22 @@ defmodule BobaTalkieWeb.GameLive.UIHelpers do
   Returns CSS class for different cell types in the game grid
   """
   def cell_class(cell, world \\ nil, position \\ nil) do
-    # Check if player is on an item for special highlighting
-    player_on_item = world && position && world.player_pos == position && Map.has_key?(world.items, position)
-    
-    base_class = case cell do
-      0 -> "bg-gray-800 border-gray-700"      # Wall
-      1 -> "bg-green-500 border-green-400"    # Empty walkable
-      2 -> "bg-blue-500 border-blue-400"      # Player
-      3 -> "bg-yellow-500 border-yellow-400"  # Item
-      _ -> "bg-gray-600 border-gray-500"      # Unknown
-    end
-    
-    # Add special highlighting when player is on an item
-    if player_on_item do
-      "bg-gradient-to-br from-blue-400 to-yellow-400 border-purple-300 ring-2 ring-purple-400 ring-opacity-50"
-    else
-      base_class
+    cond do
+      # Wall cells - no special color
+      cell == 0 ->
+        "!bg-gray-800 !border-gray-700 !border-2"
+      
+      # Player position - orange border (forced with !important)
+      world && position && world.player_pos == position ->
+        "!bg-green-100 !border-orange-500 !border-4"
+      
+      # Interactive object cells (type 3) - green border (forced with !important)
+      cell == 3 ->
+        "!bg-green-100 !border-green-600 !border-4"
+      
+      # Empty walkable cells (type 1)
+      true ->
+        "!bg-green-100 !border-gray-300 !border-2"
     end
   end
 
@@ -107,8 +107,8 @@ defmodule BobaTalkieWeb.GameLive.UIHelpers do
   @doc """
   Get listening indicator icon
   """
-  def listening_indicator(true), do: "🟢"
-  def listening_indicator(false), do: "⚫"
+  def listening_indicator(true), do: "[ON]"
+  def listening_indicator(false), do: "[OFF]"
 
   @doc """
   Format game message with timestamp (optional)
@@ -148,4 +148,23 @@ defmodule BobaTalkieWeb.GameLive.UIHelpers do
     "#{Float.round(confidence * 100, 1)}%"
   end
   def format_confidence(_), do: "N/A"
+
+  @doc """
+  Get discovery message when player is on an emoji object
+  """
+  def get_discovery_message(world) do
+    case Map.get(world.items, world.player_pos) do
+      %{emoji: emoji, type: type} ->
+        "You found a #{emoji} (#{type})!"
+      _ ->
+        nil
+    end
+  end
+
+  @doc """
+  Get effect circle class for objects (removed animation effects)
+  """
+  def get_effect_circle_class(_world, _position) do
+    ""
+  end
 end
