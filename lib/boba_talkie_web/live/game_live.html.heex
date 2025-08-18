@@ -1,5 +1,5 @@
 <div class="bg-euphoric h-screen p-2 overflow-hidden" phx-hook="FloatingClouds" id="game-background">
-  <div class="max-w-6xl mx-auto h-full flex flex-col space-y-2 main-content">
+  <div class="max-w-6xl mx-auto h-full flex flex-col space-y-1 main-content">
     
     <!-- Game Completion Screen -->
     <%= if BobaTalkie.Game.World.game_completed?(@world) do %>
@@ -22,15 +22,15 @@
     <% end %>
     
     <!-- Banner Header -->
-    <div class="flex justify-center items-center mb-3">
+    <div class="flex justify-center items-center mb-2">
       <div class="banner-container">
-        <img src="/images/logo/bobatalkie_banneer.png" alt="BobaTalkie" class="h-20 md:h-24">
+        <img src="/images/logo/bobatalkie_banneer.png" alt="BobaTalkie" class="h-16">
       </div>
     </div>
     
 
     <!-- Main Centered Game Layout -->
-    <div class="grid grid-cols-12 gap-4 flex-1">
+    <div class="grid grid-cols-12 gap-4 flex-1 pb-8">
       
       <!-- Left Sidebar - Quick Commands -->
       <div class="col-span-2 space-y-2">
@@ -78,9 +78,9 @@
       <!-- Center - Main Game Area -->
       <div class="col-span-6 flex flex-col">
         <!-- Voice Recognition Status - Speech Bubble -->
-        <div class="mb-4">
+        <div class="mb-2 h-20 flex items-center justify-center">
           <%= if @listening do %>
-            <div class="speech-bubble p-4 text-center">
+            <div class="speech-bubble p-4 text-center w-full">
               <div class="flex items-center justify-center space-x-2 mb-2">
                 <div class="w-4 h-4 bg-boba-orange rounded-full animate-pulse"></div>
                 <span class="text-boba-orange font-semibold">Listening...</span>
@@ -94,7 +94,7 @@
               <% end %>
             </div>
           <% else %>
-            <div class="speech-bubble p-4 text-center">
+            <div class="speech-bubble p-4 text-center w-full">
               <div class="text-cute">Voice Recognition Ready</div>
               <%= if @last_command do %>
                 <div class="text-boba-orange font-mono text-sm mt-1">
@@ -125,13 +125,13 @@
               <%= for {row, y} <- Enum.with_index(@world.grid) do %>
                 <%= for {cell, x} <- Enum.with_index(row) do %>
                   <div class={[
-                    "grid-cell w-12 h-12 flex items-center justify-center text-xl font-bold rounded-lg",
+                    "grid-cell w-16 h-16 flex items-center justify-center text-xl font-bold rounded-lg relative overflow-visible",
                     cell_class(cell, @world, {x, y})
                   ]} title={"(#{x}, #{y})"}>
                     <%= if {x, y} == @player.position do %>
-                      <img src="/images/character/boba.png" alt="Player" class="character-sprite w-10 h-10">
+                      <img src="/images/character/boba.png" alt="Player" class="character-sprite w-12 h-12 relative z-10">
                     <% else %>
-                      <span class="text-2xl"><%= cell_icon(cell, @world, {x, y}) %></span>
+                      <span class="text-3xl relative z-10 transform hover:scale-110 transition-transform duration-200"><%= cell_icon(cell, @world, {x, y}) %></span>
                     <% end %>
                   </div>
                 <% end %>
@@ -142,12 +142,12 @@
         </div>
 
         <!-- Voice Control Button - Cute Style -->
-        <div class="mt-4">
+        <div class="mt-3 mb-2">
           <button 
             phx-hook="VoiceCapture"
             id="voice-btn"
             class={[
-              "btn-cute w-full py-3 px-4 transition-all duration-200 text-lg",
+              "btn-cute w-full py-2 px-4 transition-all duration-200 text-base",
               if @listening do
                 "animate-pulse wiggle"
               else
