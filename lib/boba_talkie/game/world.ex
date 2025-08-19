@@ -171,7 +171,7 @@ defmodule BobaTalkie.Game.World do
   @doc """
   Creates a new world with default 6x6 grid
   """
-  def new(width \\ 6, height \\ 6, topic \\ "fruits") do
+  def new(width \\ 6, height \\ 6, topic \\ "fruits", learning_language \\ "en") do
     grid = generate_default_map(width, height)
     player_pos = {1, 1}  # Start at position (1,1)
     
@@ -225,8 +225,8 @@ defmodule BobaTalkie.Game.World do
       _ -> place_random_items(grid, width, height, player_pos, @all_fruits_items)  # Default to fruits
     end
     
-    # Generate cards based on actual items in world
-    cards = BobaTalkie.Game.Card.generate_deck(items, topic)
+    # Generate cards based on actual items in world and learning language
+    cards = BobaTalkie.Game.Card.generate_deck(items, topic, learning_language)
     
     %__MODULE__{
       grid: grid_with_items,

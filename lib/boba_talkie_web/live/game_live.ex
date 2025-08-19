@@ -9,14 +9,28 @@ defmodule BobaTalkieWeb.GameLive do
   alias BobaTalkieWeb.GameLive.{VoiceHandlers, MovementHandlers, UIHelpers, StateManager}
 
   @impl true
-  def mount(%{"topic" => topic}, _session, socket) do
-    socket = StateManager.initialize_game_state(socket, topic)
+  def mount(%{"topic" => topic} = params, _session, socket) do
+    interface_language = params["interface_language"] || "en"
+    learning_language = params["learning_language"] || "en"
+    
+    socket = 
+      socket
+      |> assign(:interface_language, interface_language)
+      |> assign(:learning_language, learning_language)
+      |> StateManager.initialize_game_state(topic, learning_language)
     {:ok, socket}
   end
 
-  def mount(_params, _session, socket) do
+  def mount(params, _session, socket) do
     # Default to fruits level for backward compatibility
-    socket = StateManager.initialize_game_state(socket, "fruits")
+    interface_language = params["interface_language"] || "en"
+    learning_language = params["learning_language"] || "en"
+    
+    socket = 
+      socket
+      |> assign(:interface_language, interface_language)
+      |> assign(:learning_language, learning_language)
+      |> StateManager.initialize_game_state("fruits", learning_language)
     {:ok, socket}
   end
 

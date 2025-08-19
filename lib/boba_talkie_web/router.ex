@@ -8,6 +8,7 @@ defmodule BobaTalkieWeb.Router do
     plug :put_root_layout, html: {BobaTalkieWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
+    plug BobaTalkieWeb.LocalePlug
   end
 
   pipeline :api do

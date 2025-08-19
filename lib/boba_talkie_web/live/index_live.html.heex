@@ -1,4 +1,12 @@
 <div class="bg-euphoric h-screen flex items-center justify-center p-2 overflow-hidden" phx-hook="FloatingClouds" id="index-background">
+  <!-- Language Persistence Hook -->
+  <div phx-hook="LanguagePersistence" id="language-persistence" style="display: none;"></div>
+  
+  <!-- Language Selector in top-right corner -->
+  <div class="absolute top-4 right-4 z-20">
+    <.compact_language_selector interface_language={@interface_language} />
+  </div>
+
   <div class="max-w-2xl w-full space-y-4 text-center main-content">
     <!-- Logo/Banner -->
     <div class="space-y-4">
@@ -6,69 +14,69 @@
         <img src="/images/logo/bobatalkie_banneer.png" alt="BobaTalkie" class="h-20 md:h-24">
       </div>
       <p class="text-lg text-cute">
-        Learn languages through voice-controlled gaming
+        <%= gettext("Learn languages through voice-controlled gaming") %>
       </p>
     </div>
 
     <!-- Game Introduction -->
     <div class="card-cute p-4 space-y-4">
       <div class="space-y-4">
-        <h2 class="text-xl font-bold text-cute">How it works</h2>
+        <h2 class="text-xl font-bold text-cute"><%= gettext("How it works") %></h2>
         <div class="grid md:grid-cols-3 gap-6 text-center">
           <div class="tooltip-container space-y-2">
             <div class="character-icon">
               <img src="/images/character/pinky_boba_microphone.png" alt="Pinky Boba Microphone" class="w-32 h-32 mx-auto hover:scale-110 transition-transform duration-200">
             </div>
-            <h3 class="font-semibold text-cute">Speak Commands</h3>
-            <div class="tooltip">Use your voice to control your character</div>
+            <h3 class="font-semibold text-cute"><%= gettext("Speak Commands") %></h3>
+            <div class="tooltip"><%= gettext("Use your voice to control your character") %></div>
           </div>
           <div class="tooltip-container space-y-2">
             <div class="character-icon">
               <img src="/images/character/smart_boba.png" alt="Smart Boba" class="w-28 h-32 mx-auto hover:scale-110 transition-transform duration-200">
             </div>
-            <h3 class="font-semibold text-cute">Navigate World</h3>
-            <div class="tooltip">Move through a 2D grid world</div>
+            <h3 class="font-semibold text-cute"><%= gettext("Navigate World") %></h3>
+            <div class="tooltip"><%= gettext("Move through a 2D grid world") %></div>
           </div>
           <div class="tooltip-container space-y-2">
             <div class="character-icon">
               <img src="/images/character/boba_musclor.png" alt="Boba Musclor" class="w-32 h-32 mx-auto hover:scale-110 transition-transform duration-200">
             </div>
-            <h3 class="font-semibold text-cute">Learn & Improve</h3>
-            <div class="tooltip">Get real-time pronunciation feedback</div>
+            <h3 class="font-semibold text-cute"><%= gettext("Learn & Improve") %></h3>
+            <div class="tooltip"><%= gettext("Get real-time pronunciation feedback") %></div>
           </div>
         </div>
       </div>
 
       <!-- Game Selection Section -->
       <div class="border-t border-boba-orange pt-6 space-y-4">
-        <h3 class="text-lg font-bold text-cute">Ready to Start Learning?</h3>
+        <h3 class="text-lg font-bold text-cute"><%= gettext("Ready to Start Learning?") %></h3>
         
         <a 
           href="/maps"
           class="btn-cute w-full py-3 px-6 text-base bounce-cute block text-center"
         >
-          🗺️ Select Map & Play
+          🗺️ <%= gettext("Select Map & Play") %>
         </a>
       </div>
 
       <!-- Voice Commands Preview -->
       <div class="border-t border-boba-orange pt-6">
-        <h3 class="text-base font-bold text-cute mb-3">Voice Commands You'll Use</h3>
+        <h3 class="text-base font-bold text-cute mb-3"><%= gettext("Voice Commands You'll Use") %></h3>
         <div class="grid grid-cols-2 gap-3 text-sm">
           <div class="bg-boba-orange-10 rounded-lg p-3">
-            <div class="text-cute font-semibold">Movement</div>
+            <div class="text-cute font-semibold"><%= gettext("Movement") %></div>
             <div class="text-cute opacity-80 space-y-1">
-              <div>"go north"</div>
-              <div>"move east"</div>
-              <div>"turn around"</div>
+              <div>"<%= gettext("go north") %>"</div>
+              <div>"<%= gettext("move east") %>"</div>
+              <div>"<%= gettext("turn around") %>"</div>
             </div>
           </div>
           <div class="bg-boba-orange-10 rounded-lg p-3">
-            <div class="text-cute font-semibold">Actions</div>
+            <div class="text-cute font-semibold"><%= gettext("Actions") %></div>
             <div class="text-cute opacity-80 space-y-1">
-              <div>"look around"</div>
-              <div>"pick up item"</div>
-              <div>"help"</div>
+              <div>"<%= gettext("look around") %>"</div>
+              <div>"<%= gettext("pick up item") %>"</div>
+              <div>"<%= gettext("help") %>"</div>
             </div>
           </div>
         </div>
@@ -77,7 +85,7 @@
 
     <!-- Footer -->
     <div class="text-center text-cute text-sm">
-      <p>Built with Phoenix LiveView • Real-time voice recognition</p>
+      <p><%= gettext("Built with Phoenix LiveView • Real-time voice recognition") %></p>
     </div>
   </div>
 </div>

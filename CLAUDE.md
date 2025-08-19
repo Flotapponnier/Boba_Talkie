@@ -8,12 +8,38 @@ This project uses Claude Code with automatic CLAUDE.md loading:
 - ✅ **Phoenix integration**: Understands Elixir/Phoenix toolchain
 - 🔄 **Self-updating**: This file evolves with the codebase
 
-## Current Status: MULTI-LEVEL LANGUAGE LEARNING GAME ✅
-**Phase 3 Complete**: 9-Level Voice-Controlled Learning System
-**Ready for Production**: Complete tutorial and gameplay system with expanded topic-aware content
+## Current Status: MULTI-LANGUAGE VOICE LEARNING PLATFORM ✅
+**Phase 4 Complete**: Full Internationalization with Dual Language System
+**Ready for Production**: Complete tutorial and gameplay system with 9 interface languages and 9 learning languages
 
 ## Project Summary
-Voice-controlled language learning game built with Phoenix LiveView. Players choose from 9 different learning topics, complete tutorials, and play voice-controlled games where they navigate a 2D grid world to complete sentence challenges using proper pronunciation.
+Multi-language voice-controlled language learning platform built with Phoenix LiveView. Players select their interface language and target learning language, choose from 9 different learning topics, complete tutorials, and play voice-controlled games where they navigate a 2D grid world to complete sentence challenges using proper pronunciation.
+
+## Internationalization Architecture ✅
+
+### Dual Language System
+**Interface Language**: Controls the app's UI, navigation, and instructions (what the user sees)
+**Learning Language**: Controls the learning content, vocabulary, and challenges (what the user studies)
+
+### Supported Languages (9 each)
+- 🇺🇸 **English** - en
+- 🇫🇷 **French** - fr  
+- 🇪🇸 **Spanish** - es
+- 🇨🇳 **Chinese** - zh (with pinyin support)
+- 🇷🇺 **Russian** - ru
+- 🇯🇵 **Japanese** - ja
+- 🇮🇹 **Italian** - it
+- 🇸🇦 **Arabic** - ar (RTL support)
+- 🇵🇹 **Portuguese** - pt
+
+### Language Selection & Persistence
+- **Top-right corner**: Interface language selector (compact dropdown with flags)
+- **Map selection page**: Learning language selector (prominent selector for target language)
+- **Browser Storage**: Languages saved to localStorage for session persistence
+- **URL Parameters**: Language state maintained across navigation
+- **Session Persistence**: Preferences survive page reloads and browser restarts
+- **Immediate Translation**: Text changes instantly when language is selected
+- **LocalePlug Integration**: Server-side locale management with Phoenix sessions
 
 ## Game Levels & Content
 **9 Complete Learning Topics**:
@@ -97,23 +123,27 @@ Example - Colors Level:
 ```
 lib/boba_talkie/
 ├── game/
-│   ├── world.ex        # Topic-aware 2D grid system
+│   ├── world.ex        # Multi-language 2D grid system
 │   ├── player.ex       # Player position and actions  
-│   └── card.ex         # Challenge card system with topic templates
+│   └── card.ex         # Learning language-aware challenge system
+├── language_manager.ex # Interface/Learning language separation
+├── content_manager.ex  # Learning content in multiple languages
 └── application.ex
 
 lib/boba_talkie_web/
 ├── live/
-│   ├── index_live.ex           # Landing page with mic setup
-│   ├── map_selection_live.ex   # 4-level topic selection
-│   ├── tutorial_live.ex        # Interactive vocabulary tutorials
-│   ├── game_live.ex            # Topic-aware gameplay
+│   ├── index_live.ex           # Landing page with interface language selector
+│   ├── map_selection_live.ex   # 9-topic selection with dual language selectors
+│   ├── tutorial_live.ex        # Multi-language vocabulary tutorials
+│   ├── game_live.ex            # Learning language-aware gameplay
 │   └── game_livemodules/       # Modular game components
-│       ├── state_manager.ex    # Topic-aware state management
+│       ├── state_manager.ex    # Multi-language state management
 │       ├── voice_handlers.ex   # Voice event processing
 │       ├── movement_handlers.ex # Grid navigation logic
 │       └── ui_helpers.ex       # Template utilities
-└── router.ex                   # Multi-topic routing
+├── components/
+│   └── language_selector.ex   # Dual language selection components
+└── router.ex                   # Multi-language routing
 ```
 
 ### Voice Commands & Gameplay
@@ -124,32 +154,41 @@ lib/boba_talkie_web/
 - "go west" → player.x -= 1
 - "look around" → describe surrounding cells
 
-**Challenge Commands (Topic-Specific):**
-- Stand on object + speak card sentence
-- Example: Stand on 🍎 + say "Eat the apple"
+**Challenge Commands (Learning Language-Specific):**
+- Stand on object + speak card sentence in learning language
+- Example: Stand on 🍎 + say "Mange la pomme" (French) or "Eat the apple" (English)
 - Cards completed → pronunciation score + progress tracking
+- Content adapts based on selected learning language
 
 ## Current Implementation Status
-- ✅ **Complete 4-Level Learning System**
-- ✅ Index page with microphone setup and voice testing
-- ✅ Map selection with 4 beautifully designed level cards
-- ✅ Interactive tutorials with pronunciation guides
-- ✅ Topic-aware 2D grid world system (6x6 with topic-specific objects)
-- ✅ Challenge card system with topic-specific sentence templates
+- ✅ **Complete 9-Topic Multi-Language Learning System**
+- ✅ **Full Internationalization**: 9 interface languages + 9 learning languages
+- ✅ **Complete Translation System**: All UI text translated in 9 languages using Phoenix Gettext
+- ✅ **Language Persistence**: Browser localStorage + URL parameters + Phoenix sessions
+- ✅ **Dual Language Selection**: Interface language (top-right) + Learning language (map page)
+- ✅ Index page with microphone setup and interface language selector
+- ✅ Map selection with 9 beautifully designed topic cards and dual language selectors
+- ✅ Interactive tutorials with multi-language pronunciation guides
+- ✅ Learning language-aware 2D grid world system (6x6 with localized content)
+- ✅ Challenge card system with learning language-specific sentence templates
 - ✅ Player movement with collision detection and voice commands
 - ✅ Real-time LiveView updates and state management
 - ✅ Complete navigation flow: Index → Maps → Tutorial → Game
+- ✅ **Chinese Pinyin Support**: Integrated pronunciation guide system
+- ✅ **Content Management**: Separated interface translations from learning content
 - 🔄 **Ready for Voice Integration**: Deepgram ASR integration
-- ⏳ **Future**: Multiplayer modes and additional topics
+- ⏳ **Future**: Voice recognition in multiple languages, multiplayer modes
 
 ## Ready to Test
 Run `mix phx.server` and visit:
-- **http://localhost:4000** → Landing page with microphone setup
-- **http://localhost:4000/maps** → Choose from 9 learning topics
-- **http://localhost:4000/tutorial/[topic]** → Interactive vocabulary tutorials
-- **http://localhost:4000/game/[topic]** → Voice-controlled gameplay
+- **http://localhost:4000** → Landing page with interface language selector
+- **http://localhost:4000/maps** → Choose learning language + 9 topics
+- **http://localhost:4000/tutorial/[topic]?interface_language=[lang]&learning_language=[lang]** → Multi-language tutorials
+- **http://localhost:4000/game/[topic]?interface_language=[lang]&learning_language=[lang]** → Localized gameplay
 
 **Available Topics**: introduction, fruits, numbers, colors, bakery, animals, restaurant, family, countries
+**Interface Languages**: en, fr, es, zh, ru, ja, it, ar, pt (interface/navigation)
+**Learning Languages**: en, fr, es, zh, ru, ja, it, ar, pt (content/vocabulary)
 
 ## Development Commands (Makefile)
 ```bash
@@ -177,8 +216,42 @@ mix deps.get       # Install dependencies
 
 ## Key Phoenix Files
 - `lib/boba_talkie_web/endpoint.ex` - WebSocket and LiveView configuration
-- `lib/boba_talkie_web/router.ex` - Route definitions
+- `lib/boba_talkie_web/router.ex` - Route definitions with LocalePlug
 - `assets/js/app.js` - Frontend JavaScript entry point
+
+## Translation Architecture
+### File Structure
+```
+lib/boba_talkie/
+├── language_manager.ex        # Interface language definitions with flags
+├── content_manager.ex         # Learning content in different languages
+└── plugs/locale_plug.ex       # Server-side locale management
+
+lib/boba_talkie_web/
+├── components/
+│   └── language_selector.ex   # Dual language selector components
+└── live/
+    ├── language_hook.ex       # LiveView language persistence
+    └── language_session.ex    # Language session utilities
+
+priv/gettext/
+├── [lang]/LC_MESSAGES/
+│   ├── default.po            # Interface translations
+│   └── errors.po             # Error translations
+├── default.pot               # Translation template
+└── [9 languages complete]    # pt, fr, es, zh, ru, ja, it, ar, en
+
+assets/js/hooks/
+└── language_persistence.js   # Browser localStorage integration
+```
+
+### Translation Flow
+1. **User selects language** → JavaScript `LanguagePersistence` hook
+2. **Store in localStorage** → Browser persistence across sessions  
+3. **Redirect with URL params** → `?interface_language=pt&learning_language=fr`
+4. **LocalePlug processes** → Sets Phoenix session + Gettext locale
+5. **LiveView renders** → All `gettext()` calls return translated text
+6. **Language persists** → Across navigation, reloads, and browser restarts
 
 ## Voice Processing Flow
 1. Browser captures audio via MediaRecorder
@@ -270,7 +343,11 @@ GAME_DEBUG=true             # Game logic debugging
 6. **Analytics**: Track learning progress and pronunciation improvement
 
 ## Recent Achievements
-- ✅ **Multi-Level System**: Expanded from single fruit level to 4 complete topics
+- ✅ **Complete Internationalization**: 9 interface languages with full translation system
+- ✅ **Language Persistence**: Browser localStorage + URL parameters + Phoenix sessions
+- ✅ **Dual Language Architecture**: Separate interface and learning language selection
+- ✅ **Translation Infrastructure**: Phoenix Gettext with complete .po files for all languages
+- ✅ **Multi-Level System**: Expanded from single fruit level to 9 complete topics
 - ✅ **Tutorial System**: Interactive vocabulary learning with pronunciations
 - ✅ **Topic-Aware Architecture**: Modular system supporting unlimited topics
 - ✅ **Card Challenge System**: Dynamic sentence completion challenges per topic

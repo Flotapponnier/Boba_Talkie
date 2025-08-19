@@ -1,0 +1,278 @@
+## Chinese translations for BobaTalkie interface
+msgid ""
+msgstr ""
+"Language: zh\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+
+#: lib/boba_talkie_web/live/map_selection_live.html.heex:16
+#, elixir-autogen
+msgid "Choose Your Learning Adventure"
+msgstr "选择您的学习冒险"
+
+#: lib/boba_talkie_web/live/map_selection_live.html.heex:17
+#, elixir-autogen
+msgid "Select a topic to start your voice-controlled journey"
+msgstr "选择一个主题开始您的语音控制之旅"
+
+#: lib/boba_talkie_web/live/map_selection_live.html.heex:84
+#, elixir-autogen
+msgid "Back to Home"
+msgstr "返回主页"
+
+#: lib/boba_talkie_web/live/map_selection_live.html.heex:63
+#, elixir-autogen
+msgid "Learn"
+msgstr "学习"
+
+#: lib/boba_talkie_web/live/map_selection_live.html.heex:71
+#, elixir-autogen
+msgid "Play"
+msgstr "游戏"
+
+#: lib/boba_talkie_web/components/language_selector.ex:19
+#, elixir-autogen
+msgid "Interface Language"
+msgstr "界面语言"
+
+#: lib/boba_talkie_web/components/language_selector.ex:45
+#, elixir-autogen
+msgid "Learning Language"
+msgstr "学习语言"
+
+msgid "Select the language you want to learn"
+msgstr "选择您想学习的语言"
+
+msgid "Quick Commands:"
+msgstr "快速命令："
+
+msgid "Stats"
+msgstr "统计"
+
+#, fuzzy
+msgid "Commands:"
+msgstr "快速命令："
+
+msgid "Score:"
+msgstr ""
+
+msgid "Messages"
+msgstr ""
+
+msgid "Voice Recognition Ready"
+msgstr ""
+
+msgid "Listening..."
+msgstr ""
+
+msgid "Speak a command..."
+msgstr ""
+
+msgid "Last:"
+msgstr ""
+
+msgid "Recording... (Release to stop)"
+msgstr ""
+
+msgid "Hold to Speak (or R)"
+msgstr ""
+
+msgid "Challenges"
+msgstr "挑战"
+
+msgid "Select a card!"
+msgstr ""
+
+# Tutorial interface
+msgid "Tutorial"
+msgstr ""
+
+msgid "Vocabulary"
+msgstr ""
+
+msgid "Practice saying each word"
+msgstr ""
+
+msgid "Continue to Game"
+msgstr ""
+
+msgid "Skip Tutorial"
+msgstr ""
+
+msgid "Congratulations!"
+msgstr "恭喜！"
+
+msgid "You completed all"
+msgstr ""
+
+msgid "cards! Your pronunciation score:"
+msgstr ""
+
+msgid "Play Again"
+msgstr ""
+
+# Error messages
+msgid "Invalid selection"
+msgstr ""
+
+msgid "Microphone not available"
+msgstr ""
+
+# Level descriptions
+msgid "Learn basic phrases to introduce yourself"
+msgstr ""
+
+msgid "Discover fruits and food vocabulary"
+msgstr ""
+
+msgid "Practice counting and number vocabulary"
+msgstr ""
+
+msgid "Learn colors and color descriptions"
+msgstr ""
+
+msgid "Learn bakery items and ordering phrases"
+msgstr ""
+
+msgid "Discover animal vocabulary and descriptions"
+msgstr ""
+
+msgid "Practice ordering food and restaurant phrases"
+msgstr ""
+
+msgid "Learn family relationships and descriptions"
+msgstr ""
+
+msgid "Explore countries, nationalities, and cultures"
+msgstr ""
+
+#: lib/boba_talkie_web/live/index_live.html.heex:17
+#, elixir-autogen
+msgid "Learn languages through voice-controlled gaming"
+msgstr ""
+
+#: lib/boba_talkie_web/live/index_live.html.heex:24
+#, elixir-autogen
+msgid "How it works"
+msgstr ""
+
+#: lib/boba_talkie_web/components/core_components.ex:342
+#: lib/boba_talkie_web/live/index_live.html.heex:75
+#, elixir-autogen, elixir-format
+msgid "Actions"
+msgstr "动作"
+
+#: lib/boba_talkie_web/components/layouts.ex:99
+#: lib/boba_talkie_web/components/layouts.ex:111
+#, elixir-autogen, elixir-format
+msgid "Attempting to reconnect"
+msgstr ""
+
+#: lib/boba_talkie_web/components/layouts.ex:106
+#, elixir-autogen, elixir-format
+msgid "Something went wrong!"
+msgstr ""
+
+#: lib/boba_talkie_web/components/layouts.ex:94
+#, elixir-autogen, elixir-format
+msgid "We can't find the internet"
+msgstr ""
+
+#: lib/boba_talkie_web/components/core_components.ex:74
+#, elixir-autogen, elixir-format
+msgid "close"
+msgstr ""
+
+#: lib/boba_talkie_web/live/index_live.html.heex:88
+#, elixir-autogen, elixir-format
+msgid "Built with Phoenix LiveView • Real-time voice recognition"
+msgstr "使用Phoenix LiveView构建 • 实时语音识别"
+
+#: lib/boba_talkie_web/live/index_live.html.heex:45
+#, elixir-autogen, elixir-format
+msgid "Get real-time pronunciation feedback"
+msgstr "获得实时发音反馈"
+
+#: lib/boba_talkie_web/live/index_live.html.heex:44
+#, elixir-autogen, elixir-format
+msgid "Learn & Improve"
+msgstr "学习和改进"
+
+#: lib/boba_talkie_web/live/index_live.html.heex:38
+#, elixir-autogen, elixir-format
+msgid "Move through a 2D grid world"
+msgstr "在2D网格世界中移动"
+
+#: lib/boba_talkie_web/live/index_live.html.heex:67
+#, elixir-autogen, elixir-format
+msgid "Movement"
+msgstr "移动"
+
+#: lib/boba_talkie_web/live/index_live.html.heex:37
+#, elixir-autogen, elixir-format
+msgid "Navigate World"
+msgstr "导航世界"
+
+#: lib/boba_talkie_web/live/index_live.html.heex:52
+#, elixir-autogen, elixir-format
+msgid "Ready to Start Learning?"
+msgstr "准备开始学习吗？"
+
+#: lib/boba_talkie_web/live/index_live.html.heex:58
+#, elixir-autogen, elixir-format
+msgid "Select Map & Play"
+msgstr "选择地图并游戏"
+
+#: lib/boba_talkie_web/live/index_live.html.heex:30
+#, elixir-autogen, elixir-format
+msgid "Speak Commands"
+msgstr "语音命令"
+
+#: lib/boba_talkie_web/live/index_live.html.heex:31
+#, elixir-autogen, elixir-format
+msgid "Use your voice to control your character"
+msgstr "用声音控制你的角色"
+
+#: lib/boba_talkie_web/live/index_live.html.heex:64
+#, elixir-autogen, elixir-format
+msgid "Voice Commands You'll Use"
+msgstr "你将使用的语音命令"
+
+#: lib/boba_talkie_web/live/index_live.html.heex:69
+#, elixir-autogen, elixir-format
+msgid "go north"
+msgstr "向北走"
+
+#: lib/boba_talkie_web/live/index_live.html.heex:79
+#, elixir-autogen, elixir-format
+msgid "help"
+msgstr "帮助"
+
+#: lib/boba_talkie_web/live/index_live.html.heex:77
+#, elixir-autogen, elixir-format
+msgid "look around"
+msgstr "环顾四周"
+
+#: lib/boba_talkie_web/live/index_live.html.heex:70
+#, elixir-autogen, elixir-format
+msgid "move east"
+msgstr "向东移动"
+
+#: lib/boba_talkie_web/live/index_live.html.heex:78
+#, elixir-autogen, elixir-format
+msgid "pick up item"
+msgstr "拾取物品"
+
+#: lib/boba_talkie_web/live/index_live.html.heex:71
+#, elixir-autogen, elixir-format
+msgid "turn around"
+msgstr "转身"
+
+#: lib/boba_talkie_web/live/map_selection_live.html.heex:46
+#, elixir-autogen, elixir-format
+msgid "Level:"
+msgstr "等级："
+
+#: lib/boba_talkie_web/live/map_selection_live.html.heex:50
+#, elixir-autogen, elixir-format
+msgid "Words:"
+msgstr "词汇："

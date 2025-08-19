@@ -1,12 +1,30 @@
 <div class="bg-euphoric h-screen flex items-center justify-center p-2 overflow-hidden" phx-hook="FloatingClouds" id="map-selection-background">
+  <!-- Language Persistence Hook -->
+  <div phx-hook="LanguagePersistence" id="language-persistence" style="display: none;"></div>
+  
+  <!-- Language Selector in top-right corner -->
+  <div class="absolute top-4 right-4 z-20">
+    <.compact_language_selector interface_language={@interface_language} />
+  </div>
+
   <div class="max-w-4xl w-full space-y-6 text-center main-content">
     <!-- Header -->
     <div class="space-y-4">
       <div class="banner-container flex justify-center">
         <img src="/images/logo/bobatalkie_banneer.png" alt="BobaTalkie" class="h-16 md:h-20">
       </div>
-      <h1 class="text-2xl font-bold text-cute">Choose Your Learning Adventure</h1>
-      <p class="text-lg text-cute opacity-90">Select a topic to start your voice-controlled journey</p>
+      <h1 class="text-2xl font-bold text-cute"><%= gettext("Choose Your Learning Adventure") %></h1>
+      <p class="text-lg text-cute opacity-90"><%= gettext("Select a topic to start your voice-controlled journey") %></p>
+      
+      <!-- Learning Language Selector -->
+      <div class="flex justify-center">
+        <.language_selector 
+          interface_language={@interface_language} 
+          learning_language={@learning_language}
+          show_learning_selector={true}
+          class="bg-white/90 backdrop-blur-sm rounded-lg p-4 border border-white/30"
+        />
+      </div>
     </div>
 
     <!-- Level Selection Cards -->
@@ -25,11 +43,11 @@
           <!-- Level Stats -->
           <div class={"flex justify-center space-x-4 text-xs #{level.text_color} opacity-70"}>
             <div class="flex items-center space-x-1">
-              <span>Level:</span>
+              <span><%= gettext("Level:") %></span>
               <span><%= level.difficulty %></span>
             </div>
             <div class="flex items-center space-x-1">
-              <span>Words:</span>
+              <span><%= gettext("Words:") %></span>
               <span><%= level.vocabulary_count %></span>
             </div>
           </div>
@@ -42,7 +60,7 @@
               phx-value-mode="tutorial"
               class="btn-cute flex-1 bg-white hover:bg-gray-50 border-2 border-current text-current py-2 px-3 text-xs transition-colors"
             >
-              Learn
+              <%= gettext("Learn") %>
             </button>
             <button 
               phx-click="select_level"
@@ -50,7 +68,7 @@
               phx-value-mode="play"
               class="btn-cute flex-1 py-2 px-3 text-xs bounce-cute"
             >
-              Play
+              <%= gettext("Play") %>
             </button>
           </div>
         </div>
@@ -63,7 +81,7 @@
         phx-click="back_to_home"
         class="btn-cute bg-white hover:bg-gray-50 border-2 border-boba-orange text-boba-orange py-2 px-6 text-sm"
       >
-        Back to Home
+        <%= gettext("Back to Home") %>
       </button>
     </div>
 

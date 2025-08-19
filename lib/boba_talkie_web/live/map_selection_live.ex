@@ -1,72 +1,106 @@
 defmodule BobaTalkieWeb.MapSelectionLive do
   use BobaTalkieWeb, :live_view
+  import BobaTalkieWeb.LanguageSelector
+  import Phoenix.LiveView
+  alias BobaTalkieWeb.LanguageSession
+  
+  on_mount BobaTalkieWeb.LanguageHook
 
   @impl true
-  def mount(_params, _session, socket) do
+  def mount(params, session, socket) do
+    interface_language = LanguageSession.get_interface_language(params, session, socket.assigns)
+    learning_language = LanguageSession.get_learning_language(params, session, socket.assigns)
+    
     socket =
       socket
       |> assign(:page_title, "Select Your Adventure - BobaTalkie")
-      |> assign(:levels, get_levels())
+      |> LanguageSession.set_locale_and_assign(interface_language, learning_language)
+      |> assign(:levels, get_levels() |> Enum.map(&translate_level/1))
 
     {:ok, socket}
   end
 
+
+  @impl true
+  def handle_event("change_interface_language", %{"value" => language_code}, socket) do
+    # Use JavaScript to store and reload with new language
+    socket = push_event(socket, "store_and_reload", %{
+      interface_language: language_code, 
+      learning_language: socket.assigns.learning_language
+    })
+    
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("change_learning_language", %{"value" => language_code}, socket) do
+    # Use JavaScript to store and reload with new language
+    socket = push_event(socket, "store_and_reload", %{
+      interface_language: socket.assigns.interface_language, 
+      learning_language: language_code
+    })
+    
+    {:noreply, socket}
+  end
+
   @impl true
   def handle_event("select_level", %{"level" => level, "mode" => mode}, socket) do
+    base_params = LanguageSession.build_language_params(socket.assigns.interface_language, socket.assigns.learning_language)
+    
     case {level, mode} do
       {"introduction", "tutorial"} ->
-        {:noreply, push_navigate(socket, to: ~p"/tutorial/introduction")}
+        {:noreply, push_navigate(socket, to: ~p"/tutorial/introduction?#{base_params}")}
       
       {"introduction", "play"} ->
-        {:noreply, push_navigate(socket, to: ~p"/game/introduction")}
+        {:noreply, push_navigate(socket, to: ~p"/game/introduction?#{base_params}")}
       
       {"fruits", "tutorial"} ->
-        {:noreply, push_navigate(socket, to: ~p"/tutorial/fruits")}
+        {:noreply, push_navigate(socket, to: ~p"/tutorial/fruits?#{base_params}")}
       
       {"fruits", "play"} ->
-        {:noreply, push_navigate(socket, to: ~p"/game/fruits")}
+        {:noreply, push_navigate(socket, to: ~p"/game/fruits?#{base_params}")}
       
       {"numbers", "tutorial"} ->
-        {:noreply, push_navigate(socket, to: ~p"/tutorial/numbers")}
+        {:noreply, push_navigate(socket, to: ~p"/tutorial/numbers?#{base_params}")}
       
       {"numbers", "play"} ->
-        {:noreply, push_navigate(socket, to: ~p"/game/numbers")}
+        {:noreply, push_navigate(socket, to: ~p"/game/numbers?#{base_params}")}
       
       {"colors", "tutorial"} ->
-        {:noreply, push_navigate(socket, to: ~p"/tutorial/colors")}
+        {:noreply, push_navigate(socket, to: ~p"/tutorial/colors?#{base_params}")}
       
       {"colors", "play"} ->
-        {:noreply, push_navigate(socket, to: ~p"/game/colors")}
+        {:noreply, push_navigate(socket, to: ~p"/game/colors?#{base_params}")}
       
       {"bakery", "tutorial"} ->
-        {:noreply, push_navigate(socket, to: ~p"/tutorial/bakery")}
+        {:noreply, push_navigate(socket, to: ~p"/tutorial/bakery?#{base_params}")}
       
       {"bakery", "play"} ->
-        {:noreply, push_navigate(socket, to: ~p"/game/bakery")}
+        {:noreply, push_navigate(socket, to: ~p"/game/bakery?#{base_params}")}
       
       {"animals", "tutorial"} ->
-        {:noreply, push_navigate(socket, to: ~p"/tutorial/animals")}
+        {:noreply, push_navigate(socket, to: ~p"/tutorial/animals?#{base_params}")}
       
       {"animals", "play"} ->
-        {:noreply, push_navigate(socket, to: ~p"/game/animals")}
+        {:noreply, push_navigate(socket, to: ~p"/game/animals?#{base_params}")}
       
       {"restaurant", "tutorial"} ->
-        {:noreply, push_navigate(socket, to: ~p"/tutorial/restaurant")}
+        {:noreply, push_navigate(socket, to: ~p"/tutorial/restaurant?#{base_params}")}
       
       {"restaurant", "play"} ->
-        {:noreply, push_navigate(socket, to: ~p"/game/restaurant")}
+        {:noreply, push_navigate(socket, to: ~p"/game/restaurant?#{base_params}")}
       
       {"family", "tutorial"} ->
-        {:noreply, push_navigate(socket, to: ~p"/tutorial/family")}
+        {:noreply, push_navigate(socket, to: ~p"/tutorial/family?#{base_params}")}
       
       {"family", "play"} ->
-        {:noreply, push_navigate(socket, to: ~p"/game/family")}
+        {:noreply, push_navigate(socket, to: ~p"/game/family?#{base_params}")}
       
       {"countries", "tutorial"} ->
-        {:noreply, push_navigate(socket, to: ~p"/tutorial/countries")}
+        {:noreply, push_navigate(socket, to: ~p"/tutorial/countries?#{base_params}")}
       
       {"countries", "play"} ->
-        {:noreply, push_navigate(socket, to: ~p"/game/countries")}
+        {:noreply, push_navigate(socket, to: ~p"/game/countries?#{base_params}")}
       
       _ ->
         {:noreply, put_flash(socket, :error, "Invalid selection")}
@@ -75,7 +109,17 @@ defmodule BobaTalkieWeb.MapSelectionLive do
 
   @impl true
   def handle_event("back_to_home", _params, socket) do
-    {:noreply, push_navigate(socket, to: ~p"/")}
+    params = LanguageSession.build_language_params(socket.assigns.interface_language, socket.assigns.learning_language)
+    {:noreply, push_navigate(socket, to: ~p"/?#{params}")}
+  end
+
+  # Helper function to translate level data  
+  defp translate_level(level) do
+    %{level | 
+      title: Gettext.gettext(BobaTalkieWeb.Gettext, level.title),
+      description: Gettext.gettext(BobaTalkieWeb.Gettext, level.description),  
+      difficulty: Gettext.gettext(BobaTalkieWeb.Gettext, level.difficulty)
+    }
   end
 
   defp get_levels do
@@ -84,7 +128,7 @@ defmodule BobaTalkieWeb.MapSelectionLive do
         id: "introduction",
         title: "Self-Introduction",
         emoji: "👋",
-        character_image: "/images/character/boba_welcome.jpeg",
+        character_image: "/images/character/boba_welcome.png",
         description: "Learn basic phrases to introduce yourself",
         difficulty: "Beginner",
         vocabulary_count: 15,
@@ -95,7 +139,7 @@ defmodule BobaTalkieWeb.MapSelectionLive do
         id: "fruits",
         title: "Fruits & Food",
         emoji: "🍎",
-        character_image: "/images/character/boba_grocery.jpeg",
+        character_image: "/images/character/boba_grocery.png",
         description: "Discover fruits and food vocabulary",
         difficulty: "Beginner",
         vocabulary_count: 20,
@@ -106,7 +150,7 @@ defmodule BobaTalkieWeb.MapSelectionLive do
         id: "numbers",
         title: "Numbers",
         emoji: "1️⃣",
-        character_image: "/images/character/boba_number.jpeg",
+        character_image: "/images/character/boba_number.png",
         description: "Practice counting and number vocabulary",
         difficulty: "Beginner",
         vocabulary_count: 12,
@@ -117,7 +161,7 @@ defmodule BobaTalkieWeb.MapSelectionLive do
         id: "colors",
         title: "Colors",
         emoji: "🌈",
-        character_image: "/images/character/boba_colour.jpeg",
+        character_image: "/images/character/boba_colour.png",
         description: "Learn colors and color descriptions",
         difficulty: "Beginner",
         vocabulary_count: 16,
@@ -128,7 +172,7 @@ defmodule BobaTalkieWeb.MapSelectionLive do
         id: "bakery",
         title: "Bakery",
         emoji: "🥐",
-        character_image: "/images/character/boba_bakery.jpeg",
+        character_image: "/images/character/boba_bakery.png",
         description: "Learn bakery items and ordering phrases",
         difficulty: "Intermediate",
         vocabulary_count: 10,
@@ -161,7 +205,7 @@ defmodule BobaTalkieWeb.MapSelectionLive do
         id: "family",
         title: "Family",
         emoji: "👨‍👩‍👧‍👦",
-        character_image: "/images/character/boba_family.jpeg",
+        character_image: "/images/character/boba_family.png",
         description: "Learn family relationships and descriptions",
         difficulty: "Intermediate",
         vocabulary_count: 10,
@@ -172,7 +216,7 @@ defmodule BobaTalkieWeb.MapSelectionLive do
         id: "countries",
         title: "Countries",
         emoji: "🇹🇼",
-        character_image: "/images/character/boba_travel.jpeg",
+        character_image: "/images/character/boba_travel.png",
         description: "Explore countries, nationalities, and cultures",
         difficulty: "Intermediate",
         vocabulary_count: 10,

@@ -1,0 +1,323 @@
+## "msgid"s in this file come from POT (.pot) files.
+###
+### Do not add, change, or remove "msgid"s manually here as
+### they're tied to the ones in the corresponding POT file
+### (with the same domain).
+###
+### Use "mix gettext.extract --merge" or "mix gettext.merge"
+### to merge POT files into PO files.
+msgid ""
+msgstr ""
+"Language: pt\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+# Main navigation and titles
+#: lib/boba_talkie_web/live/map_selection_live.html.heex:16
+#, elixir-autogen
+msgid "Choose Your Learning Adventure"
+msgstr "Escolha sua Aventura de Aprendizado"
+
+#: lib/boba_talkie_web/live/map_selection_live.html.heex:17
+#, elixir-autogen
+msgid "Select a topic to start your voice-controlled journey"
+msgstr "Selecione um tópico para iniciar sua jornada controlada por voz"
+
+#: lib/boba_talkie_web/live/map_selection_live.html.heex:84
+#, elixir-autogen
+msgid "Back to Home"
+msgstr "Voltar ao Início"
+
+#: lib/boba_talkie_web/live/map_selection_live.html.heex:63
+#, elixir-autogen
+msgid "Learn"
+msgstr "Aprender"
+
+#: lib/boba_talkie_web/live/map_selection_live.html.heex:71
+#, elixir-autogen
+msgid "Play"
+msgstr "Jogar"
+
+# Language selection
+#: lib/boba_talkie_web/components/language_selector.ex:19
+#, elixir-autogen
+msgid "Interface Language"
+msgstr "Idioma da Interface"
+
+#: lib/boba_talkie_web/components/language_selector.ex:45
+#, elixir-autogen
+msgid "Learning Language"
+msgstr "Idioma de Aprendizado"
+
+msgid "Select the language you want to learn"
+msgstr "Selecione o idioma que deseja aprender"
+
+# Game interface
+msgid "Quick Commands:"
+msgstr "Comandos Rápidos:"
+
+msgid "Stats"
+msgstr "Estatísticas"
+
+msgid "Commands:"
+msgstr "Comandos:"
+
+msgid "Score:"
+msgstr "Pontuação:"
+
+msgid "Messages"
+msgstr "Mensagens"
+
+msgid "Voice Recognition Ready"
+msgstr "Reconhecimento de Voz Pronto"
+
+msgid "Listening..."
+msgstr "Ouvindo..."
+
+msgid "Speak a command..."
+msgstr "Fale um comando..."
+
+msgid "Last:"
+msgstr "Último:"
+
+msgid "Recording... (Release to stop)"
+msgstr "Gravando... (Solte para parar)"
+
+msgid "Hold to Speak (or R)"
+msgstr "Segure para Falar (ou R)"
+
+msgid "Challenges"
+msgstr "Desafios"
+
+msgid "Select a card!"
+msgstr "Selecione um cartão!"
+
+# Tutorial interface
+msgid "Tutorial"
+msgstr "Tutorial"
+
+msgid "Vocabulary"
+msgstr "Vocabulário"
+
+msgid "Practice saying each word"
+msgstr "Pratique dizendo cada palavra"
+
+msgid "Continue to Game"
+msgstr "Continuar para o Jogo"
+
+msgid "Skip Tutorial"
+msgstr "Pular Tutorial"
+
+# Completion messages
+msgid "Congratulations!"
+msgstr "Parabéns!"
+
+msgid "You completed all"
+msgstr "Você completou todos"
+
+msgid "cards! Your pronunciation score:"
+msgstr "cartões! Sua pontuação de pronúncia:"
+
+msgid "Play Again"
+msgstr "Jogar Novamente"
+
+# Error messages
+msgid "Invalid selection"
+msgstr "Seleção inválida"
+
+msgid "Microphone not available"
+msgstr "Microfone não disponível"
+
+# Level descriptions
+msgid "Learn basic phrases to introduce yourself"
+msgstr "Aprenda frases básicas para se apresentar"
+
+msgid "Discover fruits and food vocabulary"
+msgstr "Descubra vocabulário de frutas e comidas"
+
+msgid "Practice counting and number vocabulary"
+msgstr "Pratique contagem e vocabulário de números"
+
+msgid "Learn colors and color descriptions"
+msgstr "Aprenda cores e descrições de cores"
+
+msgid "Learn bakery items and ordering phrases"
+msgstr "Aprenda itens de padaria e frases para pedidos"
+
+msgid "Discover animal vocabulary and descriptions"
+msgstr "Descubra vocabulário de animais e descrições"
+
+msgid "Practice ordering food and restaurant phrases"
+msgstr "Pratique pedidos de comida e frases de restaurante"
+
+msgid "Learn family relationships and descriptions"
+msgstr "Aprenda relacionamentos familiares e descrições"
+
+msgid "Explore countries, nationalities, and cultures"
+msgstr "Explore países, nacionalidades e culturas"
+
+#: lib/boba_talkie_web/live/index_live.html.heex:17
+#, elixir-autogen
+msgid "Learn languages through voice-controlled gaming"
+msgstr "Aprenda idiomas através de jogos controlados por voz"
+
+#: lib/boba_talkie_web/live/index_live.html.heex:24
+#, elixir-autogen
+msgid "How it works"
+msgstr "Como funciona"
+
+#: lib/boba_talkie_web/components/core_components.ex:342
+#: lib/boba_talkie_web/live/index_live.html.heex:75
+#, elixir-autogen, elixir-format
+msgid "Actions"
+msgstr "Ações"
+
+#: lib/boba_talkie_web/components/layouts.ex:99
+#: lib/boba_talkie_web/components/layouts.ex:111
+#, elixir-autogen, elixir-format
+msgid "Attempting to reconnect"
+msgstr ""
+
+#: lib/boba_talkie_web/components/layouts.ex:106
+#, elixir-autogen, elixir-format
+msgid "Something went wrong!"
+msgstr ""
+
+#: lib/boba_talkie_web/components/layouts.ex:94
+#, elixir-autogen, elixir-format
+msgid "We can't find the internet"
+msgstr ""
+
+#: lib/boba_talkie_web/components/core_components.ex:74
+#, elixir-autogen, elixir-format
+msgid "close"
+msgstr ""
+
+#: lib/boba_talkie_web/live/index_live.html.heex:88
+#, elixir-autogen, elixir-format
+msgid "Built with Phoenix LiveView • Real-time voice recognition"
+msgstr "Construído com Phoenix LiveView • Reconhecimento de voz em tempo real"
+
+#: lib/boba_talkie_web/live/index_live.html.heex:45
+#, elixir-autogen, elixir-format
+msgid "Get real-time pronunciation feedback"
+msgstr "Receba feedback de pronúncia em tempo real"
+
+#: lib/boba_talkie_web/live/index_live.html.heex:44
+#, elixir-autogen, elixir-format
+msgid "Learn & Improve"
+msgstr "Aprender e Melhorar"
+
+#: lib/boba_talkie_web/live/index_live.html.heex:38
+#, elixir-autogen, elixir-format
+msgid "Move through a 2D grid world"
+msgstr "Mova-se através de um mundo em grade 2D"
+
+#: lib/boba_talkie_web/live/index_live.html.heex:67
+#, elixir-autogen, elixir-format
+msgid "Movement"
+msgstr "Movimento"
+
+#: lib/boba_talkie_web/live/index_live.html.heex:37
+#, elixir-autogen, elixir-format
+msgid "Navigate World"
+msgstr "Navegar no Mundo"
+
+#: lib/boba_talkie_web/live/index_live.html.heex:52
+#, elixir-autogen, elixir-format
+msgid "Ready to Start Learning?"
+msgstr "Pronto para Começar a Aprender?"
+
+#: lib/boba_talkie_web/live/index_live.html.heex:58
+#, elixir-autogen, elixir-format
+msgid "Select Map & Play"
+msgstr "Selecionar Mapa e Jogar"
+
+#: lib/boba_talkie_web/live/index_live.html.heex:30
+#, elixir-autogen, elixir-format
+msgid "Speak Commands"
+msgstr "Falar Comandos"
+
+#: lib/boba_talkie_web/live/index_live.html.heex:31
+#, elixir-autogen, elixir-format
+msgid "Use your voice to control your character"
+msgstr "Use sua voz para controlar seu personagem"
+
+#: lib/boba_talkie_web/live/index_live.html.heex:64
+#, elixir-autogen, elixir-format
+msgid "Voice Commands You'll Use"
+msgstr "Comandos de Voz que Você Usará"
+
+#: lib/boba_talkie_web/live/index_live.html.heex:69
+#, elixir-autogen, elixir-format
+msgid "go north"
+msgstr "vá para o norte"
+
+#: lib/boba_talkie_web/live/index_live.html.heex:79
+#, elixir-autogen, elixir-format
+msgid "help"
+msgstr "ajuda"
+
+#: lib/boba_talkie_web/live/index_live.html.heex:77
+#, elixir-autogen, elixir-format
+msgid "look around"
+msgstr "olhar ao redor"
+
+#: lib/boba_talkie_web/live/index_live.html.heex:70
+#, elixir-autogen, elixir-format
+msgid "move east"
+msgstr "mover para leste"
+
+#: lib/boba_talkie_web/live/index_live.html.heex:78
+#, elixir-autogen, elixir-format
+msgid "pick up item"
+msgstr "pegar item"
+
+#: lib/boba_talkie_web/live/index_live.html.heex:71
+#, elixir-autogen, elixir-format
+msgid "turn around"
+msgstr "virar"
+
+#: lib/boba_talkie_web/live/map_selection_live.html.heex:46
+#, elixir-autogen, elixir-format
+msgid "Level:"
+msgstr "Nível:"
+
+#: lib/boba_talkie_web/live/map_selection_live.html.heex:50
+#, elixir-autogen, elixir-format
+msgid "Words:"
+msgstr "Palavras:"
+
+# Level difficulties
+msgid "Beginner"
+msgstr "Iniciante"
+
+msgid "Intermediate"
+msgstr "Intermediário"
+
+# Level titles
+msgid "Numbers"
+msgstr "Números"
+
+msgid "Self-Introduction"
+msgstr "Auto-apresentação"
+
+msgid "Fruits & Food"
+msgstr "Frutas e Comida"
+
+msgid "Colors"
+msgstr "Cores"
+
+msgid "Bakery"
+msgstr "Padaria"
+
+msgid "Animals"
+msgstr "Animais"
+
+msgid "Restaurant"
+msgstr "Restaurante"
+
+msgid "Family"
+msgstr "Família"
+
+msgid "Countries"
+msgstr "Países"

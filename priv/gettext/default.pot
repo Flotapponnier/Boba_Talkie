@@ -1,0 +1,279 @@
+## Template file for interface translations
+msgid ""
+msgstr ""
+
+# Main navigation and titles
+#: lib/boba_talkie_web/live/map_selection_live.html.heex:16
+#, elixir-autogen
+msgid "Choose Your Learning Adventure"
+msgstr ""
+
+#: lib/boba_talkie_web/live/map_selection_live.html.heex:17
+#, elixir-autogen
+msgid "Select a topic to start your voice-controlled journey"
+msgstr ""
+
+#: lib/boba_talkie_web/live/map_selection_live.html.heex:84
+#, elixir-autogen
+msgid "Back to Home"
+msgstr ""
+
+#: lib/boba_talkie_web/live/map_selection_live.html.heex:63
+#, elixir-autogen
+msgid "Learn"
+msgstr ""
+
+#: lib/boba_talkie_web/live/map_selection_live.html.heex:71
+#, elixir-autogen
+msgid "Play"
+msgstr ""
+
+# Language selection
+#: lib/boba_talkie_web/components/language_selector.ex:19
+#, elixir-autogen
+msgid "Interface Language"
+msgstr ""
+
+#: lib/boba_talkie_web/components/language_selector.ex:45
+#, elixir-autogen
+msgid "Learning Language"
+msgstr ""
+
+msgid "Select the language you want to learn"
+msgstr ""
+
+# Game interface
+msgid "Quick Commands:"
+msgstr ""
+
+msgid "Stats"
+msgstr ""
+
+msgid "Commands:"
+msgstr ""
+
+msgid "Score:"
+msgstr ""
+
+msgid "Messages"
+msgstr ""
+
+msgid "Voice Recognition Ready"
+msgstr ""
+
+msgid "Listening..."
+msgstr ""
+
+msgid "Speak a command..."
+msgstr ""
+
+msgid "Last:"
+msgstr ""
+
+msgid "Recording... (Release to stop)"
+msgstr ""
+
+msgid "Hold to Speak (or R)"
+msgstr ""
+
+msgid "Challenges"
+msgstr ""
+
+msgid "Select a card!"
+msgstr ""
+
+# Tutorial interface
+msgid "Tutorial"
+msgstr ""
+
+msgid "Vocabulary"
+msgstr ""
+
+msgid "Practice saying each word"
+msgstr ""
+
+msgid "Continue to Game"
+msgstr ""
+
+msgid "Skip Tutorial"
+msgstr ""
+
+# Completion messages
+msgid "Congratulations!"
+msgstr ""
+
+msgid "You completed all"
+msgstr ""
+
+msgid "cards! Your pronunciation score:"
+msgstr ""
+
+msgid "Play Again"
+msgstr ""
+
+# Error messages
+msgid "Invalid selection"
+msgstr ""
+
+msgid "Microphone not available"
+msgstr ""
+
+# Level descriptions
+msgid "Learn basic phrases to introduce yourself"
+msgstr ""
+
+msgid "Discover fruits and food vocabulary"
+msgstr ""
+
+msgid "Practice counting and number vocabulary"
+msgstr ""
+
+msgid "Learn colors and color descriptions"
+msgstr ""
+
+msgid "Learn bakery items and ordering phrases"
+msgstr ""
+
+msgid "Discover animal vocabulary and descriptions"
+msgstr ""
+
+msgid "Practice ordering food and restaurant phrases"
+msgstr ""
+
+msgid "Learn family relationships and descriptions"
+msgstr ""
+
+msgid "Explore countries, nationalities, and cultures"
+msgstr ""
+
+#: lib/boba_talkie_web/live/index_live.html.heex:17
+#, elixir-autogen
+msgid "Learn languages through voice-controlled gaming"
+msgstr ""
+
+#: lib/boba_talkie_web/live/index_live.html.heex:24
+#, elixir-autogen
+msgid "How it works"
+msgstr ""
+
+#: lib/boba_talkie_web/components/core_components.ex:342
+#: lib/boba_talkie_web/live/index_live.html.heex:75
+#, elixir-autogen, elixir-format
+msgid "Actions"
+msgstr ""
+
+#: lib/boba_talkie_web/components/layouts.ex:99
+#: lib/boba_talkie_web/components/layouts.ex:111
+#, elixir-autogen, elixir-format
+msgid "Attempting to reconnect"
+msgstr ""
+
+#: lib/boba_talkie_web/components/layouts.ex:106
+#, elixir-autogen, elixir-format
+msgid "Something went wrong!"
+msgstr ""
+
+#: lib/boba_talkie_web/components/layouts.ex:94
+#, elixir-autogen, elixir-format
+msgid "We can't find the internet"
+msgstr ""
+
+#: lib/boba_talkie_web/components/core_components.ex:74
+#, elixir-autogen, elixir-format
+msgid "close"
+msgstr ""
+
+#: lib/boba_talkie_web/live/index_live.html.heex:88
+#, elixir-autogen, elixir-format
+msgid "Built with Phoenix LiveView • Real-time voice recognition"
+msgstr ""
+
+#: lib/boba_talkie_web/live/index_live.html.heex:45
+#, elixir-autogen, elixir-format
+msgid "Get real-time pronunciation feedback"
+msgstr ""
+
+#: lib/boba_talkie_web/live/index_live.html.heex:44
+#, elixir-autogen, elixir-format
+msgid "Learn & Improve"
+msgstr ""
+
+#: lib/boba_talkie_web/live/index_live.html.heex:38
+#, elixir-autogen, elixir-format
+msgid "Move through a 2D grid world"
+msgstr ""
+
+#: lib/boba_talkie_web/live/index_live.html.heex:67
+#, elixir-autogen, elixir-format
+msgid "Movement"
+msgstr ""
+
+#: lib/boba_talkie_web/live/index_live.html.heex:37
+#, elixir-autogen, elixir-format
+msgid "Navigate World"
+msgstr ""
+
+#: lib/boba_talkie_web/live/index_live.html.heex:52
+#, elixir-autogen, elixir-format
+msgid "Ready to Start Learning?"
+msgstr ""
+
+#: lib/boba_talkie_web/live/index_live.html.heex:58
+#, elixir-autogen, elixir-format
+msgid "Select Map & Play"
+msgstr ""
+
+#: lib/boba_talkie_web/live/index_live.html.heex:30
+#, elixir-autogen, elixir-format
+msgid "Speak Commands"
+msgstr ""
+
+#: lib/boba_talkie_web/live/index_live.html.heex:31
+#, elixir-autogen, elixir-format
+msgid "Use your voice to control your character"
+msgstr ""
+
+#: lib/boba_talkie_web/live/index_live.html.heex:64
+#, elixir-autogen, elixir-format
+msgid "Voice Commands You'll Use"
+msgstr ""
+
+#: lib/boba_talkie_web/live/index_live.html.heex:69
+#, elixir-autogen, elixir-format
+msgid "go north"
+msgstr ""
+
+#: lib/boba_talkie_web/live/index_live.html.heex:79
+#, elixir-autogen, elixir-format
+msgid "help"
+msgstr ""
+
+#: lib/boba_talkie_web/live/index_live.html.heex:77
+#, elixir-autogen, elixir-format
+msgid "look around"
+msgstr ""
+
+#: lib/boba_talkie_web/live/index_live.html.heex:70
+#, elixir-autogen, elixir-format
+msgid "move east"
+msgstr ""
+
+#: lib/boba_talkie_web/live/index_live.html.heex:78
+#, elixir-autogen, elixir-format
+msgid "pick up item"
+msgstr ""
+
+#: lib/boba_talkie_web/live/index_live.html.heex:71
+#, elixir-autogen, elixir-format
+msgid "turn around"
+msgstr ""
+
+#: lib/boba_talkie_web/live/map_selection_live.html.heex:46
+#, elixir-autogen, elixir-format
+msgid "Level:"
+msgstr ""
+
+#: lib/boba_talkie_web/live/map_selection_live.html.heex:50
+#, elixir-autogen, elixir-format
+msgid "Words:"
+msgstr ""

@@ -10,11 +10,11 @@ defmodule BobaTalkieWeb.GameLive.StateManager do
   @doc """
   Initialize game state for a new session
   """
-  def initialize_game_state(socket, topic \\ "fruits") do
-    DebugLogger.live_debug("GameLive mounting with topic: #{topic}")
+  def initialize_game_state(socket, topic \\ "fruits", learning_language \\ "en") do
+    DebugLogger.live_debug("GameLive mounting with topic: #{topic}, learning language: #{learning_language}")
     
-    # Initialize game state with topic-specific content
-    world = World.new(6, 6, topic)
+    # Initialize game state with topic-specific content and learning language
+    world = World.new(6, 6, topic, learning_language)
     player = Player.new()
     
     DebugLogger.game_debug("Game initialized", %{

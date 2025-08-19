@@ -347,25 +347,40 @@ defmodule BobaTalkie.Game.Card do
   @doc """
   Generate a deck of cards based on the actual objects in the world
   """
-  def generate_deck(items, topic \\ "fruits") do
+  def generate_deck(items, topic \\ "fruits", learning_language \\ "en") do
     # Get unique object types from the world
     object_types = items
     |> Map.values()
     |> Enum.map(& &1.type)
     |> Enum.uniq()
     
-    # Get appropriate card templates based on topic
-    card_templates = case topic do
-      "introduction" -> @introduction_card_templates
-      "fruits" -> @fruit_card_templates
-      "numbers" -> @numbers_card_templates
-      "colors" -> @colors_card_templates
-      "bakery" -> @bakery_card_templates
-      "animals" -> @animals_card_templates
-      "restaurant" -> @restaurant_card_templates
-      "family" -> @family_card_templates
-      "countries" -> @countries_card_templates
-      _ -> @fruit_card_templates
+    # Get learning content from ContentManager
+    content = BobaTalkie.ContentManager.get_learning_content(topic, learning_language)
+    
+    # Get appropriate card templates based on topic (fallback to English if content not available)
+    card_templates = if Enum.empty?(content.cards) do
+      case topic do
+        "introduction" -> @introduction_card_templates
+        "fruits" -> @fruit_card_templates
+        "numbers" -> @numbers_card_templates
+        "colors" -> @colors_card_templates
+        "bakery" -> @bakery_card_templates
+        "animals" -> @animals_card_templates
+        "restaurant" -> @restaurant_card_templates
+        "family" -> @family_card_templates
+        "countries" -> @countries_card_templates
+        _ -> @fruit_card_templates
+      end
+    else
+      # Convert content cards to template format
+      Enum.map(content.cards, fn card ->
+        %{
+          template: card.template,
+          description: card.description,
+          applicable_objects: object_types,  # Apply to all available objects for now
+          type: :learning_content
+        }
+      end)
     end
     
     # Create cards that match the available objects
@@ -518,7 +533,7 @@ defmodule BobaTalkie.Game.Card do
       # Fruits
       :apple -> "apple"
       :banana -> "banana" 
-      :orange -> "orange"
+      :orange_fruit -> "orange"
       :grape -> "grape"
       :strawberry -> "strawberry"
       :cherry -> "cherry"
