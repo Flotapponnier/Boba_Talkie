@@ -2,10 +2,6 @@
   <!-- Language Persistence Hook -->
   <div phx-hook="LanguagePersistence" id="language-persistence" style="display: none;"></div>
   
-  <!-- Language Selector in top-right corner -->
-  <div class="absolute top-4 right-4 z-20">
-    <.compact_language_selector interface_language={@interface_language} />
-  </div>
 
   <div class="max-w-4xl w-full space-y-6 text-center main-content">
     <!-- Header -->
@@ -16,15 +12,6 @@
       <h1 class="text-2xl font-bold text-cute"><%= gettext("Choose Your Learning Adventure") %></h1>
       <p class="text-lg text-cute opacity-90"><%= gettext("Select a topic to start your voice-controlled journey") %></p>
       
-      <!-- Learning Language Selector -->
-      <div class="flex justify-center">
-        <.language_selector 
-          interface_language={@interface_language} 
-          learning_language={@learning_language}
-          show_learning_selector={true}
-          class="bg-white/90 backdrop-blur-sm rounded-lg p-4 border border-white/30"
-        />
-      </div>
     </div>
 
     <!-- Level Selection Cards -->

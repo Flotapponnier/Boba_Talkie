@@ -36,4 +36,15 @@ defmodule BobaTalkieWeb.IndexLive do
     
     {:noreply, socket}
   end
+
+  @impl true
+  def handle_event("change_learning_language", %{"value" => language_code}, socket) do
+    # Use JavaScript to store and reload with new language
+    socket = push_event(socket, "store_and_reload", %{
+      interface_language: socket.assigns.interface_language,
+      learning_language: language_code
+    })
+    
+    {:noreply, socket}
+  end
 end

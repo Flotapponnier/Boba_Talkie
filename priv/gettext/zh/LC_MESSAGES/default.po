@@ -311,3 +311,7 @@ msgstr "家庭"
 
 msgid "Countries"
 msgstr "国家"
+
+# Language selection for main page
+msgid "Language I want to learn:"
+msgstr "我想学习的语言："

@@ -321,3 +321,7 @@ msgstr "Famiglia"
 
 msgid "Countries"
 msgstr "Paesi"
+
+# Language selection for main page
+msgid "Language I want to learn:"
+msgstr "Lingua che voglio imparare:"
