@@ -53,107 +53,107 @@ msgid "Commands:"
 msgstr "快速命令："
 
 msgid "Score:"
-msgstr ""
+msgstr "得分："
 
 msgid "Messages"
-msgstr ""
+msgstr "消息"
 
 msgid "Voice Recognition Ready"
-msgstr ""
+msgstr "语音识别就绪"
 
 msgid "Listening..."
-msgstr ""
+msgstr "正在收听..."
 
 msgid "Speak a command..."
-msgstr ""
+msgstr "说一个命令..."
 
 msgid "Last:"
-msgstr ""
+msgstr "最后："
 
 msgid "Recording... (Release to stop)"
-msgstr ""
+msgstr "正在录音...（松开停止）"
 
 msgid "Hold to Speak (or R)"
-msgstr ""
+msgstr "按住说话（或R键）"
 
 msgid "Challenges"
 msgstr "挑战"
 
 msgid "Select a card!"
-msgstr ""
+msgstr "选择一张卡片！"
 
 # Tutorial interface
 msgid "Tutorial"
-msgstr ""
+msgstr "教程"
 
 msgid "Vocabulary"
-msgstr ""
+msgstr "词汇"
 
 msgid "Practice saying each word"
-msgstr ""
+msgstr "练习说每个单词"
 
 msgid "Continue to Game"
-msgstr ""
+msgstr "继续游戏"
 
 msgid "Skip Tutorial"
-msgstr ""
+msgstr "跳过教程"
 
 msgid "Congratulations!"
 msgstr "恭喜！"
 
 msgid "You completed all"
-msgstr ""
+msgstr "你完成了所有"
 
 msgid "cards! Your pronunciation score:"
-msgstr ""
+msgstr "卡片！你的发音得分："
 
 msgid "Play Again"
-msgstr ""
+msgstr "再玩一次"
 
 # Error messages
 msgid "Invalid selection"
-msgstr ""
+msgstr "无效选择"
 
 msgid "Microphone not available"
-msgstr ""
+msgstr "麦克风不可用"
 
 # Level descriptions
 msgid "Learn basic phrases to introduce yourself"
-msgstr ""
+msgstr "学习基本的自我介绍短语"
 
 msgid "Discover fruits and food vocabulary"
-msgstr ""
+msgstr "探索水果和食物词汇"
 
 msgid "Practice counting and number vocabulary"
-msgstr ""
+msgstr "练习计数和数字词汇"
 
 msgid "Learn colors and color descriptions"
-msgstr ""
+msgstr "学习颜色和颜色描述"
 
 msgid "Learn bakery items and ordering phrases"
-msgstr ""
+msgstr "学习烘焙食品和点餐短语"
 
 msgid "Discover animal vocabulary and descriptions"
-msgstr ""
+msgstr "探索动物词汇和描述"
 
 msgid "Practice ordering food and restaurant phrases"
-msgstr ""
+msgstr "练习点餐和餐厅用语"
 
 msgid "Learn family relationships and descriptions"
-msgstr ""
+msgstr "学习家庭关系和描述"
 
 msgid "Explore countries, nationalities, and cultures"
-msgstr ""
+msgstr "探索国家、民族和文化"
 
 #: lib/boba_talkie_web/live/index_live.html.heex:17
 #, elixir-autogen
 msgid "Learn languages through voice-controlled gaming"
-msgstr ""
+msgstr "通过语音控制游戏学习语言"
 
 #: lib/boba_talkie_web/live/index_live.html.heex:24
 #, elixir-autogen
 msgid "How it works"
-msgstr ""
+msgstr "如何使用"
 
 #: lib/boba_talkie_web/components/core_components.ex:342
 #: lib/boba_talkie_web/live/index_live.html.heex:75
@@ -165,22 +165,22 @@ msgstr "动作"
 #: lib/boba_talkie_web/components/layouts.ex:111
 #, elixir-autogen, elixir-format
 msgid "Attempting to reconnect"
-msgstr ""
+msgstr "尝试重新连接"
 
 #: lib/boba_talkie_web/components/layouts.ex:106
 #, elixir-autogen, elixir-format
 msgid "Something went wrong!"
-msgstr ""
+msgstr "出错了！"
 
 #: lib/boba_talkie_web/components/layouts.ex:94
 #, elixir-autogen, elixir-format
 msgid "We can't find the internet"
-msgstr ""
+msgstr "找不到网络连接"
 
 #: lib/boba_talkie_web/components/core_components.ex:74
 #, elixir-autogen, elixir-format
 msgid "close"
-msgstr ""
+msgstr "关闭"
 
 #: lib/boba_talkie_web/live/index_live.html.heex:88
 #, elixir-autogen, elixir-format
@@ -276,3 +276,38 @@ msgstr "等级："
 #, elixir-autogen, elixir-format
 msgid "Words:"
 msgstr "词汇："
+
+# Level difficulty translations
+msgid "Beginner"
+msgstr "初级"
+
+msgid "Intermediate"
+msgstr "中级"
+
+# Level title translations
+msgid "Numbers"
+msgstr "数字"
+
+msgid "Self-Introduction"
+msgstr "自我介绍"
+
+msgid "Fruits & Food"
+msgstr "水果和食物"
+
+msgid "Colors"
+msgstr "颜色"
+
+msgid "Bakery"
+msgstr "烘焙店"
+
+msgid "Animals"
+msgstr "动物"
+
+msgid "Restaurant"
+msgstr "餐厅"
+
+msgid "Family"
+msgstr "家庭"
+
+msgid "Countries"
+msgstr "国家"

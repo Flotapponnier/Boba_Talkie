@@ -279,3 +279,38 @@ msgstr "Niveau :"
 #, elixir-autogen, elixir-format
 msgid "Words:"
 msgstr "Mots :"
+
+# Level difficulties
+msgid "Beginner"
+msgstr "Débutant"
+
+msgid "Intermediate"
+msgstr "Intermédiaire"
+
+# Level titles
+msgid "Numbers"
+msgstr "Nombres"
+
+msgid "Self-Introduction"
+msgstr "Auto-présentation"
+
+msgid "Fruits & Food"
+msgstr "Fruits et Nourriture"
+
+msgid "Colors"
+msgstr "Couleurs"
+
+msgid "Bakery"
+msgstr "Boulangerie"
+
+msgid "Animals"
+msgstr "Animaux"
+
+msgid "Restaurant"
+msgstr "Restaurant"
+
+msgid "Family"
+msgstr "Famille"
+
+msgid "Countries"
+msgstr "Pays"

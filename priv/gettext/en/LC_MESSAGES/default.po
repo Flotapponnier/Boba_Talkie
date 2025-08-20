@@ -129,31 +129,31 @@ msgstr ""
 
 # Level descriptions
 msgid "Learn basic phrases to introduce yourself"
-msgstr ""
+msgstr "Learn basic phrases to introduce yourself"
 
 msgid "Discover fruits and food vocabulary"
-msgstr ""
+msgstr "Discover fruits and food vocabulary"
 
 msgid "Practice counting and number vocabulary"
-msgstr ""
+msgstr "Practice counting and number vocabulary"
 
 msgid "Learn colors and color descriptions"
-msgstr ""
+msgstr "Learn colors and color descriptions"
 
 msgid "Learn bakery items and ordering phrases"
-msgstr ""
+msgstr "Learn bakery items and ordering phrases"
 
 msgid "Discover animal vocabulary and descriptions"
-msgstr ""
+msgstr "Discover animal vocabulary and descriptions"
 
 msgid "Practice ordering food and restaurant phrases"
-msgstr ""
+msgstr "Practice ordering food and restaurant phrases"
 
 msgid "Learn family relationships and descriptions"
-msgstr ""
+msgstr "Learn family relationships and descriptions"
 
 msgid "Explore countries, nationalities, and cultures"
-msgstr ""
+msgstr "Explore countries, nationalities, and cultures"
 
 #: lib/boba_talkie_web/live/index_live.html.heex:17
 #, elixir-autogen
@@ -280,9 +280,44 @@ msgstr ""
 #: lib/boba_talkie_web/live/map_selection_live.html.heex:46
 #, elixir-autogen, elixir-format
 msgid "Level:"
-msgstr ""
+msgstr "Level:"
 
 #: lib/boba_talkie_web/live/map_selection_live.html.heex:50
 #, elixir-autogen, elixir-format
 msgid "Words:"
-msgstr ""
+msgstr "Words:"
+
+# Level difficulties
+msgid "Beginner"
+msgstr "Beginner"
+
+msgid "Intermediate"
+msgstr "Intermediate"
+
+# Level titles
+msgid "Numbers"
+msgstr "Numbers"
+
+msgid "Self-Introduction"
+msgstr "Self-Introduction"
+
+msgid "Fruits & Food"
+msgstr "Fruits & Food"
+
+msgid "Colors"
+msgstr "Colors"
+
+msgid "Bakery"
+msgstr "Bakery"
+
+msgid "Animals"
+msgstr "Animals"
+
+msgid "Restaurant"
+msgstr "Restaurant"
+
+msgid "Family"
+msgstr "Family"
+
+msgid "Countries"
+msgstr "Countries"

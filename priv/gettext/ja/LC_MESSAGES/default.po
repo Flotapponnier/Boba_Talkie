@@ -15,155 +15,155 @@ msgstr ""
 #: lib/boba_talkie_web/live/map_selection_live.html.heex:16
 #, elixir-autogen
 msgid "Choose Your Learning Adventure"
-msgstr ""
+msgstr "学習アドベンチャーを選ぶ"
 
 #: lib/boba_talkie_web/live/map_selection_live.html.heex:17
 #, elixir-autogen
 msgid "Select a topic to start your voice-controlled journey"
-msgstr ""
+msgstr "音声コントロールの旅を始めるためのトピックを選んでください"
 
 #: lib/boba_talkie_web/live/map_selection_live.html.heex:84
 #, elixir-autogen
 msgid "Back to Home"
-msgstr ""
+msgstr "ホームに戻る"
 
 #: lib/boba_talkie_web/live/map_selection_live.html.heex:63
 #, elixir-autogen
 msgid "Learn"
-msgstr ""
+msgstr "学習"
 
 #: lib/boba_talkie_web/live/map_selection_live.html.heex:71
 #, elixir-autogen
 msgid "Play"
-msgstr ""
+msgstr "プレイ"
 
 # Language selection
 #: lib/boba_talkie_web/components/language_selector.ex:19
 #, elixir-autogen
 msgid "Interface Language"
-msgstr ""
+msgstr "インターフェース言語"
 
 #: lib/boba_talkie_web/components/language_selector.ex:45
 #, elixir-autogen
 msgid "Learning Language"
-msgstr ""
+msgstr "学習言語"
 
 msgid "Select the language you want to learn"
-msgstr ""
+msgstr "学習したい言語を選んでください"
 
 # Game interface
 msgid "Quick Commands:"
-msgstr ""
+msgstr "クイックコマンド："
 
 msgid "Stats"
-msgstr ""
+msgstr "統計"
 
 msgid "Commands:"
-msgstr ""
+msgstr "コマンド："
 
 msgid "Score:"
-msgstr ""
+msgstr "スコア："
 
 msgid "Messages"
-msgstr ""
+msgstr "メッセージ"
 
 msgid "Voice Recognition Ready"
-msgstr ""
+msgstr "音声認識準備完了"
 
 msgid "Listening..."
-msgstr ""
+msgstr "聞いています..."
 
 msgid "Speak a command..."
-msgstr ""
+msgstr "コマンドを話してください..."
 
 msgid "Last:"
-msgstr ""
+msgstr "最後："
 
 msgid "Recording... (Release to stop)"
-msgstr ""
+msgstr "録音中...（離すと停止）"
 
 msgid "Hold to Speak (or R)"
-msgstr ""
+msgstr "話すために押し続ける（またはR）"
 
 msgid "Challenges"
-msgstr ""
+msgstr "チャレンジ"
 
 msgid "Select a card!"
-msgstr ""
+msgstr "カードを選んでください！"
 
 # Tutorial interface
 msgid "Tutorial"
-msgstr ""
+msgstr "チュートリアル"
 
 msgid "Vocabulary"
-msgstr ""
+msgstr "語彙"
 
 msgid "Practice saying each word"
-msgstr ""
+msgstr "各単語を練習して下さい"
 
 msgid "Continue to Game"
-msgstr ""
+msgstr "ゲームを続ける"
 
 msgid "Skip Tutorial"
-msgstr ""
+msgstr "チュートリアルをスキップ"
 
 # Completion messages
 msgid "Congratulations!"
-msgstr ""
+msgstr "おめでとうございます！"
 
 msgid "You completed all"
-msgstr ""
+msgstr "すべて完了しました"
 
 msgid "cards! Your pronunciation score:"
-msgstr ""
+msgstr "カード！あなたの発音スコア："
 
 msgid "Play Again"
-msgstr ""
+msgstr "もう一度プレイ"
 
 # Error messages
 msgid "Invalid selection"
-msgstr ""
+msgstr "無効な選択"
 
 msgid "Microphone not available"
-msgstr ""
+msgstr "マイクが利用できません"
 
 # Level descriptions
 msgid "Learn basic phrases to introduce yourself"
-msgstr ""
+msgstr "自己紹介の基本フレーズを学ぶ"
 
 msgid "Discover fruits and food vocabulary"
-msgstr ""
+msgstr "果物や食べ物の語彙を発見する"
 
 msgid "Practice counting and number vocabulary"
-msgstr ""
+msgstr "数え方と数字の語彙を練習する"
 
 msgid "Learn colors and color descriptions"
-msgstr ""
+msgstr "色と色の表現を学ぶ"
 
 msgid "Learn bakery items and ordering phrases"
-msgstr ""
+msgstr "パン屋の商品と注文フレーズを学ぶ"
 
 msgid "Discover animal vocabulary and descriptions"
-msgstr ""
+msgstr "動物の語彙と表現を発見する"
 
 msgid "Practice ordering food and restaurant phrases"
-msgstr ""
+msgstr "料理の注文とレストランフレーズを練習する"
 
 msgid "Learn family relationships and descriptions"
-msgstr ""
+msgstr "家族関係と表現を学ぶ"
 
 msgid "Explore countries, nationalities, and cultures"
-msgstr ""
+msgstr "国、国籍、文化を探索する"
 
 #: lib/boba_talkie_web/live/index_live.html.heex:17
 #, elixir-autogen
 msgid "Learn languages through voice-controlled gaming"
-msgstr ""
+msgstr "音声コントロールゲームで言語を学ぶ"
 
 #: lib/boba_talkie_web/live/index_live.html.heex:24
 #, elixir-autogen
 msgid "How it works"
-msgstr ""
+msgstr "使い方"
 
 #: lib/boba_talkie_web/components/core_components.ex:342
 #: lib/boba_talkie_web/live/index_live.html.heex:75
@@ -175,22 +175,22 @@ msgstr "アクション"
 #: lib/boba_talkie_web/components/layouts.ex:111
 #, elixir-autogen, elixir-format
 msgid "Attempting to reconnect"
-msgstr ""
+msgstr "再接続しようとしています"
 
 #: lib/boba_talkie_web/components/layouts.ex:106
 #, elixir-autogen, elixir-format
 msgid "Something went wrong!"
-msgstr ""
+msgstr "何かが間違っていました！"
 
 #: lib/boba_talkie_web/components/layouts.ex:94
 #, elixir-autogen, elixir-format
 msgid "We can't find the internet"
-msgstr ""
+msgstr "インターネットが見つかりません"
 
 #: lib/boba_talkie_web/components/core_components.ex:74
 #, elixir-autogen, elixir-format
 msgid "close"
-msgstr ""
+msgstr "閉じる"
 
 #: lib/boba_talkie_web/live/index_live.html.heex:88
 #, elixir-autogen, elixir-format
@@ -286,3 +286,38 @@ msgstr "レベル："
 #, elixir-autogen, elixir-format
 msgid "Words:"
 msgstr "単語："
+
+# Level difficulty translations
+msgid "Beginner"
+msgstr "初級"
+
+msgid "Intermediate"
+msgstr "中級"
+
+# Level title translations
+msgid "Numbers"
+msgstr "数字"
+
+msgid "Self-Introduction"
+msgstr "自己紹介"
+
+msgid "Fruits & Food"
+msgstr "果物と食べ物"
+
+msgid "Colors"
+msgstr "色"
+
+msgid "Bakery"
+msgstr "パン屋"
+
+msgid "Animals"
+msgstr "動物"
+
+msgid "Restaurant"
+msgstr "レストラン"
+
+msgid "Family"
+msgstr "家族"
+
+msgid "Countries"
+msgstr "国"
