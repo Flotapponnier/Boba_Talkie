@@ -13,27 +13,25 @@ defmodule BobaTalkieWeb.GameLive do
   on_mount BobaTalkieWeb.LanguageHook
 
   @impl true
-  def mount(%{"topic" => topic} = params, _session, socket) do
-    interface_language = params["interface_language"] || "en"
-    learning_language = params["learning_language"] || "en"
+  def mount(%{"topic" => topic} = params, session, socket) do
+    interface_language = LanguageSession.get_interface_language(params, session, socket.assigns)
+    learning_language = LanguageSession.get_learning_language(params, session, socket.assigns)
     
     socket = 
       socket
-      |> assign(:interface_language, interface_language)
-      |> assign(:learning_language, learning_language)
+      |> LanguageSession.set_locale_and_assign(interface_language, learning_language)
       |> StateManager.initialize_game_state(topic, learning_language)
     {:ok, socket}
   end
 
-  def mount(params, _session, socket) do
+  def mount(params, session, socket) do
     # Default to fruits level for backward compatibility
-    interface_language = params["interface_language"] || "en"
-    learning_language = params["learning_language"] || "en"
+    interface_language = LanguageSession.get_interface_language(params, session, socket.assigns)
+    learning_language = LanguageSession.get_learning_language(params, session, socket.assigns)
     
     socket = 
       socket
-      |> assign(:interface_language, interface_language)
-      |> assign(:learning_language, learning_language)
+      |> LanguageSession.set_locale_and_assign(interface_language, learning_language)
       |> StateManager.initialize_game_state("fruits", learning_language)
     {:ok, socket}
   end

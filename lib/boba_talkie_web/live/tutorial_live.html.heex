@@ -17,7 +17,7 @@
 
     <!-- Vocabulary Card -->
     <div class="card-cute p-6 space-y-6">
-      <% current_item = current_vocabulary_item(@content, @current_item) %>
+      <% current_item = current_vocabulary_item_with_translation(@content, @current_item, @interface_language) %>
       
       <!-- Progress Bar -->
       <div class="space-y-2">
@@ -34,8 +34,16 @@
       <!-- Current Vocabulary Item -->
       <div class="text-center space-y-4">
         <div class="text-8xl"><%= current_item.emoji %></div>
-        <div class="space-y-2">
-          <h2 class="text-3xl font-bold text-cute"><%= current_item.word %></h2>
+        <div class="space-y-3">
+          <!-- Learning Language (main display) -->
+          <div class="space-y-1">
+            <h2 class="text-3xl font-bold text-cute"><%= current_item.word %></h2>
+            
+            <!-- Interface Language Translation (below) -->
+            <%= if current_item.translation do %>
+              <p class="text-lg text-gray-600 italic">(<%= current_item.translation.word %>)</p>
+            <% end %>
+          </div>
           
           <!-- Pronunciation Toggle -->
           <button 
@@ -50,16 +58,37 @@
           </button>
           
           <%= if @show_pronunciation do %>
-            <div class="bg-boba-orange-10 rounded-lg p-3 text-boba-orange font-mono text-lg">
-              /<%= current_item.pronunciation %>/
+            <div class="bg-boba-orange-10 rounded-lg p-3 text-boba-orange font-mono text-lg space-y-1">
+              <div>/<%= current_item.pronunciation %>/</div>
+              <%= if Map.has_key?(current_item, :romanization) do %>
+                <div class="text-sm opacity-80">
+                  <span class="font-semibold">Romanization:</span> <%= current_item.romanization %>
+                </div>
+              <% end %>
             </div>
           <% end %>
         </div>
 
-        <!-- Example Usage -->
-        <div class="bg-blue-50 rounded-lg p-4 border-2 border-blue-200">
-          <h3 class="text-sm font-semibold text-blue-800 mb-2">Example Usage:</h3>
-          <p class="text-blue-700 italic">"<%= current_item.example %>"</p>
+        <!-- Example Usage - Dual Language -->
+        <div class="bg-blue-50 rounded-lg p-4 border-2 border-blue-200 space-y-3">
+          <h3 class="text-sm font-semibold text-blue-800">Example Usage:</h3>
+          
+          <!-- Learning Language Example -->
+          <div class="space-y-1">
+            <p class="text-blue-700 italic font-medium">"<%= current_item.example %>"</p>
+            
+            <!-- Romanization for learning language example -->
+            <%= if Map.has_key?(current_item, :example_romanization) do %>
+              <p class="text-blue-600 text-sm font-mono opacity-70">
+                <span class="font-semibold">Romanization:</span> <%= current_item.example_romanization %>
+              </p>
+            <% end %>
+            
+            <!-- Interface Language Translation of Example -->
+            <%= if current_item.translation && current_item.translation.example do %>
+              <p class="text-blue-600 italic text-sm opacity-80">(<%= current_item.translation.example %>)</p>
+            <% end %>
+          </div>
         </div>
       </div>
 
