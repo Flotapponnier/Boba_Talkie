@@ -39,6 +39,13 @@
           <div class="space-y-1">
             <h2 class="text-3xl font-bold text-cute"><%= current_item.word %></h2>
             
+            <!-- Romanization for main word -->
+            <%= if Map.has_key?(current_item, :romanization) do %>
+              <p class="text-sm text-blue-600 font-mono opacity-80">
+                <span class="font-semibold">Pinyin:</span> <%= current_item.romanization %>
+              </p>
+            <% end %>
+            
             <!-- Interface Language Translation (below) -->
             <%= if current_item.translation do %>
               <p class="text-lg text-gray-600 italic">(<%= current_item.translation.word %>)</p>

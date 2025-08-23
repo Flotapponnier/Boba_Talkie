@@ -598,21 +598,21 @@ defmodule BobaTalkie.ContentManager do
   defp get_introduction_content("zh") do
     %{
       tutorial: [
-        %{id: "intro_hello", word: "你好", emoji: "👋", pronunciation: "nǐ hǎo", pinyin: "nǐ hǎo", meaning: "A greeting", example: "你好，我叫莎拉"},
-        %{id: "intro_name", word: "我叫", emoji: "📛", pronunciation: "wǒ jiào", pinyin: "wǒ jiào", meaning: "My name is", example: "我叫约翰"},
-        %{id: "intro_nice_meet", word: "很高兴见到你", emoji: "🤝", pronunciation: "hěn gāo xìng jiàn dào nǐ", pinyin: "hěn gāo xìng jiàn dào nǐ", meaning: "Nice to meet you", example: "我也很高兴见到你！"},
-        %{id: "intro_thank_you", word: "谢谢", emoji: "🙏", pronunciation: "xiè xie", pinyin: "xiè xie", meaning: "Thank you", example: "谢谢你"}
+        %{id: "intro_hello", word: "你好", emoji: "👋", pronunciation: "nǐ hǎo", romanization: "nǐ hǎo", meaning: "A greeting", example: "你好，我叫莎拉", example_romanization: "nǐ hǎo, wǒ jiào shā lā"},
+        %{id: "intro_name", word: "我叫", emoji: "📛", pronunciation: "wǒ jiào", romanization: "wǒ jiào", meaning: "My name is", example: "我叫约翰", example_romanization: "wǒ jiào yuē hàn"},
+        %{id: "intro_nice_meet", word: "很高兴见到你", emoji: "🤝", pronunciation: "hěn gāo xìng jiàn dào nǐ", romanization: "hěn gāo xìng jiàn dào nǐ", meaning: "Nice to meet you", example: "我也很高兴见到你！", example_romanization: "wǒ yě hěn gāo xìng jiàn dào nǐ!"},
+        %{id: "intro_thank_you", word: "谢谢", emoji: "🙏", pronunciation: "xiè xie", romanization: "xiè xie", meaning: "Thank you", example: "谢谢你", example_romanization: "xiè xie nǐ"}
       ],
       game_objects: [
-        %{id: "intro_hello", emoji: "👋", word: "你好", pronunciation: "nǐ hǎo", pinyin: "nǐ hǎo"},
-        %{id: "intro_name", emoji: "📛", word: "名字", pronunciation: "míng zi", pinyin: "míng zi"},
-        %{id: "intro_nice_meet", emoji: "🤝", word: "见面", pronunciation: "jiàn miàn", pinyin: "jiàn miàn"},
-        %{id: "intro_thank_you", emoji: "🙏", word: "谢谢", pronunciation: "xiè xie", pinyin: "xiè xie"}
+        %{id: "intro_hello", emoji: "👋", word: "你好", pronunciation: "nǐ hǎo", romanization: "nǐ hǎo"},
+        %{id: "intro_name", emoji: "📛", word: "名字", pronunciation: "míng zi", romanization: "míng zi"},
+        %{id: "intro_nice_meet", emoji: "🤝", word: "见面", pronunciation: "jiàn miàn", romanization: "jiàn miàn"},
+        %{id: "intro_thank_you", emoji: "🙏", word: "谢谢", pronunciation: "xiè xie", romanization: "xiè xie"}
       ],
       cards: [
-        %{id: "intro_hello", template: "说_来打招呼", answer: "你好", pinyin: "nǎi hǎo", description: "见面时使用这个问候语"},
-        %{id: "intro_name", template: "我_小明", answer: "叫", pinyin: "jiào", description: "通过说出姓名来介绍自己"},
-        %{id: "intro_nice_meet", template: "_见到你", answer: "很高兴", pinyin: "hěn gāo xìng", description: "介绍后的礼貌回应"}
+        %{id: "intro_hello", template: "说_来打招呼", answer: "你好", romanization: "nǐ hǎo", description: "见面时使用这个问候语"},
+        %{id: "intro_name", template: "我_小明", answer: "叫", romanization: "jiào", description: "通过说出姓名来介绍自己"},
+        %{id: "intro_nice_meet", template: "_见到你", answer: "很高兴", romanization: "hěn gāo xìng", description: "介绍后的礼貌回应"}
       ]
     }
   end
@@ -824,21 +824,21 @@ defmodule BobaTalkie.ContentManager do
   defp get_fruits_content("zh") do
     %{
       tutorial: [
-        %{id: "fruit_apple", word: "苹果", emoji: "🍎", pronunciation: "píng guǒ", pinyin: "píng guǒ", meaning: "红色或绿色的水果", example: "我每天吃一个苹果", example_romanization: "wǒ měi tiān chī yī gè píng guǒ"},
-        %{id: "fruit_banana", word: "香蕉", emoji: "🍌", pronunciation: "xiāng jiāo", pinyin: "xiāng jiāo", meaning: "黄色弯曲的水果", example: "香蕉是黄色的", example_romanization: "xiāng jiāo shì huáng sè de"},
-        %{id: "fruit_orange", word: "橙子", emoji: "🍊", pronunciation: "chéng zi", pinyin: "chéng zi", meaning: "柑橘类水果", example: "橙汁很健康", example_romanization: "chéng zhī hěn jiàn kāng"},
-        %{id: "fruit_grape", word: "葡萄", emoji: "🍇", pronunciation: "pú táo", pinyin: "pú táo", meaning: "小圆水果", example: "紫葡萄很甜", example_romanization: "zǐ pú táo hěn tián"}
+        %{id: "fruit_apple", word: "苹果", emoji: "🍎", pronunciation: "píng guǒ", romanization: "píng guǒ", meaning: "红色或绿色的水果", example: "我每天吃一个苹果", example_romanization: "wǒ měi tiān chī yī gè píng guǒ"},
+        %{id: "fruit_banana", word: "香蕉", emoji: "🍌", pronunciation: "xiāng jiāo", romanization: "xiāng jiāo", meaning: "黄色弯曲的水果", example: "香蕉是黄色的", example_romanization: "xiāng jiāo shì huáng sè de"},
+        %{id: "fruit_orange", word: "橙子", emoji: "🍊", pronunciation: "chéng zi", romanization: "chéng zi", meaning: "柑橘类水果", example: "橙汁很健康", example_romanization: "chéng zhī hěn jiàn kāng"},
+        %{id: "fruit_grape", word: "葡萄", emoji: "🍇", pronunciation: "pú táo", romanization: "pú táo", meaning: "小圆水果", example: "紫葡萄很甜", example_romanization: "zǐ pú táo hěn tián"}
       ],
       game_objects: [
-        %{id: "fruit_apple", emoji: "🍎", word: "苹果", pronunciation: "píng guǒ", pinyin: "píng guǒ"},
-        %{id: "fruit_banana", emoji: "🍌", word: "香蕉", pronunciation: "xiāng jiāo", pinyin: "xiāng jiāo"},
-        %{id: "fruit_orange", emoji: "🍊", word: "橙子", pronunciation: "chéng zi", pinyin: "chéng zi"},
-        %{id: "fruit_grape", emoji: "🍇", word: "葡萄", pronunciation: "pú táo", pinyin: "pú táo"}
+        %{id: "fruit_apple", emoji: "🍎", word: "苹果", pronunciation: "píng guǒ", romanization: "píng guǒ"},
+        %{id: "fruit_banana", emoji: "🍌", word: "香蕉", pronunciation: "xiāng jiāo", romanization: "xiāng jiāo"},
+        %{id: "fruit_orange", emoji: "🍊", word: "橙子", pronunciation: "chéng zi", romanization: "chéng zi"},
+        %{id: "fruit_grape", emoji: "🍇", word: "葡萄", pronunciation: "pú táo", romanization: "pú táo"}
       ],
       cards: [
-        %{id: "fruit_apple", template: "吃_", answer: "苹果", pinyin: "píng guǒ", description: "与水果相关的动作"},
-        %{id: "fruit_banana", template: "_是黄色的", answer: "香蕉", pinyin: "xiāng jiāo", description: "描述水果的颜色"},
-        %{id: "fruit_grape", template: "我喜欢_", answer: "葡萄", pinyin: "pú táo", description: "表达喜好"}
+        %{id: "fruit_apple", template: "吃_", answer: "苹果", romanization: "píng guǒ", description: "与水果相关的动作"},
+        %{id: "fruit_banana", template: "_是黄色的", answer: "香蕉", romanization: "xiāng jiāo", description: "描述水果的颜色"},
+        %{id: "fruit_grape", template: "我喜欢_", answer: "葡萄", romanization: "pú táo", description: "表达喜好"}
       ]
     }
   end
@@ -1004,21 +1004,21 @@ defmodule BobaTalkie.ContentManager do
   defp get_numbers_content("zh") do
     %{
       tutorial: [
-        %{id: "number_one", word: "一", emoji: "1️⃣", pronunciation: "yī", pinyin: "yī", meaning: "数字1", example: "我有一个苹果", example_romanization: "wǒ yǒu yī gè píng guǒ"},
-        %{id: "number_two", word: "二", emoji: "2️⃣", pronunciation: "èr", pinyin: "èr", meaning: "数字2", example: "两只猫在玩", example_romanization: "liǎng zhī māo zài wán"},
-        %{id: "number_three", word: "三", emoji: "3️⃣", pronunciation: "sān", pinyin: "sān", meaning: "数字3", example: "数到三", example_romanization: "shǔ dào sān"},
-        %{id: "number_four", word: "四", emoji: "4️⃣", pronunciation: "sì", pinyin: "sì", meaning: "数字4", example: "汽车有四个轮子", example_romanization: "qì chē yǒu sì gè lún zi"}
+        %{id: "number_one", word: "一", emoji: "1️⃣", pronunciation: "yī", romanization: "yī", meaning: "数字1", example: "我有一个苹果", example_romanization: "wǒ yǒu yī gè píng guǒ"},
+        %{id: "number_two", word: "二", emoji: "2️⃣", pronunciation: "èr", romanization: "èr", meaning: "数字2", example: "两只猫在玩", example_romanization: "liǎng zhī māo zài wán"},
+        %{id: "number_three", word: "三", emoji: "3️⃣", pronunciation: "sān", romanization: "sān", meaning: "数字3", example: "数到三", example_romanization: "shǔ dào sān"},
+        %{id: "number_four", word: "四", emoji: "4️⃣", pronunciation: "sì", romanization: "sì", meaning: "数字4", example: "汽车有四个轮子", example_romanization: "qì chē yǒu sì gè lún zi"}
       ],
       game_objects: [
-        %{id: "number_one", emoji: "1️⃣", word: "一", pronunciation: "yī", pinyin: "yī"},
-        %{id: "number_two", emoji: "2️⃣", word: "二", pronunciation: "èr", pinyin: "èr"},
-        %{id: "number_three", emoji: "3️⃣", word: "三", pronunciation: "sān", pinyin: "sān"},
-        %{id: "number_four", emoji: "4️⃣", word: "四", pronunciation: "sì", pinyin: "sì"}
+        %{id: "number_one", emoji: "1️⃣", word: "一", pronunciation: "yī", romanization: "yī"},
+        %{id: "number_two", emoji: "2️⃣", word: "二", pronunciation: "èr", romanization: "èr"},
+        %{id: "number_three", emoji: "3️⃣", word: "三", pronunciation: "sān", romanization: "sān"},
+        %{id: "number_four", emoji: "4️⃣", word: "四", pronunciation: "sì", romanization: "sì"}
       ],
       cards: [
-        %{id: "number_one", template: "我有_个苹果", answer: "一", pinyin: "yī", description: "数物体"},
-        %{id: "number_two", template: "_只猫在玩", answer: "两", pinyin: "liǎng", description: "数动物"},
-        %{id: "number_three", template: "数到_", answer: "三", pinyin: "sān", description: "基本计数"}
+        %{id: "number_one", template: "我有_个苹果", answer: "一", romanization: "yī", description: "数物体"},
+        %{id: "number_two", template: "_只猫在玩", answer: "两", romanization: "liǎng", description: "数动物"},
+        %{id: "number_three", template: "数到_", answer: "三", romanization: "sān", description: "基本计数"}
       ]
     }
   end
@@ -1205,21 +1205,21 @@ defmodule BobaTalkie.ContentManager do
   defp get_colors_content("zh") do
     %{
       tutorial: [
-        %{id: "color_red", word: "红色", emoji: "🔴", pronunciation: "hóng sè", pinyin: "hóng sè", meaning: "红颜色", example: "玫瑰是红色的", example_romanization: "méi guì shì hóng sè de"},
-        %{id: "color_blue", word: "蓝色", emoji: "🔵", pronunciation: "lán sè", pinyin: "lán sè", meaning: "蓝颜色", example: "天空是蓝色的", example_romanization: "tiān kōng shì lán sè de"},
-        %{id: "color_green", word: "绿色", emoji: "🟢", pronunciation: "lǜ sè", pinyin: "lǜ sè", meaning: "绿颜色", example: "草是绿色的", example_romanization: "cǎo shì lǜ sè de"},
-        %{id: "color_yellow", word: "黄色", emoji: "🟡", pronunciation: "huáng sè", pinyin: "huáng sè", meaning: "黄颜色", example: "太阳是黄色的", example_romanization: "tài yáng shì huáng sè de"}
+        %{id: "color_red", word: "红色", emoji: "🔴", pronunciation: "hóng sè", romanization: "hóng sè", meaning: "红颜色", example: "玫瑰是红色的", example_romanization: "méi guì shì hóng sè de"},
+        %{id: "color_blue", word: "蓝色", emoji: "🔵", pronunciation: "lán sè", romanization: "lán sè", meaning: "蓝颜色", example: "天空是蓝色的", example_romanization: "tiān kōng shì lán sè de"},
+        %{id: "color_green", word: "绿色", emoji: "🟢", pronunciation: "lǜ sè", romanization: "lǜ sè", meaning: "绿颜色", example: "草是绿色的", example_romanization: "cǎo shì lǜ sè de"},
+        %{id: "color_yellow", word: "黄色", emoji: "🟡", pronunciation: "huáng sè", romanization: "huáng sè", meaning: "黄颜色", example: "太阳是黄色的", example_romanization: "tài yáng shì huáng sè de"}
       ],
       game_objects: [
-        %{id: "color_red", emoji: "🔴", word: "红色", pronunciation: "hóng sè", pinyin: "hóng sè"},
-        %{id: "color_blue", emoji: "🔵", word: "蓝色", pronunciation: "lán sè", pinyin: "lán sè"},
-        %{id: "color_green", emoji: "🟢", word: "绿色", pronunciation: "lǜ sè", pinyin: "lǜ sè"},
-        %{id: "color_yellow", emoji: "🟡", word: "黄色", pronunciation: "huáng sè", pinyin: "huáng sè"}
+        %{id: "color_red", emoji: "🔴", word: "红色", pronunciation: "hóng sè", romanization: "hóng sè"},
+        %{id: "color_blue", emoji: "🔵", word: "蓝色", pronunciation: "lán sè", romanization: "lán sè"},
+        %{id: "color_green", emoji: "🟢", word: "绿色", pronunciation: "lǜ sè", romanization: "lǜ sè"},
+        %{id: "color_yellow", emoji: "🟡", word: "黄色", pronunciation: "huáng sè", romanization: "huáng sè"}
       ],
       cards: [
-        %{id: "color_red", template: "玫瑰是_的", answer: "红色", pinyin: "hóng sè", description: "描述花的颜色"},
-        %{id: "color_blue", template: "天空是_的", answer: "蓝色", pinyin: "lán sè", description: "描述天空的颜色"},
-        %{id: "color_green", template: "草是_的", answer: "绿色", pinyin: "lǜ sè", description: "描述植物的颜色"}
+        %{id: "color_red", template: "玫瑰是_的", answer: "红色", romanization: "hóng sè", description: "描述花的颜色"},
+        %{id: "color_blue", template: "天空是_的", answer: "蓝色", romanization: "lán sè", description: "描述天空的颜色"},
+        %{id: "color_green", template: "草是_的", answer: "绿色", romanization: "lǜ sè", description: "描述植物的颜色"}
       ]
     }
   end
@@ -1403,6 +1403,28 @@ defmodule BobaTalkie.ContentManager do
     }
   end
 
+  defp get_bakery_content("zh") do
+    %{
+      tutorial: [
+        %{id: "bakery_bread", word: "面包", emoji: "🍞", pronunciation: "miàn bāo", romanization: "miàn bāo", meaning: "烘焙食品", example: "新鲜面包闻起来很香", example_romanization: "xīn xiān miàn bāo wén qǐ lái hěn xiāng"},
+        %{id: "bakery_croissant", word: "羊角面包", emoji: "🥐", pronunciation: "yáng jiǎo miàn bāo", romanization: "yáng jiǎo miàn bāo", meaning: "法式糕点", example: "黄油法式羊角面包", example_romanization: "huáng yóu fǎ shì yáng jiǎo miàn bāo"},
+        %{id: "bakery_cake", word: "蛋糕", emoji: "🎂", pronunciation: "dàn gāo", romanization: "dàn gāo", meaning: "甜点", example: "带蜡烛的生日蛋糕", example_romanization: "dài là zhú de shēng rì dàn gāo"},
+        %{id: "bakery_cookie", word: "饼干", emoji: "🍪", pronunciation: "bǐng gān", romanization: "bǐng gān", meaning: "甜味烘焙食品", example: "巧克力片饼干", example_romanization: "qiǎo kè lì piàn bǐng gān"}
+      ],
+      game_objects: [
+        %{id: "bakery_bread", emoji: "🍞", word: "面包", pronunciation: "miàn bāo", romanization: "miàn bāo"},
+        %{id: "bakery_croissant", emoji: "🥐", word: "羊角面包", pronunciation: "yáng jiǎo miàn bāo", romanization: "yáng jiǎo miàn bāo"},
+        %{id: "bakery_cake", emoji: "🎂", word: "蛋糕", pronunciation: "dàn gāo", romanization: "dàn gāo"},
+        %{id: "bakery_cookie", emoji: "🍪", word: "饼干", pronunciation: "bǐng gān", romanization: "bǐng gān"}
+      ],
+      cards: [
+        %{id: "bakery_bread", template: "我要新鲜_", answer: "面包", romanization: "miàn bāo", description: "在面包店点餐"},
+        %{id: "bakery_croissant", template: "黄油_", answer: "羊角面包", romanization: "yáng jiǎo miàn bāo", description: "描述糕点"},
+        %{id: "bakery_cake", template: "带蜡烛的生日_", answer: "蛋糕", romanization: "dàn gāo", description: "庆祝食品"}
+      ]
+    }
+  end
+
   defp get_bakery_content(_lang), do: get_bakery_content("en")
   
   # Animals content
@@ -1446,6 +1468,28 @@ defmodule BobaTalkie.ContentManager do
         %{id: "animal_dog", template: "El _ es leal", answer: "perro", description: "Describir características de mascotas"},
         %{id: "animal_cat", template: "El _ duerme al sol", answer: "gato", description: "Describir comportamiento animal"},
         %{id: "animal_rabbit", template: "El _ salta rápidamente", answer: "conejo", description: "Describir movimiento animal"}
+      ]
+    }
+  end
+
+  defp get_animals_content("zh") do
+    %{
+      tutorial: [
+        %{id: "animal_dog", word: "狗", emoji: "🐶", pronunciation: "gǒu", romanization: "gǒu", meaning: "家庭动物", example: "狗是人类最好的朋友", example_romanization: "gǒu shì rén lèi zuì hǎo de péng yǒu"},
+        %{id: "animal_cat", word: "猫", emoji: "🐱", pronunciation: "māo", romanization: "māo", meaning: "家庭宠物", example: "猫在阳光下睡觉", example_romanization: "māo zài yáng guāng xià shuì jiào"},
+        %{id: "animal_rabbit", word: "兔子", emoji: "🐰", pronunciation: "tù zi", romanization: "tù zi", meaning: "小跳跃动物", example: "兔子跳得很快", example_romanization: "tù zi tiào dé hěn kuài"},
+        %{id: "animal_bear", word: "熊", emoji: "🐻", pronunciation: "xióng", romanization: "xióng", meaning: "大型野生动物", example: "棕熊很强壮", example_romanization: "zōng xióng hěn qiáng zhuàng"}
+      ],
+      game_objects: [
+        %{id: "animal_dog", emoji: "🐶", word: "狗", pronunciation: "gǒu", romanization: "gǒu"},
+        %{id: "animal_cat", emoji: "🐱", word: "猫", pronunciation: "māo", romanization: "māo"},
+        %{id: "animal_rabbit", emoji: "🐰", word: "兔子", pronunciation: "tù zi", romanization: "tù zi"},
+        %{id: "animal_bear", emoji: "🐻", word: "熊", pronunciation: "xióng", romanization: "xióng"}
+      ],
+      cards: [
+        %{id: "animal_dog", template: "_很忠诚", answer: "狗", romanization: "gǒu", description: "描述宠物特征"},
+        %{id: "animal_cat", template: "_在阳光下睡觉", answer: "猫", romanization: "māo", description: "描述动物行为"},
+        %{id: "animal_rabbit", template: "_跳得很快", answer: "兔子", romanization: "tù zi", description: "描述动物运动"}
       ]
     }
   end
@@ -1497,6 +1541,28 @@ defmodule BobaTalkie.ContentManager do
     }
   end
 
+  defp get_restaurant_content("zh") do
+    %{
+      tutorial: [
+        %{id: "restaurant_menu", word: "菜单", emoji: "📋", pronunciation: "cài dān", romanization: "cài dān", meaning: "食物选项列表", example: "我可以看看菜单吗？", example_romanization: "wǒ kě yǐ kàn kàn cài dān ma?"},
+        %{id: "restaurant_pizza", word: "比萨饼", emoji: "🍕", pronunciation: "bǐ sà bǐng", romanization: "bǐ sà bǐng", meaning: "意大利菜", example: "我要一片比萨饼", example_romanization: "wǒ yào yī piàn bǐ sà bǐng"},
+        %{id: "restaurant_burger", word: "汉堡", emoji: "🍔", pronunciation: "hàn bǎo", romanization: "hàn bǎo", meaning: "肉类三明治", example: "奶酪汉堡配薯条", example_romanization: "nǎi lào hàn bǎo pèi shǔ tiáo"},
+        %{id: "restaurant_coffee", word: "咖啡", emoji: "☕", pronunciation: "kā fēi", romanization: "kā fēi", meaning: "热饮", example: "热黑咖啡", example_romanization: "rè hēi kā fēi"}
+      ],
+      game_objects: [
+        %{id: "restaurant_menu", emoji: "📋", word: "菜单", pronunciation: "cài dān", romanization: "cài dān"},
+        %{id: "restaurant_pizza", emoji: "🍕", word: "比萨饼", pronunciation: "bǐ sà bǐng", romanization: "bǐ sà bǐng"},
+        %{id: "restaurant_burger", emoji: "🍔", word: "汉堡", pronunciation: "hàn bǎo", romanization: "hàn bǎo"},
+        %{id: "restaurant_coffee", emoji: "☕", word: "咖啡", pronunciation: "kā fēi", romanization: "kā fēi"}
+      ],
+      cards: [
+        %{id: "restaurant_menu", template: "我可以看看_吗？", answer: "菜单", romanization: "cài dān", description: "要求看菜单"},
+        %{id: "restaurant_pizza", template: "我要一片_", answer: "比萨饼", romanization: "bǐ sà bǐng", description: "点餐"},
+        %{id: "restaurant_coffee", template: "热黑_", answer: "咖啡", romanization: "kā fēi", description: "点饮料"}
+      ]
+    }
+  end
+
   defp get_restaurant_content(_lang), do: get_restaurant_content("en")
   
   # Family content
@@ -1544,6 +1610,28 @@ defmodule BobaTalkie.ContentManager do
     }
   end
 
+  defp get_family_content("zh") do
+    %{
+      tutorial: [
+        %{id: "family_mother", word: "妈妈", emoji: "👩", pronunciation: "mā ma", romanization: "mā ma", meaning: "女性父母", example: "我妈妈很善良", example_romanization: "wǒ mā ma hěn shàn liáng"},
+        %{id: "family_father", word: "爸爸", emoji: "👨", pronunciation: "bà ba", romanization: "bà ba", meaning: "男性父母", example: "我爸爸工作很努力", example_romanization: "wǒ bà ba gōng zuò hěn nǔ lì"},
+        %{id: "family_sister", word: "姐妹", emoji: "👧", pronunciation: "jiě mèi", romanization: "jiě mèi", meaning: "女性兄弟姐妹", example: "我有两个姐妹", example_romanization: "wǒ yǒu liǎng gè jiě mèi"},
+        %{id: "family_brother", word: "兄弟", emoji: "👦", pronunciation: "xiōng dì", romanization: "xiōng dì", meaning: "男性兄弟姐妹", example: "我弟弟更年轻", example_romanization: "wǒ dì di gèng nián qīng"}
+      ],
+      game_objects: [
+        %{id: "family_mother", emoji: "👩", word: "妈妈", pronunciation: "mā ma", romanization: "mā ma"},
+        %{id: "family_father", emoji: "👨", word: "爸爸", pronunciation: "bà ba", romanization: "bà ba"},
+        %{id: "family_sister", emoji: "👧", word: "姐妹", pronunciation: "jiě mèi", romanization: "jiě mèi"},
+        %{id: "family_brother", emoji: "👦", word: "兄弟", pronunciation: "xiōng dì", romanization: "xiōng dì"}
+      ],
+      cards: [
+        %{id: "family_mother", template: "我_很善良", answer: "妈妈", romanization: "mā ma", description: "描述家庭成员"},
+        %{id: "family_father", template: "我_工作很努力", answer: "爸爸", romanization: "bà ba", description: "描述家庭成员"},
+        %{id: "family_sister", template: "我有两个_", answer: "姐妹", romanization: "jiě mèi", description: "谈论兄弟姐妹"}
+      ]
+    }
+  end
+
   defp get_family_content(_lang), do: get_family_content("en")
   
   # Countries content
@@ -1587,6 +1675,28 @@ defmodule BobaTalkie.ContentManager do
         %{id: "country_usa", template: "Soy de _", answer: "Estados Unidos", description: "Declarando nacionalidad"},
         %{id: "country_france", template: "_ es famosa por su cocina", answer: "Francia", description: "Describiendo países"},
         %{id: "country_japan", template: "_ tiene flores de cerezo", answer: "Japón", description: "Conocimiento cultural"}
+      ]
+    }
+  end
+
+  defp get_countries_content("zh") do
+    %{
+      tutorial: [
+        %{id: "country_usa", word: "美国", emoji: "🇺🇸", pronunciation: "měi guó", romanization: "měi guó", meaning: "北美国家", example: "美国非常多样化", example_romanization: "měi guó fēi cháng duō yàng huà"},
+        %{id: "country_france", word: "法国", emoji: "🇫🇷", pronunciation: "fǎ guó", romanization: "fǎ guó", meaning: "欧洲国家", example: "法国以美食闻名", example_romanization: "fǎ guó yǐ měi shí wén míng"},
+        %{id: "country_japan", word: "日本", emoji: "🇯🇵", pronunciation: "rì běn", romanization: "rì běn", meaning: "亚洲国家", example: "日本有美丽的樱花", example_romanization: "rì běn yǒu měi lì de yīng huā"},
+        %{id: "country_italy", word: "意大利", emoji: "🇮🇹", pronunciation: "yì dà lì", romanization: "yì dà lì", meaning: "欧洲国家", example: "意大利制作美味的意大利面", example_romanization: "yì dà lì zhì zuò měi wèi de yì dà lì miàn"}
+      ],
+      game_objects: [
+        %{id: "country_usa", emoji: "🇺🇸", word: "美国", pronunciation: "měi guó", romanization: "měi guó"},
+        %{id: "country_france", emoji: "🇫🇷", word: "法国", pronunciation: "fǎ guó", romanization: "fǎ guó"},
+        %{id: "country_japan", emoji: "🇯🇵", word: "日本", pronunciation: "rì běn", romanization: "rì běn"},
+        %{id: "country_italy", emoji: "🇮🇹", word: "意大利", pronunciation: "yì dà lì", romanization: "yì dà lì"}
+      ],
+      cards: [
+        %{id: "country_usa", template: "我来自_", answer: "美国", romanization: "měi guó", description: "声明国籍"},
+        %{id: "country_france", template: "_以美食闻名", answer: "法国", romanization: "fǎ guó", description: "描述国家"},
+        %{id: "country_japan", template: "_有樱花", answer: "日本", romanization: "rì běn", description: "文化知识"}
       ]
     }
   end

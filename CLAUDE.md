@@ -17,7 +17,7 @@ Multi-language voice-controlled language learning platform built with Phoenix Li
 
 ## Internationalization Architecture ✅
 
-### Dual Language System
+### Dual Language System Overview
 **Interface Language**: Controls the app's UI, navigation, and instructions (what the user sees)
 **Learning Language**: Controls the learning content, vocabulary, and challenges (what the user studies)
 
@@ -40,6 +40,217 @@ Multi-language voice-controlled language learning platform built with Phoenix Li
 - **Session Persistence**: Preferences survive page reloads and browser restarts
 - **Immediate Translation**: Text changes instantly when language is selected
 - **LocalePlug Integration**: Server-side locale management with Phoenix sessions
+
+## Multi-Language System Architecture 🏗️
+
+### Core Components
+
+#### 1. ContentManager (`lib/boba_talkie/content_manager.ex`)
+**Central hub for all learning content and translations**
+
+**Learning Content Functions:**
+```elixir
+# Pattern: get_[topic]_content(language_code)
+get_introduction_content("en")  # Returns English introduction content
+get_introduction_content("es")  # Returns Spanish introduction content  
+get_introduction_content("zh")  # Returns Chinese content with pinyin
+get_introduction_content(_lang) # Fallback to English for unsupported languages
+```
+
+**Content Structure:**
+```elixir
+%{
+  tutorial: [  # Tutorial vocabulary items
+    %{
+      id: "animal_dog",                    # Unique identifier
+      word: "狗",                         # Learning language word
+      emoji: "🐶",                        # Visual emoji
+      pronunciation: "gǒu",               # Pronunciation guide
+      romanization: "gǒu",                # Romanization (Chinese: pinyin, Japanese: romanization, Arabic: transliteration)
+      meaning: "家庭动物",                 # Definition in learning language
+      example: "狗是人类最好的朋友",        # Example sentence in learning language
+      example_romanization: "gǒu shì..."  # Example sentence romanization
+    }
+  ],
+  game_objects: [  # Objects that appear in 2D game world
+    %{id: "animal_dog", emoji: "🐶", word: "狗", pronunciation: "gǒu", romanization: "gǒu"}
+  ],
+  cards: [  # Challenge card templates
+    %{id: "animal_dog", template: "_很忠诚", answer: "狗", romanization: "gǒu", description: "描述宠物特征"}
+  ]
+}
+```
+
+**Interface Translation Mapping:**
+```elixir
+# Pattern: get_vocabulary_translations()
+# Maps vocabulary IDs to interface language translations
+%{
+  "animal_dog" => %{
+    "en" => %{word: "Dog", example: "The dog is man's best friend"},
+    "fr" => %{word: "Chien", example: "Le chien est le meilleur ami de l'homme"},  
+    "es" => %{word: "Perro", example: "El perro es el mejor amigo del hombre"},
+    "zh" => %{word: "狗", example: "狗是人类最好的朋友"},
+    "ru" => %{word: "Собака", example: "Собака - лучший друг человека"},
+    # ... all 9 interface languages
+  }
+}
+```
+
+#### 2. Tutorial Display (`lib/boba_talkie_web/live/tutorial_live.ex`)
+**Combines learning content with interface translations**
+
+**Key Function:**
+```elixir
+def current_vocabulary_item_with_translation(content, index, interface_language) do
+  item = Enum.at(content.vocabulary, index)
+  if item && Map.has_key?(item, :id) do
+    # Get interface language translation for this vocabulary ID
+    translation = BobaTalkie.ContentManager.get_vocabulary_translation(item.id, interface_language)
+    Map.put(item, :translation, translation)
+  else
+    item
+  end
+end
+```
+
+**Template Display Logic (`tutorial_live.html.heex`):**
+```heex
+<!-- Main vocabulary word (learning language) -->
+<h2 class="text-3xl font-bold text-cute"><%= current_item.word %></h2>
+
+<!-- Romanization for main word (pinyin, etc.) -->
+<%= if Map.has_key?(current_item, :romanization) do %>
+  <p class="text-sm text-blue-600 font-mono opacity-80">
+    <span class="font-semibold">Pinyin:</span> <%= current_item.romanization %>
+  </p>
+<% end %>
+
+<!-- Interface language translation -->
+<%= if current_item.translation do %>
+  <p class="text-lg text-gray-600 italic">(<%= current_item.translation.word %>)</p>
+<% end %>
+
+<!-- Example with romanization -->
+<p class="text-blue-700 italic font-medium">"<%= current_item.example %>"</p>
+<%= if Map.has_key?(current_item, :example_romanization) do %>
+  <p class="text-blue-600 text-sm font-mono opacity-70">
+    <span class="font-semibold">Romanization:</span> <%= current_item.example_romanization %>
+  </p>
+<% end %>
+
+<!-- Interface language translation of example -->
+<%= if current_item.translation && current_item.translation.example do %>
+  <p class="text-blue-600 italic text-sm opacity-80">(<%= current_item.translation.example %>)</p>
+<% end %>
+```
+
+### Language Implementation Status
+
+#### ✅ **Fully Implemented Learning Languages**
+**English** (`"en"`):
+- Complete content for all 9 topics
+- Base language for fallbacks
+
+**Spanish** (`"es"`):
+- Complete content for all topics: introduction, fruits, numbers, colors, bakery, animals, restaurant, family, countries
+- Standard Latin pronunciation guides
+
+**Chinese** (`"zh"`):
+- Complete content for all topics with full pinyin support
+- `romanization` field with pinyin for main words
+- `example_romanization` field with pinyin for example sentences
+- Standardized to use `romanization` (not `pinyin`) for template compatibility
+
+#### 🔄 **Partially Implemented Learning Languages**
+**French** (`"fr"`): Has some existing content but needs completion
+**Italian** (`"it"`): Has some existing content but needs completion  
+**Japanese** (`"ja"`): Has some existing content but needs romanization standardization
+**Russian** (`"ru"`): Has some existing content but needs romanization support
+**Arabic** (`"ar"`): Has some existing content but needs romanization support
+**Portuguese** (`"pt"`): Has some existing content but needs completion
+
+#### ✅ **Interface Translations (All Complete)**
+All 9 interface languages have complete translation mappings for every vocabulary ID in the system.
+
+### Adding New Learning Language Support
+
+#### Step 1: Create Content Function
+```elixir
+# In ContentManager, add new function for each topic
+defp get_animals_content("ja") do  # Japanese example
+  %{
+    tutorial: [
+      %{
+        id: "animal_dog", 
+        word: "犬", 
+        emoji: "🐶", 
+        pronunciation: "inu", 
+        romanization: "inu",                    # REQUIRED for template display
+        meaning: "家庭の動物", 
+        example: "犬は人間の最高の友達です",
+        example_romanization: "inu wa ningen no saikou no tomodachi desu"  # REQUIRED for template display
+      }
+    ],
+    game_objects: [
+      %{id: "animal_dog", emoji: "🐶", word: "犬", pronunciation: "inu", romanization: "inu"}
+    ],
+    cards: [
+      %{id: "animal_dog", template: "_は忠実です", answer: "犬", romanization: "inu", description: "ペットの特徴を説明"}
+    ]
+  }
+end
+```
+
+#### Step 2: Add All Topics
+Must create content functions for all 9 topics:
+- `get_introduction_content("ja")`
+- `get_fruits_content("ja")`  
+- `get_numbers_content("ja")`
+- `get_colors_content("ja")`
+- `get_bakery_content("ja")`
+- `get_animals_content("ja")`
+- `get_restaurant_content("ja")`
+- `get_family_content("ja")`
+- `get_countries_content("ja")`
+
+#### Step 3: Romanization Requirements
+For languages requiring romanization support (Chinese, Japanese, Arabic, Russian):
+- **MUST** include `romanization` field in tutorial items (for main word display)
+- **MUST** include `example_romanization` field in tutorial items (for example sentences)
+- **MUST** include `romanization` field in cards (for challenge answers)
+
+#### Step 4: Template Automatic Support
+Once the content functions exist with proper `romanization` fields, the template automatically displays:
+- Main word with romanization below it
+- Example sentences with romanization in pronunciation section
+- No code changes needed in templates or LiveView modules
+
+### Debugging Multi-Language Issues
+
+#### Common Problems:
+1. **Vocabulary shows English instead of chosen learning language**
+   - Check if content function exists: `get_[topic]_content(language_code)`
+   - Verify fallback is working: `get_[topic]_content(_lang)` should return English
+
+2. **Missing pinyin/romanization for main word**
+   - Ensure `romanization` field exists in tutorial items
+   - Check template looks for `Map.has_key?(current_item, :romanization)`
+
+3. **Missing interface language translations**
+   - Verify vocabulary ID exists in `get_vocabulary_translations()` mapping
+   - Check all 9 interface languages have translations for that ID
+
+4. **Inconsistent romanization display**
+   - Ensure all content uses `romanization` field (not `pinyin` or other variants)
+   - Template only displays `romanization` field
+
+### File Locations
+- **Content Management**: `lib/boba_talkie/content_manager.ex`
+- **Tutorial Logic**: `lib/boba_talkie_web/live/tutorial_live.ex`  
+- **Tutorial Template**: `lib/boba_talkie_web/live/tutorial_live.html.heex`
+- **Language Selection**: `lib/boba_talkie_web/components/language_selector.ex`
+- **Language Persistence**: `lib/boba_talkie_web/live/language_hook.ex`
 
 ## Game Levels & Content
 **9 Complete Learning Topics**:
