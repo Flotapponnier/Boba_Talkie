@@ -1,8 +1,14 @@
 defmodule BobaTalkieWeb.TutorialLive do
   use BobaTalkieWeb, :live_view
+  import BobaTalkieWeb.LanguageSelector
+  alias BobaTalkieWeb.LanguageSession
+  
+  on_mount BobaTalkieWeb.LanguageHook
 
   @impl true
-  def mount(%{"topic" => topic}, _session, socket) do
+  def mount(%{"topic" => topic}, session, socket) do
+    interface_language = LanguageSession.get_interface_language(%{}, session, socket.assigns)
+    learning_language = LanguageSession.get_learning_language(%{}, session, socket.assigns)
     case get_tutorial_content(topic) do
       nil ->
         {:ok, 
@@ -18,6 +24,7 @@ defmodule BobaTalkieWeb.TutorialLive do
           |> assign(:content, content)
           |> assign(:current_item, 0)
           |> assign(:show_pronunciation, false)
+          |> LanguageSession.set_locale_and_assign(interface_language, learning_language)
 
         {:ok, socket}
     end
@@ -61,6 +68,17 @@ defmodule BobaTalkieWeb.TutorialLive do
   @impl true
   def handle_event("back_to_maps", _params, socket) do
     {:noreply, push_navigate(socket, to: ~p"/maps")}
+  end
+
+  @impl true
+  def handle_event("change_interface_language", %{"value" => language_code}, socket) do
+    # Use JavaScript to store and reload with new language
+    socket = push_event(socket, "store_and_reload", %{
+      interface_language: language_code, 
+      learning_language: socket.assigns.learning_language
+    })
+    
+    {:noreply, socket}
   end
 
   defp get_tutorial_content("introduction") do

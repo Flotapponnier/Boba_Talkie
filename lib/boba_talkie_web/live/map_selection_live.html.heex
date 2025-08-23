@@ -2,6 +2,10 @@
   <!-- Language Persistence Hook -->
   <div phx-hook="LanguagePersistence" id="language-persistence" style="display: none;"></div>
   
+  <!-- Interface Language Selector in top-right corner -->
+  <div class="absolute top-4 right-4 z-20">
+    <.compact_language_selector interface_language={@interface_language} />
+  </div>
 
   <div class="max-w-4xl w-full space-y-6 text-center main-content">
     <!-- Header -->

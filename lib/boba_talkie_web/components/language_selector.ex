@@ -5,6 +5,7 @@ defmodule BobaTalkieWeb.LanguageSelector do
   attr :interface_language, :string, default: "en"
   attr :learning_language, :string, default: "en"  
   attr :show_learning_selector, :boolean, default: false
+  attr :show_interface_selector, :boolean, default: true
   attr :class, :string, default: ""
   
   def language_selector(assigns) do
@@ -13,30 +14,32 @@ defmodule BobaTalkieWeb.LanguageSelector do
     
     ~H"""
     <div class={"language-selectors #{@class}"}>
-      <!-- Interface Language Selector -->
-      <div class="relative inline-block">
-        <div class="flex items-center space-x-2 text-sm">
-          <span class="text-cute font-medium"><%= gettext("Interface Language") %></span>
-          <form phx-change="change_interface_language" class="relative">
-            <select 
-              name="value"
-              class="appearance-none bg-white border border-gray-300 rounded-lg px-3 py-1 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-boba-orange focus:border-transparent cursor-pointer"
-              value={@interface_language}
-            >
-              <%= for {code, lang} <- @interface_languages do %>
-                <option value={code} selected={code == @interface_language}>
-                  <%= lang.flag %> <%= lang.name %>
-                </option>
-              <% end %>
-            </select>
-            <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-              </svg>
-            </div>
-          </form>
+      <!-- Interface Language Selector (only shown when specified) -->
+      <%= if @show_interface_selector do %>
+        <div class="relative inline-block">
+          <div class="flex items-center space-x-2 text-sm">
+            <span class="text-cute font-medium"><%= gettext("Interface Language") %></span>
+            <form phx-change="change_interface_language" class="relative">
+              <select 
+                name="value"
+                class="appearance-none bg-white border border-gray-300 rounded-lg px-3 py-1 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-boba-orange focus:border-transparent cursor-pointer"
+                value={@interface_language}
+              >
+                <%= for {code, lang} <- @interface_languages do %>
+                  <option value={code} selected={code == @interface_language}>
+                    <%= lang.flag %> <%= lang.name %>
+                  </option>
+                <% end %>
+              </select>
+              <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+            </form>
+          </div>
         </div>
-      </div>
+      <% end %>
       
       <!-- Learning Language Selector (only shown when specified) -->
       <%= if @show_learning_selector do %>
@@ -64,6 +67,38 @@ defmodule BobaTalkieWeb.LanguageSelector do
           </div>
         </div>
       <% end %>
+    </div>
+    """
+  end
+
+  attr :learning_language, :string, default: "en"
+  attr :class, :string, default: ""
+  
+  def learning_language_selector(assigns) do
+    assigns = assign(assigns, :learning_languages, BobaTalkie.LanguageManager.get_learning_languages())
+    
+    ~H"""
+    <div class={"learning-language-selector #{@class}"}>
+      <div class="relative inline-block">
+        <form phx-change="change_learning_language" class="relative">
+          <select 
+            name="value"
+            class="appearance-none bg-white border border-gray-300 rounded-lg px-3 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-boba-blue focus:border-transparent cursor-pointer w-full"
+            value={@learning_language}
+          >
+            <%= for {code, lang} <- @learning_languages do %>
+              <option value={code} selected={code == @learning_language}>
+                <%= lang.flag %> <%= lang.name %>
+              </option>
+            <% end %>
+          </select>
+          <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+        </form>
+      </div>
     </div>
     """
   end

@@ -1,0 +1,1703 @@
+defmodule BobaTalkieWeb.TutorialLive do
+  use BobaTalkieWeb, :live_view
+  import BobaTalkieWeb.LanguageSelector
+  alias BobaTalkieWeb.LanguageSession
+  alias BobaTalkieWeb.TutorialLive.VocabularyTranslator
+  alias BobaTalkieWeb.TutorialLive.ExampleTranslator
+
+  on_mount BobaTalkieWeb.LanguageHook
+
+  @impl true
+  def mount(%{"topic" => topic}, session, socket) do
+    _interface_language = LanguageSession.get_interface_language(%{}, session, socket.assigns)
+    _learning_language = LanguageSession.get_learning_language(%{}, session, socket.assigns)
+    
+    case get_tutorial_content(topic) do
+      nil ->
+        {:ok, 
+         socket
+         |> put_flash(:error, "Tutorial not found")
+         |> push_navigate(to: ~p"/maps")}
+      
+      content ->
+        # Adapt content based on learning language
+        adapted_content = adapt_content_to_learning_language(content, socket.assigns.learning_language)
+        
+        socket =
+          socket
+          |> assign(:page_title, "Tutorial: #{adapted_content.title} - BobaTalkie")
+          |> assign(:topic, topic)
+          |> assign(:content, adapted_content)
+          |> assign(:current_item, 0)
+          |> assign(:show_pronunciation, false)
+
+        {:ok, socket}
+    end
+  end
+
+  @impl true
+  def handle_event("next_item", _params, socket) do
+    max_items = length(socket.assigns.content.vocabulary) - 1
+    current = min(socket.assigns.current_item + 1, max_items)
+    {:noreply, assign(socket, :current_item, current)}
+  end
+
+  @impl true
+  def handle_event("prev_item", _params, socket) do
+    current = max(socket.assigns.current_item - 1, 0)
+    {:noreply, assign(socket, :current_item, current)}
+  end
+
+  @impl true
+  def handle_event("toggle_pronunciation", _params, socket) do
+    {:noreply, assign(socket, :show_pronunciation, !socket.assigns.show_pronunciation)}
+  end
+
+  @impl true
+  def handle_event("start_game", _params, socket) do
+    params = LanguageSession.build_language_params(socket.assigns.interface_language, socket.assigns.learning_language)
+    
+    game_path = case socket.assigns.topic do
+      "introduction" -> ~p"/game/introduction?#{params}"
+      "fruits" -> ~p"/game/fruits?#{params}"
+      "numbers" -> ~p"/game/numbers?#{params}"
+      "colors" -> ~p"/game/colors?#{params}"
+      "bakery" -> ~p"/game/bakery?#{params}"
+      "animals" -> ~p"/game/animals?#{params}"
+      "restaurant" -> ~p"/game/restaurant?#{params}"
+      "family" -> ~p"/game/family?#{params}"
+      "countries" -> ~p"/game/countries?#{params}"
+      _ -> ~p"/maps?#{params}"
+    end
+    {:noreply, push_navigate(socket, to: game_path)}
+  end
+
+  @impl true
+  def handle_event("back_to_maps", _params, socket) do
+    params = LanguageSession.build_language_params(socket.assigns.interface_language, socket.assigns.learning_language)
+    {:noreply, push_navigate(socket, to: ~p"/maps?#{params}")}
+  end
+
+  @impl true
+  def handle_event("change_interface_language", %{"value" => language_code}, socket) do
+    # Use JavaScript to store and reload with new language
+    socket = push_event(socket, "store_and_reload", %{
+      interface_language: language_code, 
+      learning_language: socket.assigns.learning_language
+    })
+    
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("change_learning_language", %{"value" => language_code}, socket) do
+    # Use JavaScript to store and reload with new language  
+    socket = push_event(socket, "store_and_reload", %{
+      interface_language: socket.assigns.interface_language,
+      learning_language: language_code
+    })
+    
+    {:noreply, socket}
+  end
+
+  defp get_tutorial_content("introduction") do
+    %{
+      title: "Self-Introduction",
+      emoji: "👋",
+      description: "Learn essential phrases to introduce yourself in English",
+      vocabulary: [
+        %{word: "Hello", emoji: "👋", pronunciation: "HEH-low", example: "Hello, my name is Sarah"},
+        %{word: "Name", emoji: "📛", pronunciation: "NAYM", example: "My name is John"},
+        %{word: "Nice to meet you", emoji: "🤝", pronunciation: "NAYS too MEET yoo", example: "Nice to meet you too!"},
+        %{word: "How are you?", emoji: "😊", pronunciation: "HOW ar YOO", example: "How are you today?"},
+        %{word: "Fine", emoji: "👌", pronunciation: "FYNE", example: "I'm fine, thank you"},
+        %{word: "Thank you", emoji: "🙏", pronunciation: "THANK yoo", example: "Thank you very much"},
+        %{word: "Please", emoji: "🥺", pronunciation: "PLEEZ", example: "Please help me"},
+        %{word: "Excuse me", emoji: "🙋", pronunciation: "ik-SKYOOZ mee", example: "Excuse me, where is the bathroom?"},
+        %{word: "Sorry", emoji: "😔", pronunciation: "SOR-ee", example: "Sorry, I'm late"},
+        %{word: "Yes", emoji: "✅", pronunciation: "YES", example: "Yes, I understand"},
+        %{word: "No", emoji: "❌", pronunciation: "NOH", example: "No, I don't think so"},
+        %{word: "Goodbye", emoji: "👋", pronunciation: "gud-BYE", example: "Goodbye, see you later"},
+        %{word: "See you later", emoji: "🔄", pronunciation: "SEE yoo LAY-ter", example: "See you later, have a good day"},
+        %{word: "Where", emoji: "📍", pronunciation: "WAIR", example: "Where are you from?"},
+        %{word: "From", emoji: "🏠", pronunciation: "FRUM", example: "I'm from Canada"}
+      ]
+    }
+  end
+
+  defp get_tutorial_content("fruits") do
+    %{
+      title: "Fruits & Food",
+      emoji: "🍎",
+      description: "Discover delicious fruits and food vocabulary",
+      vocabulary: [
+        %{word: "Apple", emoji: "🍎", pronunciation: "AP-ul", example: "I eat an apple every day"},
+        %{word: "Banana", emoji: "🍌", pronunciation: "buh-NAN-uh", example: "The banana is yellow"},
+        %{word: "Orange", emoji: "🍊", pronunciation: "OR-inj", example: "Orange juice is healthy"},
+        %{word: "Grape", emoji: "🍇", pronunciation: "GRAYP", example: "Purple grapes are sweet"},
+        %{word: "Strawberry", emoji: "🍓", pronunciation: "STRAW-ber-ee", example: "Strawberries and cream"},
+        %{word: "Cherry", emoji: "🍒", pronunciation: "CHAIR-ee", example: "Red cherries are delicious"},
+        %{word: "Peach", emoji: "🍑", pronunciation: "PEECH", example: "This peach is very juicy"},
+        %{word: "Pineapple", emoji: "🍍", pronunciation: "PYN-ap-ul", example: "Pineapple pizza is controversial"},
+        %{word: "Watermelon", emoji: "🍉", pronunciation: "WAH-ter-mel-un", example: "Watermelon is perfect for summer"},
+        %{word: "Lemon", emoji: "🍋", pronunciation: "LEM-un", example: "Lemon water is refreshing"},
+        %{word: "Avocado", emoji: "🥑", pronunciation: "av-uh-KAH-doh", example: "Avocado toast for breakfast"},
+        %{word: "Coconut", emoji: "🥥", pronunciation: "KOH-kuh-nut", example: "Coconut milk is creamy"},
+        %{word: "Mango", emoji: "🥭", pronunciation: "MANG-goh", example: "Tropical mango smoothie"},
+        %{word: "Kiwi", emoji: "🥝", pronunciation: "KEE-wee", example: "Kiwi fruit is green inside"},
+        %{word: "Tomato", emoji: "🍅", pronunciation: "tuh-MAY-toh", example: "Is tomato a fruit or vegetable?"},
+        %{word: "Carrot", emoji: "🥕", pronunciation: "KAIR-ut", example: "Carrots are good for your eyes"},
+        %{word: "Bread", emoji: "🍞", pronunciation: "BRED", example: "Fresh bread smells amazing"},
+        %{word: "Milk", emoji: "🥛", pronunciation: "MILK", example: "Drink your milk for strong bones"},
+        %{word: "Cheese", emoji: "🧀", pronunciation: "CHEEZ", example: "I love cheese on my sandwich"},
+        %{word: "Egg", emoji: "🥚", pronunciation: "EG", example: "Scrambled eggs for breakfast"}
+      ]
+    }
+  end
+
+  defp get_tutorial_content("numbers") do
+    %{
+      title: "Numbers",
+      emoji: "1️⃣",
+      description: "Master counting and number vocabulary in English",
+      vocabulary: [
+        %{word: "One", emoji: "1️⃣", pronunciation: "WUN", example: "I have one apple"},
+        %{word: "Two", emoji: "2️⃣", pronunciation: "TOO", example: "Two cats are playing"},
+        %{word: "Three", emoji: "3️⃣", pronunciation: "THREE", example: "Count to three"},
+        %{word: "Four", emoji: "4️⃣", pronunciation: "FOR", example: "Four wheels on a car"},
+        %{word: "Five", emoji: "5️⃣", pronunciation: "FAYV", example: "High five!"},
+        %{word: "Six", emoji: "6️⃣", pronunciation: "SIKS", example: "Six sides on a cube"},
+        %{word: "Seven", emoji: "7️⃣", pronunciation: "SEV-un", example: "Lucky number seven"},
+        %{word: "Eight", emoji: "8️⃣", pronunciation: "AYT", example: "Eight legs on a spider"},
+        %{word: "Nine", emoji: "9️⃣", pronunciation: "NAYN", example: "Nine lives of a cat"},
+        %{word: "Ten", emoji: "🔟", pronunciation: "TEN", example: "Ten fingers on your hands"},
+        %{word: "First", emoji: "🥇", pronunciation: "FURST", example: "You are the first in line"},
+        %{word: "Second", emoji: "🥈", pronunciation: "SEK-und", example: "Wait a second please"}
+      ]
+    }
+  end
+
+  defp get_tutorial_content("colors") do
+    %{
+      title: "Colors",
+      emoji: "🌈",
+      description: "Explore vibrant colors and color descriptions",
+      vocabulary: [
+        %{word: "Red", emoji: "🔴", pronunciation: "RED", example: "The rose is red"},
+        %{word: "Blue", emoji: "🔵", pronunciation: "BLOO", example: "The sky is blue"},
+        %{word: "Green", emoji: "🟢", pronunciation: "GREEN", example: "Grass is green"},
+        %{word: "Yellow", emoji: "🟡", pronunciation: "YEL-oh", example: "The sun is yellow"},
+        %{word: "Orange", emoji: "🟠", pronunciation: "OR-inj", example: "The orange fruit is orange"},
+        %{word: "Purple", emoji: "🟣", pronunciation: "PUR-pul", example: "Purple flowers are beautiful"},
+        %{word: "Pink", emoji: "🩷", pronunciation: "PINK", example: "Pink flamingos in the pond"},
+        %{word: "Brown", emoji: "🤎", pronunciation: "BROWN", example: "Brown bear in the forest"},
+        %{word: "Black", emoji: "⚫", pronunciation: "BLAK", example: "Black cat crossing the street"},
+        %{word: "White", emoji: "⚪", pronunciation: "WHAYT", example: "White snow on the mountain"},
+        %{word: "Gray", emoji: "🔘", pronunciation: "GRAY", example: "Gray clouds in the sky"},
+        %{word: "Rainbow", emoji: "🌈", pronunciation: "RAYN-bow", example: "Rainbow after the rain"},
+        %{word: "Bright", emoji: "✨", pronunciation: "BRYHT", example: "Bright colors are cheerful"},
+        %{word: "Dark", emoji: "🌑", pronunciation: "DARK", example: "Dark colors look elegant"},
+        %{word: "Light", emoji: "💡", pronunciation: "LYHT", example: "Light blue like the morning sky"},
+        %{word: "Colorful", emoji: "🎨", pronunciation: "KUL-er-ful", example: "The painting is very colorful"}
+      ]
+    }
+  end
+
+  defp get_tutorial_content("bakery") do
+    %{
+      title: "Bakery",
+      emoji: "🥐",
+      description: "Learn essential bakery vocabulary and ordering phrases",
+      vocabulary: [
+        %{word: "Bread", emoji: "🍞", pronunciation: "BRED", example: "Fresh bread smells amazing"},
+        %{word: "Croissant", emoji: "🥐", pronunciation: "kwah-SAHN", example: "A buttery French croissant"},
+        %{word: "Bagel", emoji: "🥯", pronunciation: "BAY-gul", example: "Toasted bagel with cream cheese"},
+        %{word: "Pretzel", emoji: "🥨", pronunciation: "PRET-zul", example: "Salty twisted pretzel"},
+        %{word: "Baguette", emoji: "🥖", pronunciation: "ba-GET", example: "Long French baguette"},
+        %{word: "Cake", emoji: "🎂", pronunciation: "KAYK", example: "Birthday cake with candles"},
+        %{word: "Cupcake", emoji: "🧁", pronunciation: "KUP-kayk", example: "Sweet chocolate cupcake"},
+        %{word: "Donut", emoji: "🍩", pronunciation: "DOH-nut", example: "Glazed donut for breakfast"},
+        %{word: "Cookie", emoji: "🍪", pronunciation: "KUK-ee", example: "Chocolate chip cookie"},
+        %{word: "Pie", emoji: "🥧", pronunciation: "PYE", example: "Apple pie for dessert"}
+      ]
+    }
+  end
+
+  defp get_tutorial_content("animals") do
+    %{
+      title: "Animals",
+      emoji: "🐶",
+      description: "Discover animal vocabulary and their characteristics",
+      vocabulary: [
+        %{word: "Dog", emoji: "🐶", pronunciation: "DAWG", example: "The dog is man's best friend"},
+        %{word: "Cat", emoji: "🐱", pronunciation: "KAT", example: "The cat sleeps in the sun"},
+        %{word: "Rabbit", emoji: "🐰", pronunciation: "RAB-it", example: "The rabbit hops quickly"},
+        %{word: "Bear", emoji: "🐻", pronunciation: "BAIR", example: "The brown bear is strong"},
+        %{word: "Panda", emoji: "🐼", pronunciation: "PAN-da", example: "Giant panda eats bamboo"},
+        %{word: "Lion", emoji: "🦁", pronunciation: "LYE-un", example: "The lion is king of jungle"},
+        %{word: "Tiger", emoji: "🐯", pronunciation: "TYE-gur", example: "The tiger has stripes"},
+        %{word: "Elephant", emoji: "🐘", pronunciation: "EL-uh-fant", example: "The elephant is very big"},
+        %{word: "Monkey", emoji: "🐵", pronunciation: "MUNG-kee", example: "The monkey swings on trees"},
+        %{word: "Horse", emoji: "🐴", pronunciation: "HORS", example: "The horse runs fast"},
+        %{word: "Cow", emoji: "🐄", pronunciation: "KOW", example: "The cow gives milk"},
+        %{word: "Pig", emoji: "🐷", pronunciation: "PIG", example: "The pig rolls in mud"}
+      ]
+    }
+  end
+
+  defp get_tutorial_content("restaurant") do
+    %{
+      title: "Restaurant",
+      emoji: "🍕",
+      description: "Master restaurant vocabulary and ordering phrases",
+      vocabulary: [
+        %{word: "Menu", emoji: "📋", pronunciation: "MEN-yoo", example: "Can I see the menu please?"},
+        %{word: "Pizza", emoji: "🍕", pronunciation: "PEET-za", example: "I'll have a slice of pizza"},
+        %{word: "Burger", emoji: "🍔", pronunciation: "BUR-gur", example: "Cheeseburger with fries"},
+        %{word: "Fries", emoji: "🍟", pronunciation: "FRYZ", example: "French fries are crispy"},
+        %{word: "Pasta", emoji: "🍝", pronunciation: "PAHS-ta", example: "Spaghetti pasta with sauce"},
+        %{word: "Salad", emoji: "🥗", pronunciation: "SAL-ad", example: "Fresh green salad"},
+        %{word: "Soup", emoji: "🍲", pronunciation: "SOOP", example: "Hot chicken soup"},
+        %{word: "Coffee", emoji: "☕", pronunciation: "KAW-fee", example: "Hot black coffee"},
+        %{word: "Water", emoji: "💧", pronunciation: "WAW-tur", example: "Glass of cold water"},
+        %{word: "Bill", emoji: "🧾", pronunciation: "BIL", example: "Can I have the bill?"}
+      ]
+    }
+  end
+
+  defp get_tutorial_content("family") do
+    %{
+      title: "Family",
+      emoji: "👨‍👩‍👧‍👦",
+      description: "Learn family relationships and descriptions",
+      vocabulary: [
+        %{word: "Mother", emoji: "👩", pronunciation: "MUTH-ur", example: "My mother is very kind"},
+        %{word: "Father", emoji: "👨", pronunciation: "FAH-thur", example: "My father works hard"},
+        %{word: "Sister", emoji: "👧", pronunciation: "SIS-tur", example: "I have two sisters"},
+        %{word: "Brother", emoji: "👦", pronunciation: "BRUTH-ur", example: "My brother is younger"},
+        %{word: "Grandmother", emoji: "👵", pronunciation: "GRAND-muth-ur", example: "Grandmother tells great stories"},
+        %{word: "Grandfather", emoji: "👴", pronunciation: "GRAND-fah-thur", example: "Grandfather is very wise"},
+        %{word: "Baby", emoji: "👶", pronunciation: "BAY-bee", example: "The baby is sleeping"},
+        %{word: "Family", emoji: "👨‍👩‍👧‍👦", pronunciation: "FAM-uh-lee", example: "I love my family"},
+        %{word: "Aunt", emoji: "👸", pronunciation: "ANT", example: "My aunt lives nearby"},
+        %{word: "Uncle", emoji: "🤴", pronunciation: "UNG-kul", example: "Uncle visits on weekends"}
+      ]
+    }
+  end
+
+  defp get_tutorial_content("countries") do
+    %{
+      title: "Countries",
+      emoji: "🇹🇼",
+      description: "Explore countries, nationalities, and cultural expressions",
+      vocabulary: [
+        %{word: "Taiwan", emoji: "🇹🇼", pronunciation: "TYE-wahn", example: "Taiwan is a beautiful island"},
+        %{word: "France", emoji: "🇫🇷", pronunciation: "FRANS", example: "France is famous for cuisine"},
+        %{word: "Germany", emoji: "🇩🇪", pronunciation: "JUR-man-ee", example: "Germany has great beer"},
+        %{word: "Japan", emoji: "🇯🇵", pronunciation: "juh-PAN", example: "Japan has beautiful cherry blossoms"},
+        %{word: "USA", emoji: "🇺🇸", pronunciation: "yoo-es-AY", example: "USA is very diverse"},
+        %{word: "UK", emoji: "🇬🇧", pronunciation: "yoo-KAY", example: "UK has a rich history"},
+        %{word: "Italy", emoji: "🇮🇹", pronunciation: "IT-uh-lee", example: "Italy makes great pasta"},
+        %{word: "Spain", emoji: "🇪🇸", pronunciation: "SPAYN", example: "Spain has flamenco dancing"},
+        %{word: "China", emoji: "🇨🇳", pronunciation: "CHY-na", example: "China has a long history"},
+        %{word: "Canada", emoji: "🇨🇦", pronunciation: "KAN-uh-da", example: "Canada is known for maple syrup"}
+      ]
+    }
+  end
+
+  defp get_tutorial_content(_), do: nil
+
+  # Get vocabulary word translation in interface language
+  def get_word_translation(learning_word, learning_language, interface_language) do
+    VocabularyTranslator.get_word_translation(learning_word, learning_language, interface_language)
+  end
+
+
+  def current_vocabulary_item(content, index) do
+    Enum.at(content.vocabulary, index)
+  end
+
+  # Get the meaning/translation of an example sentence in the interface language
+  def get_example_meaning(original_word, learning_language, interface_language) do
+    # If learning and interface languages are the same, don't show translation
+    if learning_language == interface_language do
+      nil
+    else
+      get_example_translation(original_word, learning_language, interface_language)
+    end
+  end
+
+  # This function is now handled by ExampleTranslator module  
+  defp get_example_translation(word, _learning_language, interface_language) do
+    ExampleTranslator.get_example_translation(word, interface_language)
+  end
+        en: "Hello, my name is Sarah",
+        fr: "Bonjour, je m'appelle Sarah", 
+        es: "Hola, me llamo Sarah",
+        pt: "Olá, meu nome é Sarah",
+        it: "Ciao, mi chiamo Sarah",
+        ru: "Привет, меня зовут Сара",
+        ja: "こんにちは、私の名前はサラです",
+        ar: "مرحبا، اسمي سارة",
+        zh: "你好，我叫萨拉"
+      },
+      "Name" => %{
+        en: "My name is John",
+        fr: "Je m'appelle John",
+        es: "Me llamo John", 
+        pt: "Meu nome é John",
+        it: "Mi chiamo John",
+        ru: "Меня зовут Джон",
+        ja: "私の名前はジョンです",
+        ar: "اسمي جون",
+        zh: "我叫约翰"
+      },
+      "Nice to meet you" => %{
+        en: "Nice to meet you too!",
+        fr: "Ravi de vous rencontrer aussi!",
+        es: "¡Encantado de conocerte también!",
+        pt: "Prazer em conhecê-lo também!",
+        it: "Piacere di conoscerti anch'io!",
+        ru: "Мне тоже приятно познакомиться!",
+        ja: "こちらこそよろしく!",
+        ar: "أنا أيضا سرور بلقائك!",
+        zh: "我也很高兴认识你!"
+      },
+      "How are you?" => %{
+        en: "How are you today?",
+        fr: "Comment allez-vous aujourd'hui?",
+        es: "¿Cómo estás hoy?",
+        pt: "Como você está hoje?",
+        it: "Come stai oggi?",
+        ru: "Как дела сегодня?",
+        ja: "今日は元気ですか?",
+        ar: "كيف حالك اليوم؟",
+        zh: "你今天怎么样？"
+      },
+      "Fine" => %{
+        en: "I'm fine, thank you",
+        fr: "Je vais bien, merci",
+        es: "Estoy bien, gracias",
+        pt: "Estou bem, obrigado",
+        it: "Sto bene, grazie",
+        ru: "Я в порядке, спасибо",
+        ja: "元気です、ありがとう",
+        ar: "أنا بخير، شكرا",
+        zh: "我很好，谢谢"
+      },
+      "Thank you" => %{
+        en: "Thank you very much",
+        fr: "Merci beaucoup",
+        es: "Muchas gracias",
+        pt: "Muito obrigado",
+        it: "Grazie mille",
+        ru: "Большое спасибо",
+        ja: "どうもありがとう",
+        ar: "شكرا جزيلا",
+        zh: "非常感谢"
+      },
+      "Please" => %{
+        en: "Please help me",
+        fr: "S'il vous plaît aidez-moi",
+        es: "Por favor ayúdame",
+        pt: "Por favor me ajude",
+        it: "Per favore aiutami",
+        ru: "Пожалуйста, помогите мне",
+        ja: "お願いします、手伝って",
+        ar: "من فضلك ساعدني",
+        zh: "请帮助我"
+      },
+      "Excuse me" => %{
+        en: "Excuse me, where is the bathroom?",
+        fr: "Excusez-moi, où sont les toilettes?",
+        es: "Disculpe, ¿dónde está el baño?",
+        pt: "Com licença, onde fica o banheiro?",
+        it: "Scusi, dov'è il bagno?",
+        ru: "Извините, где туалет?",
+        ja: "すみません、トイレはどこですか?",
+        ar: "عذراً، أين دورة المياه؟",
+        zh: "不好意思，洗手间在哪里？"
+      },
+      "Sorry" => %{
+        en: "Sorry, I'm late",
+        fr: "Désolé, je suis en retard",
+        es: "Lo siento, llego tarde",
+        pt: "Desculpa, estou atrasado",
+        it: "Scusa, sono in ritardo",
+        ru: "Извини, я опаздываю",
+        ja: "ごめんなさい、遅れました",
+        ar: "آسف، أنا متأخر",
+        zh: "对不起，我迟到了"
+      },
+      "Yes" => %{
+        en: "Yes, I understand",
+        fr: "Oui, je comprends",
+        es: "Sí, entiendo",
+        pt: "Sim, eu entendo",
+        it: "Sì, capisco",
+        ru: "Да, я понимаю",
+        ja: "はい、わかります",
+        ar: "نعم، أفهم",
+        zh: "是的，我明白"
+      },
+      "No" => %{
+        en: "No, I don't think so",
+        fr: "Non, je ne pense pas",
+        es: "No, no creo",
+        pt: "Não, eu não acho",
+        it: "No, non credo",
+        ru: "Нет, я так не думаю",
+        ja: "いいえ、そう思いません",
+        ar: "لا، لا أعتقد ذلك",
+        zh: "不，我不这么认为"
+      },
+      "Goodbye" => %{
+        en: "Goodbye, see you later",
+        fr: "Au revoir, à bientôt",
+        es: "Adiós, hasta luego",
+        pt: "Tchau, até logo",
+        it: "Ciao, a dopo",
+        ru: "До свидания, увидимся позже",
+        ja: "さようなら、また後で",
+        ar: "وداعاً، أراك لاحقاً",
+        zh: "再见，回头见"
+      },
+      "See you later" => %{
+        en: "See you later, have a good day",
+        fr: "À bientôt, passez une bonne journée",
+        es: "Hasta luego, que tengas un buen día",
+        pt: "Até logo, tenha um bom dia",
+        it: "A dopo, buona giornata",
+        ru: "Увидимся позже, хорошего дня",
+        ja: "また後で、良い一日を",
+        ar: "أراك لاحقاً، أتمنى لك يوماً سعيداً",
+        zh: "回头见，祝你今天愉快"
+      },
+      "Where" => %{
+        en: "Where are you from?",
+        fr: "D'où venez-vous?",
+        es: "¿De dónde eres?",
+        pt: "De onde você é?",
+        it: "Di dove sei?",
+        ru: "Откуда вы?",
+        ja: "どこから来ましたか?",
+        ar: "من أين أنت؟",
+        zh: "你来自哪里？"
+      },
+      "From" => %{
+        en: "I'm from Canada",
+        fr: "Je viens du Canada",
+        es: "Soy de Canadá",
+        pt: "Eu sou do Canadá",
+        it: "Vengo dal Canada",
+        ru: "Я из Канады",
+        ja: "カナダから来ました",
+        ar: "أنا من كندا",
+        zh: "我来自加拿大"
+      },
+
+      # Fruits examples
+      "Apple" => %{
+        en: "I eat an apple every day",
+        fr: "Je mange une pomme chaque jour",
+        es: "Como una manzana cada día",
+        pt: "Eu como uma maçã todos os dias",
+        it: "Mangio una mela ogni giorno",
+        ru: "Я ем яблоко каждый день",
+        ja: "毎日りんごを食べます",
+        ar: "آكل تفاحة كل يوم",
+        zh: "我每天吃一个苹果"
+      },
+      "Banana" => %{
+        en: "The banana is yellow",
+        fr: "La banane est jaune",
+        es: "El plátano es amarillo", 
+        pt: "A banana é amarela",
+        it: "La banana è gialla",
+        ru: "Банан желтый",
+        ja: "バナナは黄色いです",
+        ar: "الموز أصفر",
+        zh: "香蕉是黄色的"
+      },
+      "Orange" => %{
+        en: "Orange juice is healthy",
+        fr: "Le jus d'orange est sain",
+        es: "El jugo de naranja es saludable",
+        pt: "O suco de laranja é saudável",
+        it: "Il succo d'arancia è salutare",
+        ru: "Апельсиновый сок полезен",
+        ja: "オレンジジュースは健康的です",
+        ar: "عصير البرتقال صحي",
+        zh: "橙汁很健康"
+      },
+      "Grape" => %{
+        en: "Purple grapes are sweet",
+        fr: "Les raisins violets sont sucrés",
+        es: "Las uvas moradas son dulces",
+        pt: "As uvas roxas são doces",
+        it: "L'uva viola è dolce",
+        ru: "Фиолетовый виноград сладкий",
+        ja: "紫のぶどうは甘いです",
+        ar: "العنب الأرجواني حلو",
+        zh: "紫葡萄很甜"
+      },
+      "Strawberry" => %{
+        en: "Strawberries and cream",
+        fr: "Fraises à la crème",
+        es: "Fresas con crema",
+        pt: "Morangos com creme",
+        it: "Fragole con panna",
+        ru: "Клубника со сливками",
+        ja: "いちごとクリーム",
+        ar: "فراولة مع كريم",
+        zh: "草莓配奶油"
+      },
+      "Cherry" => %{
+        en: "Red cherries are delicious",
+        fr: "Les cerises rouges sont délicieuses",
+        es: "Las cerezas rojas están deliciosas",
+        pt: "As cerejas vermelhas são deliciosas",
+        it: "Le ciliegie rosse sono deliziose",
+        ru: "Красная вишня вкусная",
+        ja: "赤いさくらんぼは美味しいです",
+        ar: "الكرز الأحمر لذيذ",
+        zh: "红樱桃很美味"
+      },
+      "Peach" => %{
+        en: "This peach is very juicy",
+        fr: "Cette pêche est très juteuse",
+        es: "Este durazno está muy jugoso",
+        pt: "Este pêssego está muito suculento",
+        it: "Questa pesca è molto succosa",
+        ru: "Этот персик очень сочный",
+        ja: "この桃はとてもジューシーです",
+        ar: "هذا الخوخ عصاري جداً",
+        zh: "这个桃子很多汁"
+      },
+      "Pineapple" => %{
+        en: "Pineapple pizza is controversial",
+        fr: "La pizza à l'ananas fait débat",
+        es: "La pizza con piña es controversial",
+        pt: "Pizza de abacaxi é controversa",
+        it: "La pizza con ananas è controversa",
+        ru: "Пицца с ананасом спорная",
+        ja: "パイナップルピザは議論の的です",
+        ar: "بيتزا الأناناس مثيرة للجدل",
+        zh: "菠萝披萨很有争议"
+      },
+      "Watermelon" => %{
+        en: "Watermelon is perfect for summer",
+        fr: "La pastèque est parfaite pour l'été",
+        es: "La sandía es perfecta para el verano",
+        pt: "Melancia é perfeita para o verão",
+        it: "L'anguria è perfetta per l'estate",
+        ru: "Арбуз идеален для лета",
+        ja: "すいかは夏にぴったりです",
+        ar: "البطيخ مثالي للصيف",
+        zh: "西瓜非常适合夏天"
+      },
+      "Lemon" => %{
+        en: "Lemon water is refreshing",
+        fr: "L'eau citronnée est rafraîchissante",
+        es: "El agua con limón es refrescante",
+        pt: "Água com limão é refrescante",
+        it: "L'acqua con limone è rinfrescante",
+        ru: "Лимонная вода освежает",
+        ja: "レモン水は爽やかです",
+        ar: "ماء الليمون منعش",
+        zh: "柠檬水很清爽"
+      },
+      "Avocado" => %{
+        en: "Avocado toast for breakfast",
+        fr: "Toast à l'avocat pour le petit-déjeuner",
+        es: "Tostada de aguacate para el desayuno",
+        pt: "Torrada de abacate no café da manhã",
+        it: "Toast con avocado per colazione",
+        ru: "Тост с авокадо на завтрак",
+        ja: "朝食にアボカドトースト",
+        ar: "توست الأفوكادو على الإفطار",
+        zh: "早餐吃牛油果吐司"
+      },
+      "Coconut" => %{
+        en: "Coconut milk is creamy",
+        fr: "Le lait de coco est crémeux",
+        es: "La leche de coco es cremosa",
+        pt: "O leite de coco é cremoso",
+        it: "Il latte di cocco è cremoso",
+        ru: "Кокосовое молоко сливочное",
+        ja: "ココナッツミルクはクリーミーです",
+        ar: "حليب جوز الهند كريمي",
+        zh: "椰奶很香滑"
+      },
+      "Mango" => %{
+        en: "Tropical mango smoothie",
+        fr: "Smoothie à la mangue tropicale",
+        es: "Batido de mango tropical",
+        pt: "Vitamina de manga tropical",
+        it: "Frullato di mango tropicale",
+        ru: "Тропический смузи из манго",
+        ja: "トロピカルマンゴースムージー",
+        ar: "عصير المانجو الاستوائي",
+        zh: "热带芒果奶昔"
+      },
+      "Kiwi" => %{
+        en: "Kiwi fruit is green inside",
+        fr: "Le kiwi est vert à l'intérieur",
+        es: "La fruta kiwi es verde por dentro",
+        pt: "A fruta kiwi é verde por dentro",
+        it: "Il kiwi è verde dentro",
+        ru: "Киви зеленый внутри",
+        ja: "キウイの中は緑色です",
+        ar: "فاكهة الكيوي خضراء من الداخل",
+        zh: "猕猴桃里面是绿色的"
+      },
+      "Tomato" => %{
+        en: "Is tomato a fruit or vegetable?",
+        fr: "La tomate est-elle un fruit ou un légume?",
+        es: "¿El tomate es una fruta o verdura?",
+        pt: "O tomate é fruta ou legume?",
+        it: "Il pomodoro è un frutto o una verdura?",
+        ru: "Помидор - это фрукт или овощ?",
+        ja: "トマトは果物それとも野菜？",
+        ar: "هل الطماطم فاكهة أم خضار؟",
+        zh: "西红柿是水果还是蔬菜？"
+      },
+      "Carrot" => %{
+        en: "Carrots are good for your eyes",
+        fr: "Les carottes sont bonnes pour les yeux",
+        es: "Las zanahorias son buenas para los ojos",
+        pt: "As cenouras são boas para os olhos",
+        it: "Le carote fanno bene agli occhi",
+        ru: "Морковь полезна для глаз",
+        ja: "にんじんは目に良いです",
+        ar: "الجزر مفيد للعينين",
+        zh: "胡萝卜对眼睛有好处"
+      },
+      "Bread" => %{
+        en: "Fresh bread smells amazing",
+        fr: "Le pain frais sent bon",
+        es: "El pan fresco huele increíble",
+        pt: "Pão fresco tem um cheiro incrível",
+        it: "Il pane fresco profuma meravigliosamente",
+        ru: "Свежий хлеб пахнет удивительно",
+        ja: "焼きたてのパンはいい匂いです",
+        ar: "الخبز الطازج رائحته رائعة",
+        zh: "新鲜面包闻起来很香"
+      },
+      "Milk" => %{
+        en: "Drink your milk for strong bones",
+        fr: "Buvez votre lait pour des os solides",
+        es: "Bebe tu leche para huesos fuertes",
+        pt: "Beba seu leite para ossos fortes",
+        it: "Bevi il latte per ossa forti",
+        ru: "Пейте молоко для крепких костей",
+        ja: "丈夫な骨のために牛乳を飲みなさい",
+        ar: "اشرب الحليب لعظام قوية",
+        zh: "喝牛奶能强壮骨骼"
+      },
+      "Cheese" => %{
+        en: "I love cheese on my sandwich",
+        fr: "J'adore le fromage sur mon sandwich",
+        es: "Me encanta el queso en mi sándwich",
+        pt: "Eu amo queijo no meu sanduíche",
+        it: "Adoro il formaggio nel mio panino",
+        ru: "Я люблю сыр в бутерброде",
+        ja: "サンドイッチにチーズが大好きです",
+        ar: "أحب الجبن في شطيرتي",
+        zh: "我喜欢三明治里放奶酪"
+      },
+      "Egg" => %{
+        en: "Scrambled eggs for breakfast",
+        fr: "Œufs brouillés pour le petit-déjeuner",
+        es: "Huevos revueltos para el desayuno",
+        pt: "Ovos mexidos no café da manhã",
+        it: "Uova strapazzate per colazione",
+        ru: "Яичница на завтрак",
+        ja: "朝食にスクランブルエッグ",
+        ar: "بيض مخفوق على الإفطار",
+        zh: "早餐吃炒鸡蛋"
+      },
+
+      # Numbers examples  
+      "One" => %{
+        en: "I have one apple",
+        fr: "J'ai une pomme",
+        es: "Tengo una manzana",
+        pt: "Eu tenho uma maçã",
+        it: "Ho una mela",
+        ru: "У меня одно яблоко",
+        ja: "りんごが一つあります",
+        ar: "عندي تفاحة واحدة",
+        zh: "我有一个苹果"
+      },
+      "Two" => %{
+        en: "Two cats are playing",
+        fr: "Deux chats jouent",
+        es: "Dos gatos están jugando",
+        pt: "Dois gatos estão brincando",
+        it: "Due gatti stanno giocando", 
+        ru: "Две кошки играют",
+        ja: "二匹の猫が遊んでいます",
+        ar: "قطتان تلعبان",
+        zh: "两只猫在玩"
+      },
+      "Three" => %{
+        en: "Count to three",
+        fr: "Comptez jusqu'à trois",
+        es: "Cuenta hasta tres",
+        pt: "Conte até três",
+        it: "Conta fino a tre",
+        ru: "Считай до трех",
+        ja: "三まで数えて",
+        ar: "عد إلى ثلاثة",
+        zh: "数到三"
+      },
+      "Four" => %{
+        en: "Four wheels on a car",
+        fr: "Quatre roues sur une voiture",
+        es: "Cuatro ruedas en un coche",
+        pt: "Quatro rodas em um carro",
+        it: "Quattro ruote su un'auto",
+        ru: "Четыре колеса у машины",
+        ja: "車には四つの車輪があります",
+        ar: "أربع عجلات في السيارة",
+        zh: "汽车有四个轮子"
+      },
+      "Five" => %{
+        en: "High five!",
+        fr: "Tape-m'en cinq!",
+        es: "¡Choca esos cinco!",
+        pt: "Bate aqui!",
+        it: "Batti il cinque!",
+        ru: "Дай пять!",
+        ja: "ハイファイブ!",
+        ar: "اضرب الخمسة!",
+        zh: "击掌！"
+      },
+      "Six" => %{
+        en: "Six sides on a cube",
+        fr: "Six faces sur un cube",
+        es: "Seis lados en un cubo",
+        pt: "Seis lados em um cubo",
+        it: "Sei lati su un cubo",
+        ru: "Шесть сторон у куба",
+        ja: "立方体には六つの面があります",
+        ar: "ستة جوانب في المكعب",
+        zh: "立方体有六个面"
+      },
+      "Seven" => %{
+        en: "Lucky number seven",
+        fr: "Le chiffre porte-bonheur sept",
+        es: "El número de la suerte siete",
+        pt: "O número da sorte sete",
+        it: "Il numero fortunato sette",
+        ru: "Счастливое число семь",
+        ja: "ラッキーナンバー七",
+        ar: "الرقم المحظوظ سبعة",
+        zh: "幸运数字七"
+      },
+      "Eight" => %{
+        en: "Eight legs on a spider",
+        fr: "Huit pattes sur une araignée",
+        es: "Ocho patas en una araña",
+        pt: "Oito patas em uma aranha",
+        it: "Otto zampe su un ragno",
+        ru: "Восемь ног у паука",
+        ja: "蜘蛛には八本の足があります",
+        ar: "ثمانية أرجل في العنكبوت",
+        zh: "蜘蛛有八条腿"
+      },
+      "Nine" => %{
+        en: "Nine lives of a cat",
+        fr: "Neuf vies d'un chat",
+        es: "Nueve vidas de un gato",
+        pt: "Nove vidas de um gato",
+        it: "Nove vite di un gatto",
+        ru: "Девять жизней кошки",
+        ja: "猫の九つの命",
+        ar: "تسعة أرواح للقطة",
+        zh: "猫有九条命"
+      },
+      "Ten" => %{
+        en: "Ten fingers on your hands",
+        fr: "Dix doigts sur vos mains",
+        es: "Diez dedos en tus manos",
+        pt: "Dez dedos em suas mãos",
+        it: "Dieci dita sulle tue mani",
+        ru: "Десять пальцев на руках",
+        ja: "手には十本の指があります",
+        ar: "عشرة أصابع في يديك",
+        zh: "你手上有十个手指"
+      },
+      "First" => %{
+        en: "You are the first in line",
+        fr: "Vous êtes le premier dans la file",
+        es: "Eres el primero en la fila",
+        pt: "Você é o primeiro na fila",
+        it: "Sei il primo in fila",
+        ru: "Ты первый в очереди",
+        ja: "あなたが列の最初です",
+        ar: "أنت الأول في الطابور",
+        zh: "你是队伍里的第一个"
+      },
+      "Second" => %{
+        en: "Wait a second please",
+        fr: "Attendez une seconde s'il vous plaît",
+        es: "Espera un segundo por favor",
+        pt: "Espere um segundo por favor",
+        it: "Aspetta un secondo per favore",
+        ru: "Подождите секунду, пожалуйста",
+        ja: "ちょっと待ってください",
+        ar: "انتظر ثانية من فضلك",
+        zh: "请等一下"
+      },
+
+      # Colors examples
+      "Red" => %{
+        en: "The rose is red",
+        fr: "La rose est rouge",
+        es: "La rosa es roja",
+        pt: "A rosa é vermelha", 
+        it: "La rosa è rossa",
+        ru: "Роза красная",
+        ja: "薔薇は赤いです",
+        ar: "الوردة حمراء",
+        zh: "玫瑰是红色的"
+      },
+      "Blue" => %{
+        en: "The sky is blue",
+        fr: "Le ciel est bleu",
+        es: "El cielo es azul",
+        pt: "O céu é azul",
+        it: "Il cielo è blu", 
+        ru: "Небо синее",
+        ja: "空は青いです",
+        ar: "السماء زرقاء",
+        zh: "天空是蓝色的"
+      },
+      "Green" => %{
+        en: "Grass is green",
+        fr: "L'herbe est verte",
+        es: "La hierba es verde",
+        pt: "A grama é verde",
+        it: "L'erba è verde",
+        ru: "Трава зеленая",
+        ja: "草は緑です",
+        ar: "العشب أخضر",
+        zh: "草是绿色的"
+      },
+      "Yellow" => %{
+        en: "The sun is yellow",
+        fr: "Le soleil est jaune",
+        es: "El sol es amarillo",
+        pt: "O sol é amarelo",
+        it: "Il sole è giallo",
+        ru: "Солнце желтое",
+        ja: "太陽は黄色です",
+        ar: "الشمس صفراء",
+        zh: "太阳是黄色的"
+      },
+      "Purple" => %{
+        en: "Purple flowers are beautiful",
+        fr: "Les fleurs violettes sont belles",
+        es: "Las flores moradas son hermosas",
+        pt: "Flores roxas são lindas",
+        it: "I fiori viola sono belli",
+        ru: "Фиолетовые цветы красивые",
+        ja: "紫の花は美しいです",
+        ar: "الزهور البنفسجية جميلة",
+        zh: "紫色的花很美丽"
+      },
+      "Pink" => %{
+        en: "Pink flamingos in the pond",
+        fr: "Flamants roses dans l'étang",
+        es: "Flamencos rosas en el estanque",
+        pt: "Flamingos rosa no lago",
+        it: "Fenicotteri rosa nello stagno",
+        ru: "Розовые фламинго в пруду",
+        ja: "池にピンクのフラミンゴ",
+        ar: "طيور النحام الوردية في البركة",
+        zh: "池塘里的粉红火烈鸟"
+      },
+      "Brown" => %{
+        en: "Brown bear in the forest",
+        fr: "Ours brun dans la forêt",
+        es: "Oso marrón en el bosque",
+        pt: "Urso marrom na floresta",
+        it: "Orso bruno nella foresta",
+        ru: "Бурый медведь в лесу",
+        ja: "森の茶色い熊",
+        ar: "دب بني في الغابة",
+        zh: "森林里的棕熊"
+      },
+      "Black" => %{
+        en: "Black cat crossing the street",
+        fr: "Chat noir traversant la rue",
+        es: "Gato negro cruzando la calle",
+        pt: "Gato preto atravessando a rua",
+        it: "Gatto nero che attraversa la strada",
+        ru: "Черная кошка переходит дорогу",
+        ja: "道を渡る黒い猫",
+        ar: "قطة سوداء تعبر الشارع",
+        zh: "黑猫穿过街道"
+      },
+      "White" => %{
+        en: "White snow on the mountain",
+        fr: "Neige blanche sur la montagne",
+        es: "Nieve blanca en la montaña",
+        pt: "Neve branca na montanha",
+        it: "Neve bianca sulla montagna",
+        ru: "Белый снег на горе",
+        ja: "山の白い雪",
+        ar: "ثلج أبيض على الجبل",
+        zh: "山上的白雪"
+      },
+      "Gray" => %{
+        en: "Gray clouds in the sky",
+        fr: "Nuages gris dans le ciel",
+        es: "Nubes grises en el cielo",
+        pt: "Nuvens cinzas no céu",
+        it: "Nuvole grigie nel cielo",
+        ru: "Серые облака в небе",
+        ja: "空の灰色の雲",
+        ar: "غيوم رمادية في السماء",
+        zh: "天空中的灰云"
+      },
+
+      # Bakery examples
+      "Croissant" => %{
+        en: "A buttery French croissant",
+        fr: "Un croissant français au beurre",
+        es: "Un cruasán francés con mantequilla",
+        pt: "Um croissant francês amanteigado",
+        it: "Un cornetto francese burroso",
+        ru: "Французский масляный круассан",
+        ja: "バター香るフランスのクロワッサン",
+        ar: "كرواسون فرنسي بالزبدة",
+        zh: "法式黄油羊角面包"
+      },
+      "Bagel" => %{
+        en: "Toasted bagel with cream cheese",
+        fr: "Bagel grillé avec fromage à la crème",
+        es: "Bagel tostado con queso crema",
+        pt: "Bagel torrado com cream cheese",
+        it: "Bagel tostato con formaggio spalmabile",
+        ru: "Поджаренный бейгл с сливочным сыром",
+        ja: "クリームチーズのせトーストベーグル",
+        ar: "بيجل محمص مع جبنة كريمية",
+        zh: "烤百吉饼配奶油奶酪"
+      },
+
+      # Animals examples
+      "Dog" => %{
+        en: "The dog is man's best friend",
+        fr: "Le chien est le meilleur ami de l'homme",
+        es: "El perro es el mejor amigo del hombre",
+        pt: "O cão é o melhor amigo do homem",
+        it: "Il cane è il migliore amico dell'uomo",
+        ru: "Собака - лучший друг человека",
+        ja: "犬は人間の親友です",
+        ar: "الكلب أفضل صديق للإنسان",
+        zh: "狗是人类最好的朋友"
+      },
+      "Cat" => %{
+        en: "The cat sleeps in the sun", 
+        fr: "Le chat dort au soleil",
+        es: "El gato duerme al sol",
+        pt: "O gato dorme no sol",
+        it: "Il gatto dorme al sole",
+        ru: "Кошка спит на солнце",
+        ja: "猫は日向で眠ります",
+        ar: "القطة تنام في الشمس",
+        zh: "猫在阳光下睡觉"
+      },
+      "Rabbit" => %{
+        en: "The rabbit hops quickly",
+        fr: "Le lapin sautille rapidement",
+        es: "El conejo salta rápidamente",
+        pt: "O coelho pula rapidamente",
+        it: "Il coniglio saltella velocemente",
+        ru: "Кролик быстро прыгает",
+        ja: "うさぎは素早く跳ねます",
+        ar: "الأرنب يقفز بسرعة",
+        zh: "兔子跳得很快"
+      },
+
+      # Restaurant examples
+      "Menu" => %{
+        en: "Can I see the menu please?",
+        fr: "Puis-je voir le menu s'il vous plaît?",
+        es: "¿Puedo ver el menú por favor?",
+        pt: "Posso ver o menu por favor?",
+        it: "Posso vedere il menù per favore?",
+        ru: "Можно посмотреть меню, пожалуйста?",
+        ja: "メニューを見せてください",
+        ar: "هل يمكنني رؤية القائمة من فضلك؟",
+        zh: "请给我看看菜单好吗？"
+      },
+      "Pizza" => %{
+        en: "I'll have a slice of pizza",
+        fr: "Je prendrai une part de pizza",
+        es: "Tomaré una rebanada de pizza",
+        pt: "Vou querer uma fatia de pizza",
+        it: "Prenderò una fetta di pizza",
+        ru: "Я возьму кусочек пиццы",
+        ja: "ピザを一切れください",
+        ar: "سآخذ قطعة بيتزا",
+        zh: "我要一片披萨"
+      },
+
+      # Family examples
+      "Mother" => %{
+        en: "My mother is very kind",
+        fr: "Ma mère est très gentille",
+        es: "Mi madre es muy amable",
+        pt: "Minha mãe é muito gentil",
+        it: "Mia madre è molto gentile",
+        ru: "Моя мама очень добрая",
+        ja: "私の母はとても優しいです",
+        ar: "أمي لطيفة جداً",
+        zh: "我妈妈很善良"
+      },
+      "Father" => %{
+        en: "My father works hard",
+        fr: "Mon père travaille dur",
+        es: "Mi padre trabaja duro",
+        pt: "Meu pai trabalha muito",
+        it: "Mio padre lavora sodo",
+        ru: "Мой отец много работает",
+        ja: "私の父は一生懸命働きます",
+        ar: "والدي يعمل بجد",
+        zh: "我爸爸工作很努力"
+      },
+
+      # Countries examples
+      "Taiwan" => %{
+        en: "Taiwan is a beautiful island",
+        fr: "Taïwan est une belle île",
+        es: "Taiwán es una hermosa isla",
+        pt: "Taiwan é uma ilha bonita",
+        it: "Taiwan è una bella isola",
+        ru: "Тайвань - красивый остров",
+        ja: "台湾は美しい島です",
+        ar: "تايوان جزيرة جميلة",
+        zh: "台湾是个美丽的岛屿"
+      },
+      "France" => %{
+        en: "France is famous for cuisine",
+        fr: "La France est célèbre pour sa cuisine",
+        es: "Francia es famosa por su cocina",
+        pt: "A França é famosa pela culinária",
+        it: "La Francia è famosa per la cucina",
+        ru: "Франция славится кухней",
+        ja: "フランスは料理で有名です",
+        ar: "فرنسا مشهورة بالمطبخ",
+        zh: "法国以美食闻名"
+      }
+    }
+
+    word_examples = Map.get(example_translations, word, %{})
+    interface_lang_key = String.to_atom(interface_language)
+    Map.get(word_examples, interface_lang_key)
+  end
+
+
+  # Adapt tutorial content based on the learning language selected
+  defp adapt_content_to_learning_language(content, learning_language) do
+    case learning_language do
+      "en" -> content  # English is the default
+      "fr" -> adapt_content_to_french(content)
+      "es" -> adapt_content_to_spanish(content)
+      "pt" -> adapt_content_to_portuguese(content)
+      "zh" -> adapt_content_to_chinese(content)
+      "ja" -> adapt_content_to_japanese(content)
+      "ar" -> adapt_content_to_arabic(content)
+      "it" -> adapt_content_to_italian(content)
+      "ru" -> adapt_content_to_russian(content)
+      _ -> content  # Fallback to English
+    end
+  end
+
+  # French vocabulary translations
+  defp adapt_content_to_french(content) do
+    adapted_vocabulary = Enum.map(content.vocabulary, fn item ->
+      get_french_translation(item)
+    end)
+    %{content | vocabulary: adapted_vocabulary}
+  end
+
+  # Spanish vocabulary translations  
+  defp adapt_content_to_spanish(content) do
+    adapted_vocabulary = Enum.map(content.vocabulary, fn item ->
+      get_spanish_translation(item)
+    end)
+    %{content | vocabulary: adapted_vocabulary}
+  end
+
+  # Portuguese vocabulary translations
+  defp adapt_content_to_portuguese(content) do
+    adapted_vocabulary = Enum.map(content.vocabulary, fn item ->
+      get_portuguese_translation(item)
+    end)
+    %{content | vocabulary: adapted_vocabulary}
+  end
+
+  # Chinese vocabulary translations with Pinyin
+  defp adapt_content_to_chinese(content) do
+    adapted_vocabulary = Enum.map(content.vocabulary, fn item ->
+      get_chinese_translation(item)
+    end)
+    %{content | vocabulary: adapted_vocabulary}
+  end
+
+  # Japanese vocabulary translations with romaji  
+  defp adapt_content_to_japanese(content) do
+    adapted_vocabulary = Enum.map(content.vocabulary, fn item ->
+      get_japanese_translation(item)
+    end)
+    %{content | vocabulary: adapted_vocabulary}
+  end
+
+  # Arabic vocabulary translations with transliteration
+  defp adapt_content_to_arabic(content) do
+    adapted_vocabulary = Enum.map(content.vocabulary, fn item ->
+      get_arabic_translation(item)
+    end)
+    %{content | vocabulary: adapted_vocabulary}
+  end
+
+  # Italian vocabulary translations
+  defp adapt_content_to_italian(content) do
+    adapted_vocabulary = Enum.map(content.vocabulary, fn item ->
+      get_italian_translation(item)
+    end)
+    %{content | vocabulary: adapted_vocabulary}
+  end
+
+  # Russian vocabulary translations
+  defp adapt_content_to_russian(content) do
+    adapted_vocabulary = Enum.map(content.vocabulary, fn item ->
+      get_russian_translation(item)
+    end)
+    %{content | vocabulary: adapted_vocabulary}
+  end
+
+  # French vocabulary translations
+  defp get_french_translation(item) do
+    case item.word do
+      # Self-Introduction vocabulary  
+      "Hello" -> %{item | word: "Bonjour", pronunciation: "bon-ZHOOR", example: "Bonjour, je m'appelle Marie"}
+      "Name" -> %{item | word: "Nom", pronunciation: "nohm", example: "Mon nom est Pierre"}
+      "Nice to meet you" -> %{item | word: "Enchanté", pronunciation: "ahn-shahn-TAY", example: "Enchanté de vous rencontrer"}
+      "How are you?" -> %{item | word: "Comment allez-vous?", pronunciation: "ko-mahn tah-lay VOO", example: "Comment allez-vous aujourd'hui?"}
+      "Fine" -> %{item | word: "Bien", pronunciation: "bee-ahn", example: "Je vais bien, merci"}
+      "Thank you" -> %{item | word: "Merci", pronunciation: "mer-SEE", example: "Merci beaucoup"}
+      "Please" -> %{item | word: "S'il vous plaît", pronunciation: "see voo PLEH", example: "Aidez-moi s'il vous plaît"}
+      "Excuse me" -> %{item | word: "Excusez-moi", pronunciation: "ex-koo-zay MWAH", example: "Excusez-moi, où sont les toilettes?"}
+      "Sorry" -> %{item | word: "Désolé", pronunciation: "day-zo-LAY", example: "Désolé, je suis en retard"}
+      "Yes" -> %{item | word: "Oui", pronunciation: "WEE", example: "Oui, je comprends"}
+      "No" -> %{item | word: "Non", pronunciation: "nohn", example: "Non, je ne pense pas"}
+      "Goodbye" -> %{item | word: "Au revoir", pronunciation: "oh ruh-VWAHR", example: "Au revoir, à bientôt"}
+      "See you later" -> %{item | word: "À plus tard", pronunciation: "ah ploo TAHR", example: "À plus tard, bonne journée"}
+      "Where" -> %{item | word: "Où", pronunciation: "OO", example: "Où habitez-vous?"}
+      "From" -> %{item | word: "De", pronunciation: "duh", example: "Je viens du Canada"}
+      
+      # Fruits & Food vocabulary
+      "Apple" -> %{item | word: "Pomme", pronunciation: "pohm", example: "Je mange une pomme chaque jour"}
+      "Banana" -> %{item | word: "Banane", pronunciation: "ba-nahn", example: "La banane est jaune"}
+      "Orange" -> %{item | word: "Orange", pronunciation: "oh-rahnzh", example: "Le jus d'orange est sain"}
+      "Grape" -> %{item | word: "Raisin", pronunciation: "ray-zahn", example: "Les raisins violets sont sucrés"}
+      "Strawberry" -> %{item | word: "Fraise", pronunciation: "frehz", example: "Fraises à la crème"}
+      "Cherry" -> %{item | word: "Cerise", pronunciation: "suh-reez", example: "Les cerises rouges sont délicieuses"}
+      "Peach" -> %{item | word: "Pêche", pronunciation: "pehsh", example: "Cette pêche est très juteuse"}
+      "Pineapple" -> %{item | word: "Ananas", pronunciation: "ah-nah-nahs", example: "La pizza à l'ananas fait débat"}
+      "Watermelon" -> %{item | word: "Pastèque", pronunciation: "pahs-tehk", example: "La pastèque est parfaite pour l'été"}
+      "Lemon" -> %{item | word: "Citron", pronunciation: "see-trohn", example: "L'eau citronnée est rafraîchissante"}
+      "Bread" -> %{item | word: "Pain", pronunciation: "pahn", example: "Le pain frais sent bon"}
+      "Milk" -> %{item | word: "Lait", pronunciation: "leh", example: "Buvez du lait pour des os solides"}
+      "Cheese" -> %{item | word: "Fromage", pronunciation: "froh-mahzh", example: "J'adore le fromage sur mon sandwich"}
+      "Egg" -> %{item | word: "Œuf", pronunciation: "uhf", example: "Œufs brouillés au petit-déjeuner"}
+      
+      # Numbers vocabulary
+      "One" -> %{item | word: "Un", pronunciation: "uhn", example: "J'ai une pomme"}
+      "Two" -> %{item | word: "Deux", pronunciation: "duh", example: "Deux chats jouent"}
+      "Three" -> %{item | word: "Trois", pronunciation: "twah", example: "Comptez jusqu'à trois"}
+      "Four" -> %{item | word: "Quatre", pronunciation: "kah-truh", example: "Quatre roues sur une voiture"}
+      "Five" -> %{item | word: "Cinq", pronunciation: "sank", example: "Tope là!"}
+      "Six" -> %{item | word: "Six", pronunciation: "sees", example: "Six côtés sur un cube"}
+      "Seven" -> %{item | word: "Sept", pronunciation: "set", example: "Le chiffre porte-bonheur sept"}
+      "Eight" -> %{item | word: "Huit", pronunciation: "weet", example: "Huit pattes sur une araignée"}
+      "Nine" -> %{item | word: "Neuf", pronunciation: "nuhf", example: "Neuf vies d'un chat"}
+      "Ten" -> %{item | word: "Dix", pronunciation: "dees", example: "Dix doigts sur vos mains"}
+      "First" -> %{item | word: "Premier", pronunciation: "pruh-mee-AY", example: "Vous êtes le premier dans la file"}
+      "Second" -> %{item | word: "Seconde", pronunciation: "suh-gohnd", example: "Attendez une seconde s'il vous plaît"}
+      
+      # Colors vocabulary
+      "Red" -> %{item | word: "Rouge", pronunciation: "roozh", example: "La rose est rouge"}
+      "Blue" -> %{item | word: "Bleu", pronunciation: "bluh", example: "Le ciel est bleu"}
+      "Green" -> %{item | word: "Vert", pronunciation: "vehr", example: "L'herbe est verte"}
+      "Yellow" -> %{item | word: "Jaune", pronunciation: "zhohn", example: "Le soleil est jaune"}
+      "Orange" -> %{item | word: "Orange", pronunciation: "oh-rahnzh", example: "L'orange est orange"}
+      "Purple" -> %{item | word: "Violet", pronunciation: "vee-oh-leh", example: "Les fleurs violettes sont belles"}
+      "Pink" -> %{item | word: "Rose", pronunciation: "rohz", example: "Flamants roses dans l'étang"}
+      "Brown" -> %{item | word: "Marron", pronunciation: "mah-rohn", example: "Ours brun dans la forêt"}
+      "Black" -> %{item | word: "Noir", pronunciation: "nwahr", example: "Chat noir traversant la rue"}
+      "White" -> %{item | word: "Blanc", pronunciation: "blahn", example: "Neige blanche sur la montagne"}
+      "Gray" -> %{item | word: "Gris", pronunciation: "gree", example: "Nuages gris dans le ciel"}
+      
+      _ -> item # Keep original if no translation found
+    end
+  end
+
+  # Chinese translations with Pinyin
+  defp get_chinese_translation(item) do
+    case item.word do
+      # Self-Introduction vocabulary
+      "Hello" -> %{item | word: "你好 - nǐ hǎo", pronunciation: "nǐ hǎo (nee-how)", example: "你好，我叫小明 - nǐ hǎo, wǒ jiào xiǎo míng", original_word: "Hello"}
+      "Name" -> %{item | word: "名字 - míng zi", pronunciation: "míng zi (ming-zuh)", example: "我的名字是李华 - wǒ de míng zi shì lǐ huá", original_word: "Name"}
+      "Nice to meet you" -> %{item | word: "很高兴认识你 - hěn gāo xìng rèn shi nǐ", pronunciation: "hěn gāo xìng rèn shi nǐ (hen-gao-shing-ren-shur-nee)", example: "很高兴认识你 - hěn gāo xìng rèn shi nǐ", original_word: "Nice to meet you"}
+      "Thank you" -> %{item | word: "谢谢 - xiè xie", pronunciation: "xiè xie (shay-shay)", example: "谢谢你 - xiè xie nǐ", original_word: "Thank you"}
+      "How are you?" -> %{item | word: "你好吗 - nǐ hǎo ma", pronunciation: "nǐ hǎo ma (nee-how-mah)", example: "你好吗？- nǐ hǎo ma?", original_word: "How are you?"}
+      "Fine" -> %{item | word: "很好 - hěn hǎo", pronunciation: "hěn hǎo (hen-how)", example: "我很好，谢谢 - wǒ hěn hǎo, xiè xie", original_word: "Fine"}
+      "Please" -> %{item | word: "请 - qǐng", pronunciation: "qǐng (ching)", example: "请帮助我 - qǐng bāng zhù wǒ", original_word: "Please"}
+      "Sorry" -> %{item | word: "对不起 - duì bu qǐ", pronunciation: "duì bu qǐ (dway-boo-chee)", example: "对不起，我迟到了 - duì bu qǐ, wǒ chí dào le", original_word: "Sorry"}
+      "Yes" -> %{item | word: "是 - shì", pronunciation: "shì (shur)", example: "是的，我明白 - shì de, wǒ míng bái", original_word: "Yes"}
+      "No" -> %{item | word: "不 - bù", pronunciation: "bù (boo)", example: "不，我不认为 - bù, wǒ bù rèn wéi", original_word: "No"}
+      "Goodbye" -> %{item | word: "再见 - zài jiàn", pronunciation: "zài jiàn (zai-jyen)", example: "再见，回头见 - zài jiàn, huí tóu jiàn", original_word: "Goodbye"}
+      "Excuse me" -> %{item | word: "不好意思 - bù hǎo yì si", pronunciation: "bù hǎo yì si (boo-how-ee-suh)", example: "不好意思，厕所在哪里？ - bù hǎo yì si, cè suǒ zài nǎ lǐ?", original_word: "Excuse me"}
+      "Where" -> %{item | word: "哪里 - nǎ lǐ", pronunciation: "nǎ lǐ (nah-lee)", example: "你从哪里来？ - nǐ cóng nǎ lǐ lái?", original_word: "Where"}
+      "From" -> %{item | word: "从 - cóng", pronunciation: "cóng (tsong)", example: "我从加拿大来 - wǒ cóng jiā ná dà lái", original_word: "From"}
+      "See you later" -> %{item | word: "回头见 - huí tóu jiàn", pronunciation: "huí tóu jiàn (hway-toe-jyen)", example: "回头见，祝你一天愉快 - huí tóu jiàn, zhù nǐ yī tiān yú kuài", original_word: "See you later"}
+      
+      # Fruits vocabulary
+      "Apple" -> %{item | word: "苹果 - píng guǒ", pronunciation: "píng guǒ (ping-gwoh)", example: "我每天吃一个苹果 - wǒ měi tiān chī yī gè píng guǒ", original_word: "Apple"}
+      "Banana" -> %{item | word: "香蕉 - xiāng jiāo", pronunciation: "xiāng jiāo (shyang-jyao)", example: "香蕉是黄色的 - xiāng jiāo shì huáng sè de", original_word: "Banana"}
+      "Orange" -> %{item | word: "橙子 - chéng zi", pronunciation: "chéng zi (cheng-zuh)", example: "橙汁很健康 - chéng zhī hěn jiàn kāng", original_word: "Orange"}
+      "Grape" -> %{item | word: "葡萄 - pú táo", pronunciation: "pú táo (poo-tao)", example: "紫色的葡萄很甜 - zǐ sè de pú táo hěn tián", original_word: "Grape"}
+      "Strawberry" -> %{item | word: "草莓 - cǎo méi", pronunciation: "cǎo méi (tsao-may)", example: "草莓配奶油 - cǎo méi pèi nǎi yóu", original_word: "Strawberry"}
+      "Cherry" -> %{item | word: "樱桃 - yīng táo", pronunciation: "yīng táo (ying-tao)", example: "红樱桃很好吃 - hóng yīng táo hěn hǎo chī", original_word: "Cherry"}
+      "Peach" -> %{item | word: "桃子 - táo zi", pronunciation: "táo zi (tao-zuh)", example: "这个桃子很多汁 - zhè ge táo zi hěn duō zhī", original_word: "Peach"}
+      "Pineapple" -> %{item | word: "菠萝 - bō luó", pronunciation: "bō luó (boh-luo)", example: "菠萝披萨有争议 - bō luó pī sà yǒu zhēng yì", original_word: "Pineapple"}
+      "Watermelon" -> %{item | word: "西瓜 - xī guā", pronunciation: "xī guā (shee-gwa)", example: "西瓜很适合夏天 - xī guā hěn shì hé xià tiān", original_word: "Watermelon"}
+      "Lemon" -> %{item | word: "柠檬 - níng méng", pronunciation: "níng méng (ning-mung)", example: "柠檬水很清爽 - níng méng shuǐ hěn qīng shuǎng", original_word: "Lemon"}
+      "Avocado" -> %{item | word: "牛油果 - niú yóu guǒ", pronunciation: "niú yóu guǒ (nyo-yo-gwo)", example: "早餐吃牛油果吐司 - zǎo cān chī niú yóu guǒ tǔ sī", original_word: "Avocado"}
+      "Coconut" -> %{item | word: "椰子 - yē zi", pronunciation: "yē zi (yeh-zuh)", example: "椰奶很香滑 - yē nǎi hěn xiāng huá", original_word: "Coconut"}
+      "Mango" -> %{item | word: "芒果 - máng guǒ", pronunciation: "máng guǒ (mang-gwo)", example: "热带芒果奶昔 - rè dài máng guǒ nǎi xī", original_word: "Mango"}
+      "Kiwi" -> %{item | word: "猕猴桃 - mí hóu táo", pronunciation: "mí hóu táo (mee-ho-tao)", example: "猕猴桃里面是绿色的 - mí hóu táo lǐ miàn shì lǜ sè de", original_word: "Kiwi"}
+      "Tomato" -> %{item | word: "西红柿 - xī hóng shì", pronunciation: "xī hóng shì (shee-hong-shur)", example: "西红柿是水果还是蔬菜？ - xī hóng shì shì shuǐ guǒ hái shì shū cài?", original_word: "Tomato"}
+      "Carrot" -> %{item | word: "胡萝卜 - hú luó bo", pronunciation: "hú luó bo (hoo-luo-boh)", example: "胡萝卜对眼睛好 - hú luó bo duì yǎn jīng hǎo", original_word: "Carrot"}
+      "Cheese" -> %{item | word: "奶酪 - nǎi lào", pronunciation: "nǎi lào (nai-lao)", example: "我喜欢三明治里的奶酪 - wǒ xǐ huān sān míng zhì lǐ de nǎi lào", original_word: "Cheese"}
+      "Bread" -> %{item | word: "面包 - miàn bāo", pronunciation: "miàn bāo (myen-bao)", example: "新鲜面包很香 - xīn xiān miàn bāo hěn xiāng", original_word: "Bread"}
+      "Milk" -> %{item | word: "牛奶 - niú nǎi", pronunciation: "niú nǎi (nyo-nai)", example: "喝牛奶对骨头好 - hē niú nǎi duì gú tou hǎo", original_word: "Milk"}
+      "Egg" -> %{item | word: "鸡蛋 - jī dàn", pronunciation: "jī dàn (jee-dan)", example: "早餐炒鸡蛋 - zǎo cān chǎo jī dàn", original_word: "Egg"}
+      
+      # Numbers vocabulary  
+      "One" -> %{item | word: "一 - yī", pronunciation: "yī (ee)", example: "我有一只猫 - wǒ yǒu yī zhī māo", original_word: "One"}
+      "Two" -> %{item | word: "二 - èr", pronunciation: "èr (ar)", example: "两只狗在玩 - liǎng zhī gǒu zài wán", original_word: "Two"}
+      "Three" -> %{item | word: "三 - sān", pronunciation: "sān (sahn)", example: "数到三 - shǔ dào sān", original_word: "Three"}
+      "Four" -> %{item | word: "四 - sì", pronunciation: "sì (suh)", example: "汽车有四个轮子 - qì chē yǒu sì gè lún zi", original_word: "Four"}
+      "Five" -> %{item | word: "五 - wǔ", pronunciation: "wǔ (woo)", example: "击掌！- jī zhǎng!", original_word: "Five"}
+      "Six" -> %{item | word: "六 - liù", pronunciation: "liù (lyo)", example: "立方体有六个面 - lì fāng tǐ yǒu liù ge miàn", original_word: "Six"}
+      "Seven" -> %{item | word: "七 - qī", pronunciation: "qī (chee)", example: "幸运数字七 - xìng yùn shù zì qī", original_word: "Seven"}
+      "Eight" -> %{item | word: "八 - bā", pronunciation: "bā (bah)", example: "蜘蛛有八条腿 - zhī zhū yǒu bā tiáo tuǐ", original_word: "Eight"}
+      "Nine" -> %{item | word: "九 - jiǔ", pronunciation: "jiǔ (jyo)", example: "猫有九条命 - māo yǒu jiǔ tiáo mìng", original_word: "Nine"}
+      "Ten" -> %{item | word: "十 - shí", pronunciation: "shí (shur)", example: "你的手有十个手指 - nǐ de shǒu yǒu shí gè shǒu zhǐ", original_word: "Ten"}
+      "First" -> %{item | word: "第一 - dì yī", pronunciation: "dì yī (dee-ee)", example: "你是排队第一个 - nǐ shì pái duì dì yī ge", original_word: "First"}
+      "Second" -> %{item | word: "秒 - miǎo", pronunciation: "miǎo (mee-ao)", example: "请等一秒钟 - qǐng děng yī miǎo zhōng", original_word: "Second"}
+      
+      # Colors vocabulary
+      "Red" -> %{item | word: "红色 - hóng sè", pronunciation: "hóng sè (hong-suh)", example: "玫瑰花是红色的 - méi gui huā shì hóng sè de", original_word: "Red"}
+      "Blue" -> %{item | word: "蓝色 - lán sè", pronunciation: "lán sè (lahn-suh)", example: "天空是蓝色的 - tiān kōng shì lán sè de", original_word: "Blue"}
+      "Green" -> %{item | word: "绿色 - lǜ sè", pronunciation: "lǜ sè (loo-suh)", example: "草是绿色的 - cǎo shì lǜ sè de", original_word: "Green"}
+      "Yellow" -> %{item | word: "黄色 - huáng sè", pronunciation: "huáng sè (hwang-suh)", example: "太阳是黄色的 - tài yáng shì huáng sè de", original_word: "Yellow"}
+      "Black" -> %{item | word: "黑色 - hēi sè", pronunciation: "hēi sè (hay-suh)", example: "黑猫过马路 - hēi māo guò mǎ lù", original_word: "Black"}
+      "White" -> %{item | word: "白色 - bái sè", pronunciation: "bái sè (bai-suh)", example: "山上的白雪 - shān shàng de bái xuě", original_word: "White"}
+      "Orange" -> %{item | word: "橙色 - chéng sè", pronunciation: "chéng sè (cheng-suh)", example: "橙子是橙色的 - chéng zi shì chéng sè de", original_word: "Orange"}
+      "Purple" -> %{item | word: "紫色 - zǐ sè", pronunciation: "zǐ sè (zuh-suh)", example: "紫色的花很美丽 - zǐ sè de huā hěn měi lì", original_word: "Purple"}
+      "Pink" -> %{item | word: "粉色 - fěn sè", pronunciation: "fěn sè (fen-suh)", example: "池塘里的粉色火烈鸟 - chí táng lǐ de fěn sè huǒ liè niǎo", original_word: "Pink"}
+      "Brown" -> %{item | word: "棕色 - zōng sè", pronunciation: "zōng sè (zong-suh)", example: "森林里的棕熊 - sēn lín lǐ de zōng xióng", original_word: "Brown"}
+      "Gray" -> %{item | word: "灰色 - huī sè", pronunciation: "huī sè (hway-suh)", example: "天空中的灰云 - tiān kōng zhōng de huī yún", original_word: "Gray"}
+      "Rainbow" -> %{item | word: "彩虹 - cǎi hóng", pronunciation: "cǎi hóng (tsai-hong)", example: "雨后的彩虹 - yǔ hòu de cǎi hóng", original_word: "Rainbow"}
+      "Bright" -> %{item | word: "明亮 - míng liàng", pronunciation: "míng liàng (ming-lyang)", example: "明亮的颜色很愉快 - míng liàng de yán sè hěn yú kuài", original_word: "Bright"}
+      "Dark" -> %{item | word: "深色 - shēn sè", pronunciation: "shēn sè (shen-suh)", example: "深色看起来很优雅 - shēn sè kàn qǐ lái hěn yōu yǎ", original_word: "Dark"}
+      "Light" -> %{item | word: "浅色 - qiǎn sè", pronunciation: "qiǎn sè (chyen-suh)", example: "像晨空一样的浅蓝色 - xiàng chén kōng yī yàng de qiǎn lán sè", original_word: "Light"}
+      "Colorful" -> %{item | word: "五彩缤纷 - wǔ cǎi bīn fēn", pronunciation: "wǔ cǎi bīn fēn (woo-tsai-bin-fen)", example: "这幅画很五彩缤纷 - zhè fú huà hěn wǔ cǎi bīn fēn", original_word: "Colorful"}
+      
+      # Bakery vocabulary
+      "Bread" -> %{item | word: "面包 - miàn bāo", pronunciation: "miàn bāo (myen-bao)", example: "新鲜面包很香 - xīn xiān miàn bāo hěn xiāng", original_word: "Bread"}
+      "Croissant" -> %{item | word: "牛角包 - niú jiǎo bāo", pronunciation: "niú jiǎo bāo (nyo-jyao-bao)", example: "奶香法式牛角包 - nǎi xiāng fǎ shì niú jiǎo bāo", original_word: "Croissant"}
+      "Bagel" -> %{item | word: "百吉饼 - bǎi jí bǐng", pronunciation: "bǎi jí bǐng (bai-jee-bing)", example: "烤百吉饼配奶油奶酪 - kǎo bǎi jí bǐng pèi nǎi yóu nǎi lào", original_word: "Bagel"}
+      "Pretzel" -> %{item | word: "椒盐脆饼 - jiāo yán cuì bǐng", pronunciation: "jiāo yán cuì bǐng (jyao-yan-tsway-bing)", example: "扭曲的咸椒盐脆饼 - niǔ qū de xián jiāo yán cuì bǐng", original_word: "Pretzel"}
+      "Baguette" -> %{item | word: "法棍 - fǎ gùn", pronunciation: "fǎ gùn (fah-goon)", example: "长长的法式法棍 - cháng cháng de fǎ shì fǎ gùn", original_word: "Baguette"}
+      "Cake" -> %{item | word: "蛋糕 - dàn gāo", pronunciation: "dàn gāo (dan-gao)", example: "生日蛋糕配蜡烛 - shēng rì dàn gāo pèi là zhú", original_word: "Cake"}
+      "Cupcake" -> %{item | word: "纸杯蛋糕 - zhǐ bēi dàn gāo", pronunciation: "zhǐ bēi dàn gāo (zhur-bay-dan-gao)", example: "甜蜜的巧克力纸杯蛋糕 - tián mì de qiǎo kè lì zhǐ bēi dàn gāo", original_word: "Cupcake"}
+      "Donut" -> %{item | word: "甜甜圈 - tián tián quān", pronunciation: "tián tián quān (tyen-tyen-chwan)", example: "早餐吃糖霜甜甜圈 - zǎo cān chī táng shuāng tián tián quān", original_word: "Donut"}
+      "Cookie" -> %{item | word: "饼干 - bǐng gān", pronunciation: "bǐng gān (bing-gan)", example: "巧克力片饼干 - qiǎo kè lì piàn bǐng gān", original_word: "Cookie"}
+      "Pie" -> %{item | word: "馅饼 - xiàn bǐng", pronunciation: "xiàn bǐng (shyen-bing)", example: "甜点苹果馅饼 - tián diǎn píng guǒ xiàn bǐng", original_word: "Pie"}
+      
+      # Animals vocabulary
+      "Dog" -> %{item | word: "狗 - gǒu", pronunciation: "gǒu (go)", example: "狗是人类最好的朋友 - gǒu shì rén lèi zuì hǎo de péng yǒu", original_word: "Dog"}
+      "Cat" -> %{item | word: "猫 - māo", pronunciation: "māo (mao)", example: "猫在阳光下睡觉 - māo zài yáng guāng xià shuì jiào", original_word: "Cat"}
+      "Rabbit" -> %{item | word: "兔子 - tù zi", pronunciation: "tù zi (too-zuh)", example: "兔子跳得很快 - tù zi tiào de hěn kuài", original_word: "Rabbit"}
+      "Bear" -> %{item | word: "熊 - xióng", pronunciation: "xióng (shyong)", example: "棕熊很强壮 - zōng xióng hěn qiáng zhuàng", original_word: "Bear"}
+      "Panda" -> %{item | word: "熊猫 - xióng māo", pronunciation: "xióng māo (shyong-mao)", example: "大熊猫吃竹子 - dà xióng māo chī zhú zi", original_word: "Panda"}
+      "Lion" -> %{item | word: "狮子 - shī zi", pronunciation: "shī zi (shur-zuh)", example: "狮子是丛林之王 - shī zi shì cóng lín zhī wáng", original_word: "Lion"}
+      "Tiger" -> %{item | word: "老虎 - lǎo hǔ", pronunciation: "lǎo hǔ (lao-hoo)", example: "老虎身上有条纹 - lǎo hǔ shēn shàng yǒu tiáo wén", original_word: "Tiger"}
+      "Elephant" -> %{item | word: "大象 - dà xiàng", pronunciation: "dà xiàng (dah-shyang)", example: "大象很大 - dà xiàng hěn dà", original_word: "Elephant"}
+      "Monkey" -> %{item | word: "猴子 - hóu zi", pronunciation: "hóu zi (ho-zuh)", example: "猴子在树上荡秋千 - hóu zi zài shù shàng dàng qiū qiān", original_word: "Monkey"}
+      "Horse" -> %{item | word: "马 - mǎ", pronunciation: "mǎ (mah)", example: "马跑得很快 - mǎ pǎo de hěn kuài", original_word: "Horse"}
+      "Cow" -> %{item | word: "奶牛 - nǎi niú", pronunciation: "nǎi niú (nai-nyo)", example: "奶牛产奶 - nǎi niú chǎn nǎi", original_word: "Cow"}
+      "Pig" -> %{item | word: "猪 - zhū", pronunciation: "zhū (zhoo)", example: "猪在泥里打滚 - zhū zài ní lǐ dǎ gǔn", original_word: "Pig"}
+      
+      # Restaurant vocabulary
+      "Menu" -> %{item | word: "菜单 - cài dān", pronunciation: "cài dān (tsai-dan)", example: "请给我看看菜单 - qǐng gěi wǒ kàn kan cài dān", original_word: "Menu"}
+      "Pizza" -> %{item | word: "披萨 - pī sà", pronunciation: "pī sà (pee-sah)", example: "我要一片披萨 - wǒ yào yī piàn pī sà", original_word: "Pizza"}
+      "Burger" -> %{item | word: "汉堡 - hàn bǎo", pronunciation: "hàn bǎo (han-bao)", example: "芝士汉堡配薯条 - zhī shì hàn bǎo pèi shǔ tiáo", original_word: "Burger"}
+      "Fries" -> %{item | word: "薯条 - shǔ tiáo", pronunciation: "shǔ tiáo (shoo-tyao)", example: "法式薯条很脆 - fǎ shì shǔ tiáo hěn cuì", original_word: "Fries"}
+      "Pasta" -> %{item | word: "意大利面 - yì dà lì miàn", pronunciation: "yì dà lì miàn (ee-dah-lee-myen)", example: "配酱的意大利面条 - pèi jiàng de yì dà lì miàn tiáo", original_word: "Pasta"}
+      "Salad" -> %{item | word: "沙拉 - shā lā", pronunciation: "shā lā (shah-lah)", example: "新鲜绿色沙拉 - xīn xiān lǜ sè shā lā", original_word: "Salad"}
+      "Soup" -> %{item | word: "汤 - tāng", pronunciation: "tāng (tang)", example: "热腾腾的鸡汤 - rè téng téng de jī tāng", original_word: "Soup"}
+      "Coffee" -> %{item | word: "咖啡 - kā fēi", pronunciation: "kā fēi (kah-fay)", example: "热黑咖啡 - rè hēi kā fēi", original_word: "Coffee"}
+      "Water" -> %{item | word: "水 - shuǐ", pronunciation: "shuǐ (shway)", example: "一杯冷水 - yī bēi lěng shuǐ", original_word: "Water"}
+      "Bill" -> %{item | word: "账单 - zhàng dān", pronunciation: "zhàng dān (zhang-dan)", example: "可以给我账单吗？ - kě yǐ gěi wǒ zhàng dān ma?", original_word: "Bill"}
+      
+      # Family vocabulary
+      "Mother" -> %{item | word: "妈妈 - mā ma", pronunciation: "mā ma (mah-mah)", example: "我妈妈很善良 - wǒ mā ma hěn shàn liáng", original_word: "Mother"}
+      "Father" -> %{item | word: "爸爸 - bà ba", pronunciation: "bà ba (bah-bah)", example: "我爸爸工作很努力 - wǒ bà ba gōng zuò hěn nǔ lì", original_word: "Father"}
+      "Sister" -> %{item | word: "姐姐/妹妹 - jiě jie/mèi mei", pronunciation: "jiě jie/mèi mei (jyeh-jyeh/may-may)", example: "我有两个姐姐 - wǒ yǒu liǎng ge jiě jie", original_word: "Sister"}
+      "Brother" -> %{item | word: "哥哥/弟弟 - gē ge/dì di", pronunciation: "gē ge/dì di (guh-guh/dee-dee)", example: "我弟弟比我小 - wǒ dì di bǐ wǒ xiǎo", original_word: "Brother"}
+      "Grandmother" -> %{item | word: "奶奶 - nǎi nai", pronunciation: "nǎi nai (nai-nai)", example: "奶奶讲很棒的故事 - nǎi nai jiǎng hěn bàng de gù shi", original_word: "Grandmother"}
+      "Grandfather" -> %{item | word: "爷爷 - yé ye", pronunciation: "yé ye (yeh-yeh)", example: "爷爷很有智慧 - yé ye hěn yǒu zhì huì", original_word: "Grandfather"}
+      "Baby" -> %{item | word: "宝宝 - bǎo bao", pronunciation: "bǎo bao (bao-bao)", example: "宝宝在睡觉 - bǎo bao zài shuì jiào", original_word: "Baby"}
+      "Family" -> %{item | word: "家庭 - jiā tíng", pronunciation: "jiā tíng (jya-ting)", example: "我爱我的家庭 - wǒ ài wǒ de jiā tíng", original_word: "Family"}
+      "Aunt" -> %{item | word: "阿姨 - ā yí", pronunciation: "ā yí (ah-yee)", example: "我阿姨住在附近 - wǒ ā yí zhù zài fù jìn", original_word: "Aunt"}
+      "Uncle" -> %{item | word: "叔叔 - shū shu", pronunciation: "shū shu (shoo-shoo)", example: "叔叔周末来拜访 - shū shu zhōu mò lái bài fǎng", original_word: "Uncle"}
+      
+      # Countries vocabulary
+      "Taiwan" -> %{item | word: "台湾 - tái wān", pronunciation: "tái wān (tai-wan)", example: "台湾是一个美丽的岛屿 - tái wān shì yī ge měi lì de dǎo yǔ", original_word: "Taiwan"}
+      "France" -> %{item | word: "法国 - fǎ guó", pronunciation: "fǎ guó (fah-gwo)", example: "法国以美食闻名 - fǎ guó yǐ měi shí wén míng", original_word: "France"}
+      "Germany" -> %{item | word: "德国 - dé guó", pronunciation: "dé guó (duh-gwo)", example: "德国有很棒的啤酒 - dé guó yǒu hěn bàng de pí jiǔ", original_word: "Germany"}
+      "Japan" -> %{item | word: "日本 - rì běn", pronunciation: "rì běn (rur-ben)", example: "日本有美丽的樱花 - rì běn yǒu měi lì de yīng huā", original_word: "Japan"}
+      "USA" -> %{item | word: "美国 - měi guó", pronunciation: "měi guó (may-gwo)", example: "美国很多元化 - měi guó hěn duō yuán huà", original_word: "USA"}
+      "UK" -> %{item | word: "英国 - yīng guó", pronunciation: "yīng guó (ying-gwo)", example: "英国历史悠久 - yīng guó lì shǐ yōu jiǔ", original_word: "UK"}
+      "Italy" -> %{item | word: "意大利 - yì dà lì", pronunciation: "yì dà lì (ee-dah-lee)", example: "意大利制作很棒的意大利面 - yì dà lì zhì zuò hěn bàng de yì dà lì miàn", original_word: "Italy"}
+      "Spain" -> %{item | word: "西班牙 - xī bān yá", pronunciation: "xī bān yá (shee-ban-yah)", example: "西班牙有弗拉门戈舞蹈 - xī bān yá yǒu fú lā mén gē wǔ dǎo", original_word: "Spain"}
+      "China" -> %{item | word: "中国 - zhōng guó", pronunciation: "zhōng guó (zhong-gwo)", example: "中国有悠久的历史 - zhōng guó yǒu yōu jiǔ de lì shǐ", original_word: "China"}
+      "Canada" -> %{item | word: "加拿大 - jiā ná dà", pronunciation: "jiā ná dà (jya-nah-dah)", example: "加拿大以枫糖浆闻名 - jiā ná dà yǐ fēng táng jiāng wén míng", original_word: "Canada"}
+      
+      _ -> item
+    end
+  end
+
+  # Japanese translations with romaji
+  defp get_japanese_translation(item) do
+    case item.word do
+      # Self-Introduction vocabulary
+      "Hello" -> %{item | word: "こんにちは - konnichiwa", pronunciation: "konnichiwa (kon-nee-chee-wah)", example: "こんにちは、私の名前は田中です - konnichiwa, watashi no namae wa tanaka desu"}
+      "Name" -> %{item | word: "名前 - namae", pronunciation: "namae (nah-mah-eh)", example: "私の名前は佐藤です - watashi no namae wa satou desu"}
+      "Nice to meet you" -> %{item | word: "よろしくお願いします - yoroshiku onegaishimasu", pronunciation: "yoroshiku onegaishimasu (yo-ro-she-ku o-ne-guy-she-mas)", example: "よろしくお願いします - yoroshiku onegaishimasu"}
+      "Thank you" -> %{item | word: "ありがとう - arigatou", pronunciation: "arigatou (ah-ree-gah-toe)", example: "ありがとうございます - arigatou gozaimasu"}
+      "How are you?" -> %{item | word: "元気ですか - genki desu ka", pronunciation: "genki desu ka (gen-kee-des-kah)", example: "元気ですか？ - genki desu ka?"}
+      "Fine" -> %{item | word: "元気です - genki desu", pronunciation: "genki desu (gen-kee-des)", example: "元気です、ありがとう - genki desu, arigatou"}
+      "Please" -> %{item | word: "お願いします - onegaishimasu", pronunciation: "onegaishimasu (o-ne-guy-she-mas)", example: "手伝ってお願いします - tetsudatte onegaishimasu"}
+      "Sorry" -> %{item | word: "すみません - sumimasen", pronunciation: "sumimasen (soo-mee-mah-sen)", example: "すみません、遅れました - sumimasen, okuremashita"}
+      "Yes" -> %{item | word: "はい - hai", pronunciation: "hai (high)", example: "はい、わかります - hai, wakarimasu"}
+      "No" -> %{item | word: "いいえ - iie", pronunciation: "iie (ee-eh)", example: "いいえ、そう思いません - iie, sou omoimasen"}
+      "Goodbye" -> %{item | word: "さようなら - sayounara", pronunciation: "sayounara (sah-yo-nah-rah)", example: "さようなら、また後で - sayounara, mata ato de"}
+      "Excuse me" -> %{item | word: "すみません - sumimasen", pronunciation: "sumimasen (soo-mee-mah-sen)", example: "すみません、トイレはどこですか？ - sumimasen, toire wa doko desu ka?"}
+      "Where" -> %{item | word: "どこ - doko", pronunciation: "doko (doh-koh)", example: "どこから来ましたか？ - doko kara kimashita ka?"}
+      "From" -> %{item | word: "から - kara", pronunciation: "kara (kah-rah)", example: "カナダから来ました - kanada kara kimashita"}
+      "See you later" -> %{item | word: "また後で - mata ato de", pronunciation: "mata ato de (mah-tah ah-toh deh)", example: "また後で、良い一日を - mata ato de, yoi ichinichi wo"}
+      
+      # Fruits vocabulary
+      "Apple" -> %{item | word: "りんご - ringo", pronunciation: "ringo (reen-go)", example: "毎日りんごを食べます - mainichi ringo wo tabemasu"}
+      "Banana" -> %{item | word: "バナナ - banana", pronunciation: "banana (bah-nah-nah)", example: "バナナは黄色いです - banana wa kiiroi desu"}
+      "Orange" -> %{item | word: "オレンジ - orenji", pronunciation: "orenji (oh-ren-jee)", example: "オレンジジュースは健康的です - orenji juusu wa kenkou-teki desu"}
+      "Grape" -> %{item | word: "ぶどう - budou", pronunciation: "budou (boo-doe)", example: "紫のぶどうは甘いです - murasaki no budou wa amai desu"}
+      "Strawberry" -> %{item | word: "いちご - ichigo", pronunciation: "ichigo (ee-chee-go)", example: "いちごとクリーム - ichigo to kuriimu"}
+      "Cherry" -> %{item | word: "さくらんぼ - sakuranbo", pronunciation: "sakuranbo (sah-koo-ran-boh)", example: "赤いさくらんぼは美味しいです - akai sakuranbo wa oishii desu"}
+      "Peach" -> %{item | word: "桃 - momo", pronunciation: "momo (moh-moh)", example: "この桃はとてもジューシーです - kono momo wa totemo juushii desu"}
+      "Pineapple" -> %{item | word: "パイナップル - painappuru", pronunciation: "painappuru (pie-nah-poo-roo)", example: "パイナップルピザは議論の的です - painappuru piza wa giron no mato desu"}
+      "Watermelon" -> %{item | word: "スイカ - suika", pronunciation: "suika (sway-kah)", example: "スイカは夏にぴったりです - suika wa natsu ni pittari desu"}
+      "Lemon" -> %{item | word: "レモン - remon", pronunciation: "remon (reh-mohn)", example: "レモン水は爽やかです - remon sui wa sawayaka desu"}
+      "Avocado" -> %{item | word: "アボカド - abokado", pronunciation: "abokado (ah-boh-kah-doh)", example: "朝食にアボカドトースト - choushoku ni abokado toosuto"}
+      "Coconut" -> %{item | word: "ココナッツ - kokonattsu", pronunciation: "kokonattsu (koh-koh-naht-tsoo)", example: "ココナッツミルクはクリーミーです - kokonattsu miruku wa kuriimu desu"}
+      "Mango" -> %{item | word: "マンゴー - mangoo", pronunciation: "mangoo (mahn-goh)", example: "トロピカルマンゴースムージー - toropikaru mangoo sumuujii"}
+      "Kiwi" -> %{item | word: "キウイ - kiui", pronunciation: "kiui (kee-wee)", example: "キウイフルーツは中が緑です - kiui furuutsu wa naka ga midori desu"}
+      "Tomato" -> %{item | word: "トマト - tomato", pronunciation: "tomato (toh-mah-toh)", example: "トマトは果物ですか野菜ですか？ - tomato wa kudamono desu ka yasai desu ka?"}
+      "Carrot" -> %{item | word: "にんじん - ninjin", pronunciation: "ninjin (neen-jeen)", example: "にんじんは目に良いです - ninjin wa me ni yoi desu"}
+      "Cheese" -> %{item | word: "チーズ - chiizu", pronunciation: "chiizu (chee-zoo)", example: "サンドイッチにチーズが大好きです - sandoicchi ni chiizu ga daisuki desu"}
+      "Bread" -> %{item | word: "パン - pan", pronunciation: "pan (pahn)", example: "新鮮なパンはいい匂いです - shinsen na pan wa ii nioi desu"}
+      "Milk" -> %{item | word: "牛乳 - gyuunyuu", pronunciation: "gyuunyuu (gyoo-nyoo)", example: "強い骨のために牛乳を飲む - tsuyoi hone no tame ni gyuunyuu wo nomu"}
+      "Egg" -> %{item | word: "卵 - tamago", pronunciation: "tamago (tah-mah-go)", example: "朝食にスクランブルエッグ - choushoku ni sukuramburu eggu"}
+      
+      # Numbers vocabulary
+      "One" -> %{item | word: "一 - ichi", pronunciation: "ichi (ee-chee)", example: "猫が一匹います - neko ga ippiki imasu"}
+      "Two" -> %{item | word: "二 - ni", pronunciation: "ni (nee)", example: "犬が二匹遊んでいます - inu ga nihiki asonde imasu"}
+      "Three" -> %{item | word: "三 - san", pronunciation: "san (sahn)", example: "三まで数えて - san made kazoete"}
+      "Four" -> %{item | word: "四 - yon/shi", pronunciation: "yon/shi (yone/shee)", example: "車には四つの車輪があります - kuruma ni wa yottsu no sharin ga arimasu"}
+      "Five" -> %{item | word: "五 - go", pronunciation: "go (go)", example: "ハイタッチ！ - hai tatchi!"}
+      "Six" -> %{item | word: "六 - roku", pronunciation: "roku (roh-koo)", example: "立方体には六つの面があります - rippoutai ni wa muttsu no men ga arimasu"}
+      "Seven" -> %{item | word: "七 - shichi/nana", pronunciation: "shichi/nana (shee-chee/nah-nah)", example: "ラッキーセブン - rakkii sebun"}
+      "Eight" -> %{item | word: "八 - hachi", pronunciation: "hachi (hah-chee)", example: "蜘蛛には八本の足があります - kumo ni wa happon no ashi ga arimasu"}
+      "Nine" -> %{item | word: "九 - kyuu", pronunciation: "kyuu (kyoo)", example: "猫には九つの命があります - neko ni wa kokonotsu no inochi ga arimasu"}
+      "Ten" -> %{item | word: "十 - juu", pronunciation: "juu (joo)", example: "手には十本の指があります - te ni wa juu-hon no yubi ga arimasu"}
+      "First" -> %{item | word: "最初 - saisho", pronunciation: "saisho (sai-shoh)", example: "あなたは列の最初です - anata wa retsu no saisho desu"}
+      "Second" -> %{item | word: "秒 - byou", pronunciation: "byou (byoh)", example: "ちょっと待ってください - chotto matte kudasai"}
+      
+      # Colors vocabulary
+      "Red" -> %{item | word: "赤 - aka", pronunciation: "aka (ah-kah)", example: "バラは赤いです - bara wa akai desu"}
+      "Blue" -> %{item | word: "青 - ao", pronunciation: "ao (ah-oh)", example: "空は青いです - sora wa aoi desu"}
+      "Green" -> %{item | word: "緑 - midori", pronunciation: "midori (mee-do-ree)", example: "草は緑です - kusa wa midori desu"}
+      "Yellow" -> %{item | word: "黄色 - kiiro", pronunciation: "kiiro (kee-ro)", example: "太陽は黄色です - taiyou wa kiiro desu"}
+      "Black" -> %{item | word: "黒 - kuro", pronunciation: "kuro (koo-ro)", example: "黒い猫が道を渡る - kuroi neko ga michi wo wataru"}
+      "White" -> %{item | word: "白 - shiro", pronunciation: "shiro (shee-ro)", example: "山の白い雪 - yama no shiroi yuki"}
+      "Orange" -> %{item | word: "オレンジ - orenji", pronunciation: "orenji (oh-ren-jee)", example: "オレンジ色のオレンジ - orenji-iro no orenji"}
+      "Purple" -> %{item | word: "紫 - murasaki", pronunciation: "murasaki (moo-rah-sah-kee)", example: "紫の花は美しいです - murasaki no hana wa utsukushii desu"}
+      "Pink" -> %{item | word: "ピンク - pinku", pronunciation: "pinku (peen-koo)", example: "池のピンクのフラミンゴ - ike no pinku no furamingo"}
+      "Brown" -> %{item | word: "茶色 - chairo", pronunciation: "chairo (chai-roh)", example: "森の茶色いクマ - mori no chairoi kuma"}
+      "Gray" -> %{item | word: "灰色 - haiiro", pronunciation: "haiiro (hai-ee-roh)", example: "空の灰色の雲 - sora no haiiro no kumo"}
+      "Rainbow" -> %{item | word: "虹 - niji", pronunciation: "niji (nee-jee)", example: "雨の後の虹 - ame no ato no niji"}
+      "Bright" -> %{item | word: "明るい - akarui", pronunciation: "akarui (ah-kah-roo-ee)", example: "明るい色は陽気です - akarui iro wa youki desu"}
+      "Dark" -> %{item | word: "暗い - kurai", pronunciation: "kurai (koo-rai)", example: "暗い色は上品に見えます - kurai iro wa jouhin ni miemasu"}
+      "Light" -> %{item | word: "薄い - usui", pronunciation: "usui (oo-soo-ee)", example: "朝空のような薄い青 - asazora no you na usui ao"}
+      "Colorful" -> %{item | word: "カラフル - karafuru", pronunciation: "karafuru (kah-rah-foo-roo)", example: "その絵はとてもカラフルです - sono e wa totemo karafuru desu"}
+      
+      # Bakery vocabulary
+      "Bread" -> %{item | word: "パン - pan", pronunciation: "pan (pahn)", example: "新鮮なパンはいい匂いです - shinsen na pan wa ii nioi desu"}
+      "Croissant" -> %{item | word: "クロワッサン - kurowassan", pronunciation: "kurowassan (koo-roh-wahs-sahn)", example: "バターの効いたフランスのクロワッサン - bataa no kiita furansu no kurowassan"}
+      "Bagel" -> %{item | word: "ベーグル - beeguru", pronunciation: "beeguru (bay-goo-roo)", example: "クリームチーズ付きトーストベーグル - kuriimu chiizu tsuki toosuto beeguru"}
+      "Pretzel" -> %{item | word: "プレッツェル - purettsueru", pronunciation: "purettsueru (poo-reht-tsoo-eh-roo)", example: "ねじれた塩味のプレッツェル - nejireta shioaji no purettsueru"}
+      "Baguette" -> %{item | word: "バゲット - bagetto", pronunciation: "bagetto (bah-geht-toh)", example: "長いフランスのバゲット - nagai furansu no bagetto"}
+      "Cake" -> %{item | word: "ケーキ - keeki", pronunciation: "keeki (kay-kee)", example: "ろうそく付きの誕生日ケーキ - rousoku tsuki no tanjoubi keeki"}
+      "Cupcake" -> %{item | word: "カップケーキ - kappukeeki", pronunciation: "kappukeeki (kahp-poo-kay-kee)", example: "甘いチョコレートカップケーキ - amai chokoreeto kappukeeki"}
+      "Donut" -> %{item | word: "ドーナツ - doonatsu", pronunciation: "doonatsu (doh-naht-soo)", example: "朝食にグレーズドドーナツ - choushoku ni gureezudo doonatsu"}
+      "Cookie" -> %{item | word: "クッキー - kukkii", pronunciation: "kukkii (kook-kee)", example: "チョコチップクッキー - chokochippu kukkii"}
+      "Pie" -> %{item | word: "パイ - pai", pronunciation: "pai (pie)", example: "デザートにアップルパイ - dezaato ni appuru pai"}
+      
+      # Animals vocabulary
+      "Dog" -> %{item | word: "犬 - inu", pronunciation: "inu (ee-noo)", example: "犬は人間の最良の友です - inu wa ningen no sairyou no tomo desu"}
+      "Cat" -> %{item | word: "猫 - neko", pronunciation: "neko (neh-koh)", example: "猫は日向で眠ります - neko wa hinata de nemurimasu"}
+      "Rabbit" -> %{item | word: "うさぎ - usagi", pronunciation: "usagi (oo-sah-gee)", example: "うさぎは素早く跳びます - usagi wa subayaku tobimasu"}
+      "Bear" -> %{item | word: "クマ - kuma", pronunciation: "kuma (koo-mah)", example: "茶色いクマは強いです - chairoi kuma wa tsuyoi desu"}
+      "Panda" -> %{item | word: "パンダ - panda", pronunciation: "panda (pahn-dah)", example: "ジャイアントパンダは竹を食べます - jaianto panda wa take wo tabemasu"}
+      "Lion" -> %{item | word: "ライオン - raion", pronunciation: "raion (rai-ohn)", example: "ライオンはジャングルの王です - raion wa janguru no ou desu"}
+      "Tiger" -> %{item | word: "トラ - tora", pronunciation: "tora (toh-rah)", example: "トラには縞模様があります - tora ni wa shima moyou ga arimasu"}
+      "Elephant" -> %{item | word: "象 - zou", pronunciation: "zou (zoh)", example: "象はとても大きいです - zou wa totemo ookii desu"}
+      "Monkey" -> %{item | word: "サル - saru", pronunciation: "saru (sah-roo)", example: "サルは木でブランコします - saru wa ki de buranko shimasu"}
+      "Horse" -> %{item | word: "馬 - uma", pronunciation: "uma (oo-mah)", example: "馬は速く走ります - uma wa hayaku hashirimasu"}
+      "Cow" -> %{item | word: "牛 - ushi", pronunciation: "ushi (oo-shee)", example: "牛はミルクを出します - ushi wa miruku wo dashimasu"}
+      "Pig" -> %{item | word: "豚 - buta", pronunciation: "buta (boo-tah)", example: "豚は泥の中で転がります - buta wa doro no naka de korogarimasu"}
+      
+      # Restaurant vocabulary
+      "Menu" -> %{item | word: "メニュー - menyuu", pronunciation: "menyuu (men-yoo)", example: "メニューを見せてください - menyuu wo misete kudasai"}
+      "Pizza" -> %{item | word: "ピザ - piza", pronunciation: "piza (pee-zah)", example: "ピザを一切れください - piza wo hitokire kudasai"}
+      "Burger" -> %{item | word: "ハンバーガー - hanbaagaa", pronunciation: "hanbaagaa (hahn-bah-gah)", example: "フライドポテト付きチーズバーガー - furaido poteto tsuki chiizu baagaa"}
+      "Fries" -> %{item | word: "フライドポテト - furaido poteto", pronunciation: "furaido poteto (foo-rai-doh poh-teh-toh)", example: "フレンチフライはサクサクです - furenchi furai wa sakusaku desu"}
+      "Pasta" -> %{item | word: "パスタ - pasuta", pronunciation: "pasuta (pah-soo-tah)", example: "ソース付きスパゲッティパスタ - soosu tsuki supagetti pasuta"}
+      "Salad" -> %{item | word: "サラダ - sarada", pronunciation: "sarada (sah-rah-dah)", example: "新鮮な緑のサラダ - shinsen na midori no sarada"}
+      "Soup" -> %{item | word: "スープ - suupu", pronunciation: "suupu (soo-poo)", example: "熱いチキンスープ - atsui chikin suupu"}
+      "Coffee" -> %{item | word: "コーヒー - koohii", pronunciation: "koohii (koh-hee)", example: "熱いブラックコーヒー - atsui burakku koohii"}
+      "Water" -> %{item | word: "水 - mizu", pronunciation: "mizu (mee-zoo)", example: "冷たい水をグラス一杯 - tsumetai mizu wo gurasu ippai"}
+      "Bill" -> %{item | word: "お会計 - okaikei", pronunciation: "okaikei (oh-kai-kei)", example: "お会計をお願いします - okaikei wo onegaishimasu"}
+      
+      # Family vocabulary
+      "Mother" -> %{item | word: "お母さん - okaasan", pronunciation: "okaasan (oh-kah-sahn)", example: "私のお母さんはとても優しいです - watashi no okaasan wa totemo yasashii desu"}
+      "Father" -> %{item | word: "お父さん - otousan", pronunciation: "otousan (oh-toh-sahn)", example: "私のお父さんは一生懸命働きます - watashi no otousan wa isshokenmei hatarakimasu"}
+      "Sister" -> %{item | word: "姉/妹 - ane/imouto", pronunciation: "ane/imouto (ah-neh/ee-moh-toh)", example: "私には二人の姉がいます - watashi ni wa futari no ane ga imasu"}
+      "Brother" -> %{item | word: "兄/弟 - ani/otouto", pronunciation: "ani/otouto (ah-nee/oh-toh-toh)", example: "私の弟は私より若いです - watashi no otouto wa watashi yori wakai desu"}
+      "Grandmother" -> %{item | word: "おばあさん - obaasan", pronunciation: "obaasan (oh-bah-sahn)", example: "おばあさんは素晴らしい話をします - obaasan wa subarashii hanashi wo shimasu"}
+      "Grandfather" -> %{item | word: "おじいさん - ojiisan", pronunciation: "ojiisan (oh-jee-sahn)", example: "おじいさんはとても賢いです - ojiisan wa totemo kashikoi desu"}
+      "Baby" -> %{item | word: "赤ちゃん - akachan", pronunciation: "akachan (ah-kah-chahn)", example: "赤ちゃんは眠っています - akachan wa nemutte imasu"}
+      "Family" -> %{item | word: "家族 - kazoku", pronunciation: "kazoku (kah-zoh-koo)", example: "私は家族を愛しています - watashi wa kazoku wo aishite imasu"}
+      "Aunt" -> %{item | word: "叔母 - oba", pronunciation: "oba (oh-bah)", example: "私の叔母は近くに住んでいます - watashi no oba wa chikaku ni sunde imasu"}
+      "Uncle" -> %{item | word: "叔父 - oji", pronunciation: "oji (oh-jee)", example: "叔父は週末に訪ねてきます - oji wa shuumatsu ni tazunete kimasu"}
+      
+      # Countries vocabulary
+      "Taiwan" -> %{item | word: "台湾 - taiwan", pronunciation: "taiwan (tai-wahn)", example: "台湾は美しい島です - taiwan wa utsukushii shima desu"}
+      "France" -> %{item | word: "フランス - furansu", pronunciation: "furansu (foo-rahn-soo)", example: "フランスは料理で有名です - furansu wa ryouri de yuumei desu"}
+      "Germany" -> %{item | word: "ドイツ - doitsu", pronunciation: "doitsu (doy-tsoo)", example: "ドイツは素晴らしいビールがあります - doitsu wa subarashii biiru ga arimasu"}
+      "Japan" -> %{item | word: "日本 - nihon", pronunciation: "nihon (nee-hohn)", example: "日本には美しい桜があります - nihon ni wa utsukushii sakura ga arimasu"}
+      "USA" -> %{item | word: "アメリカ - amerika", pronunciation: "amerika (ah-meh-ree-kah)", example: "アメリカはとても多様です - amerika wa totemo tayou desu"}
+      "UK" -> %{item | word: "イギリス - igirisu", pronunciation: "igirisu (ee-gee-ree-soo)", example: "イギリスは豊かな歴史があります - igirisu wa yutaka na rekishi ga arimasu"}
+      "Italy" -> %{item | word: "イタリア - itaria", pronunciation: "itaria (ee-tah-ree-ah)", example: "イタリアは素晴らしいパスタを作ります - itaria wa subarashii pasuta wo tsukurimasu"}
+      "Spain" -> %{item | word: "スペイン - supein", pronunciation: "supein (soo-peh-een)", example: "スペインにはフラメンコダンスがあります - supein ni wa furamenko dansu ga arimasu"}
+      "China" -> %{item | word: "中国 - chuugoku", pronunciation: "chuugoku (choo-goh-koo)", example: "中国は長い歴史があります - chuugoku wa nagai rekishi ga arimasu"}
+      "Canada" -> %{item | word: "カナダ - kanada", pronunciation: "kanada (kah-nah-dah)", example: "カナダはメープルシロップで知られています - kanada wa meepuru shiropu de shirarete imasu"}
+      
+      _ -> item
+    end
+  end
+
+  # Arabic translations with transliteration
+  defp get_arabic_translation(item) do
+    case item.word do
+      # Self-Introduction vocabulary
+      "Hello" -> %{item | word: "مرحبا - marhaban", pronunciation: "marhaban (mar-ha-ban)", example: "مرحبا، اسمي أحمد - marhaban, ismi ahmed"}
+      "Name" -> %{item | word: "اسم - ism", pronunciation: "ism (ees-em)", example: "اسمي فاطمة - ismi fatima"}
+      "Nice to meet you" -> %{item | word: "تشرفنا - tasharrafna", pronunciation: "tasharrafna (ta-shar-raf-na)", example: "تشرفنا بلقائك - tasharrafna bi-liqa'ik"}
+      "Thank you" -> %{item | word: "شكرا - shukran", pronunciation: "shukran (shook-ran)", example: "شكرا لك - shukran lak"}
+      "How are you?" -> %{item | word: "كيف حالك - kayf halak", pronunciation: "kayf halak (kayf-ha-lak)", example: "كيف حالك اليوم؟ - kayf halak al-yawm?"}
+      "Fine" -> %{item | word: "بخير - bi-khayr", pronunciation: "bi-khayr (bee-khire)", example: "أنا بخير، شكرا - ana bi-khayr, shukran"}
+      "Please" -> %{item | word: "من فضلك - min fadlik", pronunciation: "min fadlik (min-fad-lik)", example: "ساعدني من فضلك - sa'idni min fadlik"}
+      "Sorry" -> %{item | word: "آسف - aasif", pronunciation: "aasif (ah-seef)", example: "آسف، أنا متأخر - aasif, ana muta'akhir"}
+      "Yes" -> %{item | word: "نعم - na'am", pronunciation: "na'am (nah-ahm)", example: "نعم، أفهم - na'am, afham"}
+      "No" -> %{item | word: "لا - la", pronunciation: "la (lah)", example: "لا، لا أعتقد ذلك - la, la a'taqid thalik"}
+      "Goodbye" -> %{item | word: "وداعا - wada'an", pronunciation: "wada'an (wa-dah-an)", example: "وداعا، أراك لاحقا - wada'an, araka lahiqan"}
+      "Excuse me" -> %{item | word: "عذرا - udhran", pronunciation: "udhran (uzh-ran)", example: "عذرا، أين الحمام؟ - udhran, ayna al-hammam?"}
+      "Where" -> %{item | word: "أين - ayna", pronunciation: "ayna (ay-nah)", example: "من أين أنت؟ - min ayna anta?"}
+      "From" -> %{item | word: "من - min", pronunciation: "min (meen)", example: "أنا من كندا - ana min kanada"}
+      "See you later" -> %{item | word: "أراك لاحقا - araka lahiqan", pronunciation: "araka lahiqan (ah-ra-ka lah-hee-qan)", example: "أراك لاحقا، يوم سعيد - araka lahiqan, yawm saeed"}
+      
+      # Fruits vocabulary
+      "Apple" -> %{item | word: "تفاحة - tuffāḥah", pronunciation: "tuffāḥah (too-fah-hah)", example: "آكل تفاحة كل يوم - akul tuffahah kull yawm"}
+      "Banana" -> %{item | word: "موز - mawz", pronunciation: "mawz (mows)", example: "الموز أصفر - al-mawz asfar"}
+      "Orange" -> %{item | word: "برتقال - burtuqal", pronunciation: "burtuqal (boor-too-qal)", example: "عصير البرتقال صحي - aseer al-burtuqal sahhi"}
+      "Grape" -> %{item | word: "عنب - inab", pronunciation: "inab (ee-nab)", example: "العنب البنفسجي حلو - al-inab al-banafsaji hulw"}
+      "Strawberry" -> %{item | word: "فراولة - farawla", pronunciation: "farawla (fa-raw-la)", example: "فراولة مع الكريمة - farawla ma'a al-kreema"}
+      "Cherry" -> %{item | word: "كرز - karaz", pronunciation: "karaz (ka-raz)", example: "الكرز الأحمر لذيذ - al-karaz al-ahmar latheeth"}
+      "Peach" -> %{item | word: "خوخ - khukh", pronunciation: "khukh (khookh)", example: "هذا الخوخ عصيري جدا - hatha al-khukh aseeri jiddan"}
+      "Pineapple" -> %{item | word: "أناناس - ananas", pronunciation: "ananas (ah-nah-nahs)", example: "بيتزا الأناناس مثيرة للجدل - beetza al-ananas mutheera lil-jadal"}
+      "Watermelon" -> %{item | word: "بطيخ - batteekh", pronunciation: "batteekh (baht-teekh)", example: "البطيخ مثالي للصيف - al-batteekh mithali lil-sayf"}
+      "Lemon" -> %{item | word: "ليمون - laymoun", pronunciation: "laymoun (lay-moon)", example: "ماء الليمون منعش - ma al-laymoun mun'ish"}
+      "Avocado" -> %{item | word: "أفوكادو - afokado", pronunciation: "afokado (ah-foh-kah-doh)", example: "توست الأفوكادو للفطار - toast al-afokado lil-futar"}
+      "Coconut" -> %{item | word: "جوز الهند - jouz al-hind", pronunciation: "jouz al-hind (johz-ahl-hind)", example: "حليب جوز الهند كريمي - haleeb jouz al-hind kareemi"}
+      "Mango" -> %{item | word: "مانجو - mango", pronunciation: "mango (man-go)", example: "عصير المانجو الاستوائي - aseer al-mango al-istiwa'i"}
+      "Kiwi" -> %{item | word: "كيوي - kiwi", pronunciation: "kiwi (kee-wee)", example: "فاكهة الكيوي خضراء من الداخل - fakihat al-kiwi khadra min al-dakhil"}
+      "Tomato" -> %{item | word: "طماطم - tamatin", pronunciation: "tamatin (ta-ma-teen)", example: "هل الطماطم فاكهة أم خضار؟ - hal al-tamatin fakiha am khudar?"}
+      "Carrot" -> %{item | word: "جزر - jazar", pronunciation: "jazar (ja-zar)", example: "الجزر مفيد للعيون - al-jazar mufeed lil-oyoun"}
+      "Cheese" -> %{item | word: "جبنة - jibneh", pronunciation: "jibneh (jib-neh)", example: "أحب الجبنة في السندويش - uhibb al-jibneh fi al-sandweesh"}
+      "Bread" -> %{item | word: "خبز - khubz", pronunciation: "khubz (khoobz)", example: "الخبز الطازج رائحته جميلة - al-khubz al-tazij ra'ihatuhu jameela"}
+      "Milk" -> %{item | word: "حليب - haleeb", pronunciation: "haleeb (ha-leeb)", example: "اشرب الحليب للعظام القوية - ishrab al-haleeb lil-itham al-qawiyya"}
+      "Egg" -> %{item | word: "بيضة - bayda", pronunciation: "bayda (bay-da)", example: "بيض مخفوق للإفطار - bayd makhfuq lil-iftar"}
+      
+      # Numbers vocabulary
+      "One" -> %{item | word: "واحد - wahid", pronunciation: "wahid (wah-heed)", example: "عندي قطة واحدة - indi qitta wahida"}
+      "Two" -> %{item | word: "اثنان - ithnan", pronunciation: "ithnan (ith-nan)", example: "كلبان يلعبان - kalban yal'aban"}
+      "Three" -> %{item | word: "ثلاثة - thalatha", pronunciation: "thalatha (tha-la-tha)", example: "عد إلى ثلاثة - udd ila thalatha"}
+      "Four" -> %{item | word: "أربعة - arba'a", pronunciation: "arba'a (ar-ba-ah)", example: "للسيارة أربعة عجلات - lil-sayyara arba'at ajlat"}
+      "Five" -> %{item | word: "خمسة - khamsa", pronunciation: "khamsa (kham-sa)", example: "تصفيق عالي! - tasfeeq aali!"}
+      "Six" -> %{item | word: "ستة - sitta", pronunciation: "sitta (sit-ta)", example: "للمكعب ستة وجوه - lil-muka'ab sitta wujuh"}
+      "Seven" -> %{item | word: "سبعة - sab'a", pronunciation: "sab'a (sab-ah)", example: "الرقم المحظوظ سبعة - al-raqam al-mahthouth sab'a"}
+      "Eight" -> %{item | word: "ثمانية - thamaniya", pronunciation: "thamaniya (tha-ma-nee-ya)", example: "للعنكبوت ثمانية أرجل - lil-ankabout thamaniyat arjul"}
+      "Nine" -> %{item | word: "تسعة - tis'a", pronunciation: "tis'a (tis-ah)", example: "للقطة تسعة أرواح - lil-qitta tis'at arwah"}
+      "Ten" -> %{item | word: "عشرة - ashara", pronunciation: "ashara (ah-sha-ra)", example: "يديك بهما عشرة أصابع - yadayk bihima asharat asabi'"}
+      "First" -> %{item | word: "أول - awwal", pronunciation: "awwal (aw-wal)", example: "أنت الأول في الطابور - anta al-awwal fi al-tabur"}
+      "Second" -> %{item | word: "ثانية - thaniya", pronunciation: "thaniya (tha-nee-ya)", example: "انتظر ثانية من فضلك - intathir thaniya min fadlik"}
+      
+      # Colors vocabulary
+      "Red" -> %{item | word: "أحمر - ahmar", pronunciation: "ahmar (ah-mar)", example: "الوردة حمراء - al-warda hamra"}
+      "Blue" -> %{item | word: "أزرق - azraq", pronunciation: "azraq (az-raq)", example: "السماء زرقاء - al-sama zarqa"}
+      "Green" -> %{item | word: "أخضر - akhdar", pronunciation: "akhdar (akh-dar)", example: "العشب أخضر - al-ushb akhdar"}
+      "Yellow" -> %{item | word: "أصفر - asfar", pronunciation: "asfar (as-far)", example: "الشمس صفراء - al-shams safra"}
+      "Black" -> %{item | word: "أسود - aswad", pronunciation: "aswad (as-wad)", example: "قطة سوداء تعبر الطريق - qitta sawda ta'bur al-tareeq"}
+      "White" -> %{item | word: "أبيض - abyad", pronunciation: "abyad (ab-yad)", example: "الثلج الأبيض على الجبل - al-thalj al-abyad ala al-jabal"}
+      "Orange" -> %{item | word: "برتقالي - burtuqali", pronunciation: "burtuqali (boor-too-qa-lee)", example: "البرتقال لونه برتقالي - al-burtuqal lawnuhu burtuqali"}
+      "Purple" -> %{item | word: "بنفسجي - banafsaji", pronunciation: "banafsaji (ba-naf-sa-jee)", example: "الزهور البنفسجية جميلة - al-zuhur al-banafsajiyya jameela"}
+      "Pink" -> %{item | word: "وردي - wardi", pronunciation: "wardi (war-dee)", example: "النحام الوردي في البركة - al-naham al-wardi fi al-birka"}
+      "Brown" -> %{item | word: "بني - bunni", pronunciation: "bunni (bun-nee)", example: "الدب البني في الغابة - al-dubb al-bunni fi al-ghaba"}
+      "Gray" -> %{item | word: "رمادي - ramadi", pronunciation: "ramadi (ra-ma-dee)", example: "الغيوم الرمادية في السماء - al-ghuyum al-ramadiyya fi al-sama"}
+      "Rainbow" -> %{item | word: "قوس قزح - qaws quzah", pronunciation: "qaws quzah (qaws-qu-zah)", example: "قوس قزح بعد المطر - qaws quzah ba'd al-matar"}
+      "Bright" -> %{item | word: "مشرق - mushriq", pronunciation: "mushriq (mush-riq)", example: "الألوان المشرقة مبهجة - al-alwan al-mushriqa mubhija"}
+      "Dark" -> %{item | word: "داكن - dakin", pronunciation: "dakin (da-keen)", example: "الألوان الداكنة تبدو أنيقة - al-alwan al-dakina tabdu aniqa"}
+      "Light" -> %{item | word: "فاتح - fatih", pronunciation: "fatih (fa-teeh)", example: "الأزرق الفاتح مثل سماء الصباح - al-azraq al-fatih mithl sama al-sabah"}
+      "Colorful" -> %{item | word: "ملون - mulawwan", pronunciation: "mulawwan (mu-law-wan)", example: "هذه اللوحة ملونة جدا - hathihi al-lawha mulawwana jiddan"}
+      
+      # Bakery vocabulary
+      "Bread" -> %{item | word: "خبز - khubz", pronunciation: "khubz (khoobz)", example: "الخبز الطازج رائحته جميلة - al-khubz al-tazij ra'ihatuhu jameela"}
+      "Croissant" -> %{item | word: "كرواسون - kruason", pronunciation: "kruason (kroo-ah-son)", example: "كرواسون فرنسي بالزبدة - kruason faransi bil-zubda"}
+      "Bagel" -> %{item | word: "بيغل - beegel", pronunciation: "beegel (bee-gel)", example: "بيغل محمص مع الجبنة الكريمية - beegel muhamas ma'a al-jibneh al-kareemiyya"}
+      "Pretzel" -> %{item | word: "بريتزل - breetzel", pronunciation: "breetzel (breet-zel)", example: "بريتزل مالح ملتوي - breetzel malih maltawi"}
+      "Baguette" -> %{item | word: "باغيت - baghit", pronunciation: "baghit (ba-gheet)", example: "باغيت فرنسي طويل - baghit faransi taweel"}
+      "Cake" -> %{item | word: "كعكة - ka'ka", pronunciation: "ka'ka (kah-kah)", example: "كعكة عيد ميلاد بالشموع - ka'kat eed meelaad bil-shumou'"}
+      "Cupcake" -> %{item | word: "كب كيك - kab keek", pronunciation: "kab keek (kab-keek)", example: "كب كيك الشوكولاتة الحلو - kab keek al-shokolata al-hulw"}
+      "Donut" -> %{item | word: "دونات - donat", pronunciation: "donat (doh-nat)", example: "دونات مزجج للفطار - donat muzajjaj lil-futar"}
+      "Cookie" -> %{item | word: "بسكويت - baskaweet", pronunciation: "baskaweet (bas-ka-weet)", example: "بسكويت برقائق الشوكولاتة - baskaweet bi-raqa'iq al-shokolata"}
+      "Pie" -> %{item | word: "فطيرة - fatira", pronunciation: "fatira (fa-tee-ra)", example: "فطيرة التفاح للحلو - fatirat al-tuffah lil-hulw"}
+      
+      # Animals vocabulary
+      "Dog" -> %{item | word: "كلب - kalb", pronunciation: "kalb (kalb)", example: "الكلب أفضل صديق للإنسان - al-kalb afdal sadeeq lil-insan"}
+      "Cat" -> %{item | word: "قطة - qitta", pronunciation: "qitta (qit-ta)", example: "القطة تنام في الشمس - al-qitta tanam fi al-shams"}
+      "Rabbit" -> %{item | word: "أرنب - arnab", pronunciation: "arnab (ar-nab)", example: "الأرنب يقفز بسرعة - al-arnab yaqfiz bi-sur'a"}
+      "Bear" -> %{item | word: "دب - dubb", pronunciation: "dubb (dub)", example: "الدب البني قوي - al-dubb al-bunni qawi"}
+      "Panda" -> %{item | word: "باندا - banda", pronunciation: "banda (ban-da)", example: "الباندا العملاق يأكل الخيزران - al-banda al-imlaq ya'kul al-khayzuran"}
+      "Lion" -> %{item | word: "أسد - asad", pronunciation: "asad (ah-sad)", example: "الأسد ملك الغابة - al-asad malik al-ghaba"}
+      "Tiger" -> %{item | word: "نمر - namir", pronunciation: "namir (na-meer)", example: "النمر له خطوط - al-namir lahu khotout"}
+      "Elephant" -> %{item | word: "فيل - feel", pronunciation: "feel (feel)", example: "الفيل كبير جدا - al-feel kabeer jiddan"}
+      "Monkey" -> %{item | word: "قرد - qird", pronunciation: "qird (qeerd)", example: "القرد يتأرجح على الأشجار - al-qird yata'rajah ala al-ashjar"}
+      "Horse" -> %{item | word: "حصان - hisan", pronunciation: "hisan (hee-san)", example: "الحصان يجري بسرعة - al-hisan yajri bi-sur'a"}
+      "Cow" -> %{item | word: "بقرة - baqara", pronunciation: "baqara (ba-qa-ra)", example: "البقرة تعطي الحليب - al-baqara tu'ti al-haleeb"}
+      "Pig" -> %{item | word: "خنزير - khinzeer", pronunciation: "khinzeer (kheen-zeer)", example: "الخنزير يتمرغ في الطين - al-khinzeer yatamarragh fi al-teen"}
+      
+      # Restaurant vocabulary
+      "Menu" -> %{item | word: "قائمة الطعام - qa'imat al-ta'am", pronunciation: "qa'imat al-ta'am (qah-ee-mat-ahl-tah-ahm)", example: "هل يمكنني رؤية قائمة الطعام؟ - hal yumkinuni ru'yat qa'imat al-ta'am?"}
+      "Pizza" -> %{item | word: "بيتزا - beetza", pronunciation: "beetza (beet-za)", example: "أريد قطعة بيتزا - ureed qit'at beetza"}
+      "Burger" -> %{item | word: "برغر - burghar", pronunciation: "burghar (bur-ghar)", example: "برغر بالجبنة مع البطاطا المقلية - burghar bil-jibneh ma'a al-batata al-maqliyya"}
+      "Fries" -> %{item | word: "بطاطا مقلية - batata maqliyya", pronunciation: "batata maqliyya (ba-ta-ta maq-lee-ya)", example: "البطاطا المقلية الفرنسية مقرمشة - al-batata al-maqliyya al-faransiyya muqarmasha"}
+      "Pasta" -> %{item | word: "معكرونة - ma'karona", pronunciation: "ma'karona (mah-ka-ro-na)", example: "معكرونة السباغيتي بالصلصة - ma'karonat al-sbaaghiti bil-salsa"}
+      "Salad" -> %{item | word: "سلطة - salata", pronunciation: "salata (sa-la-ta)", example: "سلطة خضراء طازجة - salata khadra tazja"}
+      "Soup" -> %{item | word: "حساء - hasa'", pronunciation: "hasa' (ha-sa)", example: "حساء الدجاج الساخن - hasa' al-dajaj al-sakhin"}
+      "Coffee" -> %{item | word: "قهوة - qahwa", pronunciation: "qahwa (qah-wa)", example: "قهوة سوداء ساخنة - qahwa sawda sakhina"}
+      "Water" -> %{item | word: "ماء - ma'", pronunciation: "ma' (mah)", example: "كوب من الماء البارد - kub min al-ma' al-barid"}
+      "Bill" -> %{item | word: "الحساب - al-hisab", pronunciation: "al-hisab (ahl-hee-sab)", example: "هل يمكنني الحصول على الحساب؟ - hal yumkinuni al-husool ala al-hisab?"}
+      
+      # Family vocabulary
+      "Mother" -> %{item | word: "أم - umm", pronunciation: "umm (um)", example: "أمي لطيفة جدا - ummi lateefa jiddan"}
+      "Father" -> %{item | word: "أب - ab", pronunciation: "ab (ab)", example: "أبي يعمل بجد - abi ya'mal bi-jadd"}
+      "Sister" -> %{item | word: "أخت - ukht", pronunciation: "ukht (ukht)", example: "عندي أختان - indi ukhtaan"}
+      "Brother" -> %{item | word: "أخ - akh", pronunciation: "akh (akh)", example: "أخي أصغر مني - akhi asghar minni"}
+      "Grandmother" -> %{item | word: "جدة - jadda", pronunciation: "jadda (jad-da)", example: "جدتي تحكي قصص رائعة - jaddati tahki qisas ra'i'a"}
+      "Grandfather" -> %{item | word: "جد - jadd", pronunciation: "jadd (jad)", example: "جدي حكيم جدا - jaddi hakeem jiddan"}
+      "Baby" -> %{item | word: "طفل رضيع - tifl radee'", pronunciation: "tifl radee' (tif-el ra-dee)", example: "الطفل الرضيع نائم - al-tifl al-radee' na'im"}
+      "Family" -> %{item | word: "عائلة - a'ila", pronunciation: "a'ila (ah-ee-la)", example: "أحب عائلتي - uhibb a'ilati"}
+      "Aunt" -> %{item | word: "عمة - amma", pronunciation: "amma (am-ma)", example: "عمتي تسكن قريبا - ammati taskun qareeba"}
+      "Uncle" -> %{item | word: "عم - amm", pronunciation: "amm (am)", example: "عمي يزورنا في نهاية الأسبوع - ammi yazuruna fi nihayat al-usbou'"}
+      
+      # Countries vocabulary
+      "Taiwan" -> %{item | word: "تايوان - taiuwan", pronunciation: "taiuwan (tai-wa-n)", example: "تايوان جزيرة جميلة - taiuwan jazira jameela"}
+      "France" -> %{item | word: "فرنسا - faransa", pronunciation: "faransa (fa-ran-sa)", example: "فرنسا مشهورة بالمطبخ - faransa mashhura bil-matbakh"}
+      "Germany" -> %{item | word: "ألمانيا - almania", pronunciation: "almania (al-ma-nee-ya)", example: "ألمانيا لديها بيرة رائعة - almania ladayha beera ra'i'a"}
+      "Japan" -> %{item | word: "اليابان - al-yaban", pronunciation: "al-yaban (ahl-ya-ban)", example: "اليابان لديها أزهار الكرز الجميلة - al-yaban ladayha azhar al-karaz al-jameela"}
+      "USA" -> %{item | word: "أمريكا - amreeka", pronunciation: "amreeka (am-ree-ka)", example: "أمريكا متنوعة جدا - amreeka mutanawwi'a jiddan"}
+      "UK" -> %{item | word: "بريطانيا - breetania", pronunciation: "breetania (bree-ta-nee-ya)", example: "بريطانيا لها تاريخ غني - breetania laha tareekh ghani"}
+      "Italy" -> %{item | word: "إيطاليا - eetalia", pronunciation: "eetalia (ee-ta-lee-ya)", example: "إيطاليا تصنع معكرونة رائعة - eetalia tasna' ma'karona ra'i'a"}
+      "Spain" -> %{item | word: "إسبانيا - isbania", pronunciation: "isbania (is-ba-nee-ya)", example: "إسبانيا لديها رقص الفلامنكو - isbania ladayha raqs al-flamenco"}
+      "China" -> %{item | word: "الصين - al-seen", pronunciation: "al-seen (ahl-seen)", example: "الصين لها تاريخ طويل - al-seen laha tareekh taweel"}
+      "Canada" -> %{item | word: "كندا - kanada", pronunciation: "kanada (ka-na-da)", example: "كندا مشهورة بشراب القيقب - kanada mashhura bi-sharab al-qeeqab"}
+      
+      _ -> item
+    end
+  end
+
+  # Spanish translations
+  defp get_spanish_translation(item) do
+    case item.word do
+      # Self-Introduction vocabulary
+      "Hello" -> %{item | word: "Hola", pronunciation: "OH-lah", example: "Hola, me llamo María"}
+      "Name" -> %{item | word: "Nombre", pronunciation: "NOHM-breh", example: "Mi nombre es Pedro"}
+      "Thank you" -> %{item | word: "Gracias", pronunciation: "GRAH-see-ahs", example: "Gracias por tu ayuda"}
+      
+      # Fruits vocabulary
+      "Apple" -> %{item | word: "Manzana", pronunciation: "man-SAH-nah", example: "Como una manzana cada día"}
+      "Banana" -> %{item | word: "Plátano", pronunciation: "PLAH-tah-no", example: "El plátano es amarillo"}
+      "Orange" -> %{item | word: "Naranja", pronunciation: "nah-RAHN-hah", example: "El zumo de naranja es saludable"}
+      
+      # Numbers vocabulary
+      "One" -> %{item | word: "Uno", pronunciation: "OO-no", example: "Tengo un gato"}
+      "Two" -> %{item | word: "Dos", pronunciation: "dohs", example: "Dos perros juegan"}
+      "Three" -> %{item | word: "Tres", pronunciation: "trehs", example: "Cuenta hasta tres"}
+      
+      # Colors vocabulary
+      "Red" -> %{item | word: "Rojo", pronunciation: "ROH-ho", example: "La rosa es roja"}
+      "Blue" -> %{item | word: "Azul", pronunciation: "ah-SOOL", example: "El cielo es azul"}
+      "Green" -> %{item | word: "Verde", pronunciation: "VEHR-deh", example: "La hierba es verde"}
+      
+      _ -> item
+    end
+  end
+
+  # Placeholder functions for remaining languages
+  defp get_portuguese_translation(item), do: item
+  defp get_italian_translation(item), do: item  
+  defp get_russian_translation(item), do: item
+end

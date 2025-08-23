@@ -58,14 +58,11 @@
           🗺️ <%= gettext("Select Map & Play") %>
         </a>
         
-        <!-- Language Selection -->
+        <!-- Language Selection - Learning Language Only -->
         <div class="mt-4 space-y-2">
           <p class="text-sm text-cute font-semibold"><%= gettext("Language I want to learn:") %></p>
-          <.language_selector 
-            interface_language={@interface_language} 
+          <.learning_language_selector 
             learning_language={@learning_language}
-            show_learning_selector={true}
-            show_interface_selector={false}
             class="bg-white/90 backdrop-blur-sm rounded-lg p-3 border border-white/30"
           />
         </div>

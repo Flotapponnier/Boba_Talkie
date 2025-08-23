@@ -1,5 +1,7 @@
 defmodule BobaTalkieWeb.GameLive do
   use BobaTalkieWeb, :live_view
+  import BobaTalkieWeb.LanguageSelector
+  alias BobaTalkieWeb.LanguageSession
 
   # Core modules moved to modular components
   # alias BobaTalkie.Game.{World, Player}
@@ -7,6 +9,8 @@ defmodule BobaTalkieWeb.GameLive do
   
   # Import modular components
   alias BobaTalkieWeb.GameLive.{VoiceHandlers, MovementHandlers, UIHelpers, StateManager}
+  
+  on_mount BobaTalkieWeb.LanguageHook
 
   @impl true
   def mount(%{"topic" => topic} = params, _session, socket) do
@@ -124,6 +128,17 @@ defmodule BobaTalkieWeb.GameLive do
       socket.assigns.world, 
       socket.assigns.player
     )
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("change_interface_language", %{"value" => language_code}, socket) do
+    # Use JavaScript to store and reload with new language
+    socket = push_event(socket, "store_and_reload", %{
+      interface_language: language_code, 
+      learning_language: socket.assigns.learning_language
+    })
+    
     {:noreply, socket}
   end
 
