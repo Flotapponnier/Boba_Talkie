@@ -6,9 +6,9 @@ defmodule BobaTalkieWeb.TutorialLive do
   on_mount BobaTalkieWeb.LanguageHook
 
   @impl true
-  def mount(%{"topic" => topic}, session, socket) do
-    interface_language = LanguageSession.get_interface_language(%{}, session, socket.assigns)
-    learning_language = LanguageSession.get_learning_language(%{}, session, socket.assigns)
+  def mount(%{"topic" => topic} = params, session, socket) do
+    interface_language = LanguageSession.get_interface_language(params, session, socket.assigns)
+    learning_language = LanguageSession.get_learning_language(params, session, socket.assigns)
     
     # Get learning content from ContentManager
     learning_content = BobaTalkie.ContentManager.get_learning_content(topic, learning_language)
@@ -22,13 +22,13 @@ defmodule BobaTalkieWeb.TutorialLive do
          |> put_flash(:error, "Tutorial not found")
          |> push_navigate(to: ~p"/maps")}
       
-      {metadata, content} when content.tutorial != [] ->
+      {metadata, content} when content.vocabulary != [] ->
         # Combine metadata with learning content
         combined_content = %{
           title: metadata.title,
           emoji: metadata.emoji,
           description: metadata.description,
-          vocabulary: content.tutorial  # Use tutorial items from ContentManager
+          vocabulary: content.vocabulary  # Use vocabulary items from ContentManager
         }
         
         socket =
@@ -70,24 +70,27 @@ defmodule BobaTalkieWeb.TutorialLive do
 
   @impl true
   def handle_event("start_game", _params, socket) do
+    base_params = LanguageSession.build_language_params(socket.assigns.interface_language, socket.assigns.learning_language)
+    
     game_path = case socket.assigns.topic do
-      "introduction" -> ~p"/game/introduction"
-      "fruits" -> ~p"/game/fruits"
-      "numbers" -> ~p"/game/numbers"
-      "colors" -> ~p"/game/colors"
-      "bakery" -> ~p"/game/bakery"
-      "animals" -> ~p"/game/animals"
-      "restaurant" -> ~p"/game/restaurant"
-      "family" -> ~p"/game/family"
-      "countries" -> ~p"/game/countries"
-      _ -> ~p"/maps"
+      "introduction" -> ~p"/game/introduction?#{base_params}"
+      "fruits" -> ~p"/game/fruits?#{base_params}"
+      "numbers" -> ~p"/game/numbers?#{base_params}"
+      "colors" -> ~p"/game/colors?#{base_params}"
+      "bakery" -> ~p"/game/bakery?#{base_params}"
+      "animals" -> ~p"/game/animals?#{base_params}"
+      "restaurant" -> ~p"/game/restaurant?#{base_params}"
+      "family" -> ~p"/game/family?#{base_params}"
+      "countries" -> ~p"/game/countries?#{base_params}"
+      _ -> ~p"/maps?#{base_params}"
     end
     {:noreply, push_navigate(socket, to: game_path)}
   end
 
   @impl true
   def handle_event("back_to_maps", _params, socket) do
-    {:noreply, push_navigate(socket, to: ~p"/maps")}
+    base_params = LanguageSession.build_language_params(socket.assigns.interface_language, socket.assigns.learning_language)
+    {:noreply, push_navigate(socket, to: ~p"/maps?#{base_params}")}
   end
 
   @impl true

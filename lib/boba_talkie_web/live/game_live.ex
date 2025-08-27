@@ -118,6 +118,17 @@ defmodule BobaTalkieWeb.GameLive do
   end
 
   @impl true
+  def handle_event("change_interface_language", %{"value" => language_code}, socket) do
+    # Use JavaScript to store and reload with new language
+    socket = push_event(socket, "store_and_reload", %{
+      interface_language: language_code, 
+      learning_language: socket.assigns.learning_language
+    })
+    
+    {:noreply, socket}
+  end
+
+  @impl true
   def handle_info({:voice_result, command, confidence}, socket) do
     socket = VoiceHandlers.handle_voice_result(
       socket, 
@@ -126,17 +137,6 @@ defmodule BobaTalkieWeb.GameLive do
       socket.assigns.world, 
       socket.assigns.player
     )
-    {:noreply, socket}
-  end
-
-  @impl true
-  def handle_event("change_interface_language", %{"value" => language_code}, socket) do
-    # Use JavaScript to store and reload with new language
-    socket = push_event(socket, "store_and_reload", %{
-      interface_language: language_code, 
-      learning_language: socket.assigns.learning_language
-    })
-    
     {:noreply, socket}
   end
 

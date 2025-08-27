@@ -42,7 +42,7 @@
             <!-- Romanization for main word -->
             <%= if Map.has_key?(current_item, :romanization) do %>
               <p class="text-sm text-blue-600 font-mono opacity-80">
-                <span class="font-semibold">Pinyin:</span> <%= current_item.romanization %>
+                <span class="font-semibold"><%= if @learning_language == "zh", do: "Pinyin:", else: "Romanization:" %></span> <%= current_item.romanization %>
               </p>
             <% end %>
             
