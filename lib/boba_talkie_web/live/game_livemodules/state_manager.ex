@@ -44,6 +44,7 @@ defmodule BobaTalkieWeb.GameLive.StateManager do
     socket
     |> assign(:page_title, "BobaTalkie - #{topic_title}")
     |> assign(:topic, topic)
+    |> assign(:learning_language, learning_language)
     |> assign(:learning_content, learning_content)
     |> assign(:world, world)
     |> assign(:player, player)

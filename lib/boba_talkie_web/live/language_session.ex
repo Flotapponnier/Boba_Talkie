@@ -14,10 +14,14 @@ defmodule BobaTalkieWeb.LanguageSession do
   end
 
   def get_learning_language(params, session, socket_assigns \\ %{}) do
-    params["learning_language"] ||
+    learning_lang = params["learning_language"] ||
     session["learning_language"] ||
     socket_assigns[:learning_language] ||
     @default_locale
+    
+    require Logger
+    Logger.info("LanguageSession.get_learning_language: #{learning_lang} from params: #{inspect(params["learning_language"])}")
+    learning_lang
   end
 
   def set_locale_and_assign(socket, interface_language, learning_language) do

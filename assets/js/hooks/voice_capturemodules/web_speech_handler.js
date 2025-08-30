@@ -11,7 +11,7 @@ export const WebSpeechHandler = {
     return 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
   },
   
-  setup() {
+  setup(learningLanguage = 'en') {
     if (!this.isAvailable()) {
       console.warn('WebSpeechHandler: Web Speech API not available');
       return false;
@@ -22,7 +22,11 @@ export const WebSpeechHandler = {
     
     this.recognition.continuous = false;
     this.recognition.interimResults = true;
-    this.recognition.lang = 'en-US';
+    
+    // Map learning language to Web Speech API language codes
+    const webSpeechLang = this.mapToWebSpeechLanguage(learningLanguage);
+    console.log('WebSpeechHandler: Setting language:', webSpeechLang, 'from learning language:', learningLanguage);
+    this.recognition.lang = webSpeechLang;
     
     this.recognition.onresult = (event) => {
       // Clear timeout since we're getting results
@@ -78,6 +82,23 @@ export const WebSpeechHandler = {
     };
     
     return true;
+  },
+  
+  mapToWebSpeechLanguage(learningLanguage) {
+    // Map our language codes to Web Speech API language codes
+    const mapping = {
+      'en': 'en-US',
+      'fr': 'fr-FR', 
+      'es': 'es-ES',
+      'zh': 'zh-CN',
+      'ru': 'ru-RU',
+      'ja': 'ja-JP',
+      'it': 'it-IT',
+      'ar': 'ar-SA',
+      'pt': 'pt-PT'
+    };
+    
+    return mapping[learningLanguage] || 'en-US';
   },
   
   start() {

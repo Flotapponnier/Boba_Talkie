@@ -10,14 +10,14 @@ defmodule BobaTalkieWeb.GameLive.MovementHandlers do
   @doc """
   Process voice commands and execute game actions
   """
-  def process_command(world, player, command, confidence) do
-    DebugLogger.voice_debug("Processing voice command", %{command: command, confidence: confidence})
+  def process_command(world, player, command, confidence, learning_language \\ "en") do
+    DebugLogger.voice_debug("Processing voice command", %{command: command, confidence: confidence, learning_language: learning_language})
     
     # Update player stats
     new_player = Player.record_voice_command(player, command, confidence)
     
-    # Parse and execute command
-    case parse_voice_command(command) do
+    # Parse and execute command with learning language
+    case parse_voice_command(command, learning_language) do
       {:move, direction, steps} ->
         handle_movement(world, new_player, direction, steps)
       
@@ -143,7 +143,7 @@ defmodule BobaTalkieWeb.GameLive.MovementHandlers do
     {world, player, message}
   end
 
-  defp parse_voice_command(command) do
+  defp parse_voice_command(command, learning_language \\ "en") do
     # Clean the command: lowercase, trim, remove punctuation, normalize common speech recognition mistakes
     clean_command = command
     |> String.downcase()
@@ -153,14 +153,44 @@ defmodule BobaTalkieWeb.GameLive.MovementHandlers do
     |> String.trim()
     
     cond do
-      # Priority: Simple single-word directional commands (new prioritized patterns)
-      clean_command in ["north", "up"] -> {:move, :north, 1}
-      clean_command in ["south", "down"] -> {:move, :south, 1}
-      clean_command in ["east", "right"] -> {:move, :east, 1}
-      clean_command in ["west", "left"] -> {:move, :west, 1}
+      # Priority: Simple single-word directional commands (multilingual)
+      clean_command in get_direction_words(:north, learning_language) -> {:move, :north, 1}
+      clean_command in get_direction_words(:south, learning_language) -> {:move, :south, 1}
+      clean_command in get_direction_words(:east, learning_language) -> {:move, :east, 1}
+      clean_command in get_direction_words(:west, learning_language) -> {:move, :west, 1}
       
-      # Priority: Multi-step movement commands (cleaner patterns)
-      String.match?(clean_command, ~r/^\s*(1|one)\s+(north|up)\s*$/) -> {:move, :north, 1}
+      # French numbered commands with "fois" (times)
+      String.match?(clean_command, ~r/\b(à gauche|gauche)\s+(1|un|une)\s+fois\b/) or String.match?(clean_command, ~r/\b(1|un|une)\s+fois\s+(à gauche|gauche)\b/) -> {:move, :west, 1}
+      String.match?(clean_command, ~r/\b(à gauche|gauche)\s+(2|deux)\s+fois\b/) or String.match?(clean_command, ~r/\b(2|deux)\s+fois\s+(à gauche|gauche)\b/) -> {:move, :west, 2}
+      String.match?(clean_command, ~r/\b(à gauche|gauche)\s+(3|trois)\s+fois\b/) or String.match?(clean_command, ~r/\b(3|trois)\s+fois\s+(à gauche|gauche)\b/) -> {:move, :west, 3}
+      
+      String.match?(clean_command, ~r/\b(à droite|droite)\s+(1|un|une)\s+fois\b/) or String.match?(clean_command, ~r/\b(1|un|une)\s+fois\s+(à droite|droite)\b/) -> {:move, :east, 1}
+      String.match?(clean_command, ~r/\b(à droite|droite)\s+(2|deux)\s+fois\b/) or String.match?(clean_command, ~r/\b(2|deux)\s+fois\s+(à droite|droite)\b/) -> {:move, :east, 2}
+      String.match?(clean_command, ~r/\b(à droite|droite)\s+(3|trois)\s+fois\b/) or String.match?(clean_command, ~r/\b(3|trois)\s+fois\s+(à droite|droite)\b/) -> {:move, :east, 3}
+      
+      String.match?(clean_command, ~r/\b(en haut|haut|nord)\s+(1|un|une)\s+fois\b/) or String.match?(clean_command, ~r/\b(1|un|une)\s+fois\s+(en haut|haut|nord)\b/) -> {:move, :north, 1}
+      String.match?(clean_command, ~r/\b(en haut|haut|nord)\s+(2|deux)\s+fois\b/) or String.match?(clean_command, ~r/\b(2|deux)\s+fois\s+(en haut|haut|nord)\b/) -> {:move, :north, 2}
+      String.match?(clean_command, ~r/\b(en haut|haut|nord)\s+(3|trois)\s+fois\b/) or String.match?(clean_command, ~r/\b(3|trois)\s+fois\s+(en haut|haut|nord)\b/) -> {:move, :north, 3}
+      
+      String.match?(clean_command, ~r/\b(en bas|bas|sud)\s+(1|un|une)\s+fois\b/) or String.match?(clean_command, ~r/\b(1|un|une)\s+fois\s+(en bas|bas|sud)\b/) -> {:move, :south, 1}
+      String.match?(clean_command, ~r/\b(en bas|bas|sud)\s+(2|deux)\s+fois\b/) or String.match?(clean_command, ~r/\b(2|deux)\s+fois\s+(en bas|bas|sud)\b/) -> {:move, :south, 2}
+      String.match?(clean_command, ~r/\b(en bas|bas|sud)\s+(3|trois)\s+fois\b/) or String.match?(clean_command, ~r/\b(3|trois)\s+fois\s+(en bas|bas|sud)\b/) -> {:move, :south, 3}
+
+      # Check for "va en [direction]" pattern (French: "go to [direction]")
+      String.contains?(clean_command, "va en") and String.contains?(clean_command, "bas") -> {:move, :south, 1}
+      String.contains?(clean_command, "va en") and String.contains?(clean_command, "haut") -> {:move, :north, 1}
+      String.contains?(clean_command, "va en") and String.contains?(clean_command, "droite") -> {:move, :east, 1}
+      String.contains?(clean_command, "va en") and String.contains?(clean_command, "gauche") -> {:move, :west, 1}
+      String.contains?(clean_command, "va") and String.contains?(clean_command, "nord") -> {:move, :north, 1}
+      String.contains?(clean_command, "va") and String.contains?(clean_command, "sud") -> {:move, :south, 1}
+      String.contains?(clean_command, "va") and String.contains?(clean_command, "est") -> {:move, :east, 1}
+      String.contains?(clean_command, "va") and String.contains?(clean_command, "ouest") -> {:move, :west, 1}
+      
+      # Multilingual numbered movement commands
+      parse_numbered_movement(clean_command, learning_language) != :unknown -> parse_numbered_movement(clean_command, learning_language)
+      
+      # Priority: Multi-step movement commands (cleaner patterns) - only for English
+      learning_language == "en" and String.match?(clean_command, ~r/^\s*(1|one)\s+(north|up)\s*$/) -> {:move, :north, 1}
       String.match?(clean_command, ~r/^\s*(2|two)\s+(north|up)\s*$/) -> {:move, :north, 2}
       String.match?(clean_command, ~r/^\s*(3|three|tree)\s+(north|up)\s*$/) -> {:move, :north, 3}
       String.match?(clean_command, ~r/^\s*(1|one)\s+(south|down)\s*$/) -> {:move, :south, 1}
@@ -203,11 +233,11 @@ defmodule BobaTalkieWeb.GameLive.MovementHandlers do
       String.match?(clean_command, ~r/\b(2|two)\s*(west|left)\b/) -> {:move, :west, 2}
       String.match?(clean_command, ~r/\b(3|three|tree)\s*(west|left)\b/) -> {:move, :west, 3}
       
-      # Check for single direction words (default to 1 move)
-      String.contains?(clean_command, ["north", "up"]) -> {:move, :north, 1}
-      String.contains?(clean_command, ["south", "down"]) -> {:move, :south, 1}
-      String.contains?(clean_command, ["east", "right"]) -> {:move, :east, 1}
-      String.contains?(clean_command, ["west", "left"]) -> {:move, :west, 1}
+      # Check for single direction words (only for current learning language)
+      contains_direction_word?(clean_command, :north, learning_language) -> {:move, :north, 1}
+      contains_direction_word?(clean_command, :south, learning_language) -> {:move, :south, 1}
+      contains_direction_word?(clean_command, :east, learning_language) -> {:move, :east, 1}
+      contains_direction_word?(clean_command, :west, learning_language) -> {:move, :west, 1}
       
       # Check for card challenge phrases (full sentences containing topic-specific words)
       # Fruits and food
@@ -353,5 +383,173 @@ defmodule BobaTalkieWeb.GameLive.MovementHandlers do
     |> Enum.take(10)  # Keep last 10 messages
     
     assign(socket, :game_messages, new_messages)
+  end
+
+  # Get direction words for different languages
+  defp get_direction_words(:north, learning_language) do
+    case learning_language do
+      "en" -> ["north", "up"]
+      "fr" -> ["nord", "haut"]
+      "es" -> ["norte", "arriba"]
+      "zh" -> ["北", "上", "bei", "shang"]
+      "ru" -> ["север", "вверх", "sever", "vverkh"]
+      "ja" -> ["北", "上", "kita", "ue"]
+      "it" -> ["nord", "su"]
+      "ar" -> ["شمال", "فوق", "shamal", "fawq"]
+      "pt" -> ["norte", "cima"]
+      _ -> ["north", "up"]
+    end
+  end
+
+  defp get_direction_words(:south, learning_language) do
+    case learning_language do
+      "en" -> ["south", "down"]
+      "fr" -> ["sud", "bas"]
+      "es" -> ["sur", "abajo"]
+      "zh" -> ["南", "下", "nan", "xia"]
+      "ru" -> ["юг", "вниз", "yug", "vniz"]
+      "ja" -> ["南", "下", "minami", "shita"]
+      "it" -> ["sud", "giù"]
+      "ar" -> ["جنوب", "تحت", "janub", "taht"]
+      "pt" -> ["sul", "baixo"]
+      _ -> ["south", "down"]
+    end
+  end
+
+  defp get_direction_words(:east, learning_language) do
+    case learning_language do
+      "en" -> ["east", "right"]
+      "fr" -> ["est", "droite"]
+      "es" -> ["este", "derecha"]
+      "zh" -> ["东", "右", "dong", "you"]
+      "ru" -> ["восток", "вправо", "vostok", "vpravo"]
+      "ja" -> ["東", "右", "higashi", "migi"]
+      "it" -> ["est", "destra"]
+      "ar" -> ["شرق", "يمين", "sharq", "yameen"]
+      "pt" -> ["leste", "direita"]
+      _ -> ["east", "right"]
+    end
+  end
+
+  defp get_direction_words(:west, learning_language) do
+    case learning_language do
+      "en" -> ["west", "left"]
+      "fr" -> ["ouest", "gauche"]
+      "es" -> ["oeste", "izquierda"]
+      "zh" -> ["西", "左", "xi", "zuo"]
+      "ru" -> ["запад", "влево", "zapad", "vlevo"]
+      "ja" -> ["西", "左", "nishi", "hidari"]
+      "it" -> ["ovest", "sinistra"]
+      "ar" -> ["غرب", "يسار", "gharb", "yasar"]
+      "pt" -> ["oeste", "esquerda"]
+      _ -> ["west", "left"]
+    end
+  end
+
+  # Check if command contains any direction word for the current learning language
+  defp contains_direction_word?(command, direction, learning_language) do
+    direction_words = get_direction_words(direction, learning_language)
+    Enum.any?(direction_words, fn word -> String.contains?(command, word) end)
+  end
+
+  # Parse numbered movement commands for all languages
+  defp parse_numbered_movement(command, learning_language) do
+    case learning_language do
+      "fr" -> parse_french_numbered_movement(command)
+      "es" -> parse_spanish_numbered_movement(command)
+      "zh" -> parse_chinese_numbered_movement(command)
+      "ru" -> parse_russian_numbered_movement(command)
+      "ja" -> parse_japanese_numbered_movement(command)
+      "it" -> parse_italian_numbered_movement(command)
+      "ar" -> parse_arabic_numbered_movement(command)
+      "pt" -> parse_portuguese_numbered_movement(command)
+      _ -> :unknown
+    end
+  end
+
+  defp parse_french_numbered_movement(command) do
+    cond do
+      # "à gauche 3 fois" or "3 fois à gauche"
+      String.match?(command, ~r/\b(à gauche|gauche)\s+(1|un|une)\s+fois\b/) or String.match?(command, ~r/\b(1|un|une)\s+fois\s+(à gauche|gauche)\b/) -> {:move, :west, 1}
+      String.match?(command, ~r/\b(à gauche|gauche)\s+(2|deux)\s+fois\b/) or String.match?(command, ~r/\b(2|deux)\s+fois\s+(à gauche|gauche)\b/) -> {:move, :west, 2}
+      String.match?(command, ~r/\b(à gauche|gauche)\s+(3|trois)\s+fois\b/) or String.match?(command, ~r/\b(3|trois)\s+fois\s+(à gauche|gauche)\b/) -> {:move, :west, 3}
+      
+      String.match?(command, ~r/\b(à droite|droite)\s+(1|un|une)\s+fois\b/) or String.match?(command, ~r/\b(1|un|une)\s+fois\s+(à droite|droite)\b/) -> {:move, :east, 1}
+      String.match?(command, ~r/\b(à droite|droite)\s+(2|deux)\s+fois\b/) or String.match?(command, ~r/\b(2|deux)\s+fois\s+(à droite|droite)\b/) -> {:move, :east, 2}
+      String.match?(command, ~r/\b(à droite|droite)\s+(3|trois)\s+fois\b/) or String.match?(command, ~r/\b(3|trois)\s+fois\s+(à droite|droite)\b/) -> {:move, :east, 3}
+      
+      String.match?(command, ~r/\b(en haut|haut|nord)\s+(1|un|une)\s+fois\b/) or String.match?(command, ~r/\b(1|un|une)\s+fois\s+(en haut|haut|nord)\b/) -> {:move, :north, 1}
+      String.match?(command, ~r/\b(en haut|haut|nord)\s+(2|deux)\s+fois\b/) or String.match?(command, ~r/\b(2|deux)\s+fois\s+(en haut|haut|nord)\b/) -> {:move, :north, 2}
+      String.match?(command, ~r/\b(en haut|haut|nord)\s+(3|trois)\s+fois\b/) or String.match?(command, ~r/\b(3|trois)\s+fois\s+(en haut|haut|nord)\b/) -> {:move, :north, 3}
+      
+      String.match?(command, ~r/\b(en bas|bas|sud)\s+(1|un|une)\s+fois\b/) or String.match?(command, ~r/\b(1|un|une)\s+fois\s+(en bas|bas|sud)\b/) -> {:move, :south, 1}
+      String.match?(command, ~r/\b(en bas|bas|sud)\s+(2|deux)\s+fois\b/) or String.match?(command, ~r/\b(2|deux)\s+fois\s+(en bas|bas|sud)\b/) -> {:move, :south, 2}
+      String.match?(command, ~r/\b(en bas|bas|sud)\s+(3|trois)\s+fois\b/) or String.match?(command, ~r/\b(3|trois)\s+fois\s+(en bas|bas|sud)\b/) -> {:move, :south, 3}
+      
+      true -> :unknown
+    end
+  end
+
+  defp parse_spanish_numbered_movement(command) do
+    cond do
+      String.match?(command, ~r/\b(izquierda|oeste)\s+(1|uno|una)\s+(vez|veces)\b/) or String.match?(command, ~r/\b(1|uno|una)\s+(vez|veces)\s+(izquierda|oeste)\b/) -> {:move, :west, 1}
+      String.match?(command, ~r/\b(izquierda|oeste)\s+(2|dos)\s+(veces)\b/) or String.match?(command, ~r/\b(2|dos)\s+(veces)\s+(izquierda|oeste)\b/) -> {:move, :west, 2}
+      String.match?(command, ~r/\b(izquierda|oeste)\s+(3|tres)\s+(veces)\b/) or String.match?(command, ~r/\b(3|tres)\s+(veces)\s+(izquierda|oeste)\b/) -> {:move, :west, 3}
+      true -> :unknown
+    end
+  end
+
+  defp parse_chinese_numbered_movement(command) do
+    cond do
+      String.match?(command, ~r/\b(左|zuo)\s+(1|一|yi)\s+(次|ci)\b/) or String.match?(command, ~r/\b(1|一|yi)\s+(次|ci)\s+(左|zuo)\b/) -> {:move, :west, 1}
+      String.match?(command, ~r/\b(左|zuo)\s+(2|二|er)\s+(次|ci)\b/) or String.match?(command, ~r/\b(2|二|er)\s+(次|ci)\s+(左|zuo)\b/) -> {:move, :west, 2}
+      String.match?(command, ~r/\b(左|zuo)\s+(3|三|san)\s+(次|ci)\b/) or String.match?(command, ~r/\b(3|三|san)\s+(次|ci)\s+(左|zuo)\b/) -> {:move, :west, 3}
+      true -> :unknown
+    end
+  end
+
+  defp parse_russian_numbered_movement(command) do
+    cond do
+      String.match?(command, ~r/\b(влево|vlevo)\s+(1|один|odin)\s+(раз|raz)\b/) or String.match?(command, ~r/\b(1|один|odin)\s+(раз|raz)\s+(влево|vlevo)\b/) -> {:move, :west, 1}
+      String.match?(command, ~r/\b(влево|vlevo)\s+(2|два|dva)\s+(раза|raza)\b/) or String.match?(command, ~r/\b(2|два|dva)\s+(раза|raza)\s+(влево|vlevo)\b/) -> {:move, :west, 2}
+      String.match?(command, ~r/\b(влево|vlevo)\s+(3|три|tri)\s+(раза|raza)\b/) or String.match?(command, ~r/\b(3|три|tri)\s+(раза|raza)\s+(влево|vlevo)\b/) -> {:move, :west, 3}
+      true -> :unknown
+    end
+  end
+
+  defp parse_japanese_numbered_movement(command) do
+    cond do
+      String.match?(command, ~r/\b(左|hidari)\s+(1|一|ichi)\s+(回|kai)\b/) or String.match?(command, ~r/\b(1|一|ichi)\s+(回|kai)\s+(左|hidari)\b/) -> {:move, :west, 1}
+      String.match?(command, ~r/\b(左|hidari)\s+(2|二|ni)\s+(回|kai)\b/) or String.match?(command, ~r/\b(2|二|ni)\s+(回|kai)\s+(左|hidari)\b/) -> {:move, :west, 2}
+      String.match?(command, ~r/\b(左|hidari)\s+(3|三|san)\s+(回|kai)\b/) or String.match?(command, ~r/\b(3|三|san)\s+(回|kai)\s+(左|hidari)\b/) -> {:move, :west, 3}
+      true -> :unknown
+    end
+  end
+
+  defp parse_italian_numbered_movement(command) do
+    cond do
+      String.match?(command, ~r/\b(sinistra|ovest)\s+(1|uno|una)\s+(volta|volte)\b/) or String.match?(command, ~r/\b(1|uno|una)\s+(volta|volte)\s+(sinistra|ovest)\b/) -> {:move, :west, 1}
+      String.match?(command, ~r/\b(sinistra|ovest)\s+(2|due)\s+(volte)\b/) or String.match?(command, ~r/\b(2|due)\s+(volte)\s+(sinistra|ovest)\b/) -> {:move, :west, 2}
+      String.match?(command, ~r/\b(sinistra|ovest)\s+(3|tre)\s+(volte)\b/) or String.match?(command, ~r/\b(3|tre)\s+(volte)\s+(sinistra|ovest)\b/) -> {:move, :west, 3}
+      true -> :unknown
+    end
+  end
+
+  defp parse_arabic_numbered_movement(command) do
+    cond do
+      String.match?(command, ~r/\b(يسار|yasar)\s+(1|واحد|wahid)\s+(مرة|marra)\b/) or String.match?(command, ~r/\b(1|واحد|wahid)\s+(مرة|marra)\s+(يسار|yasar)\b/) -> {:move, :west, 1}
+      String.match?(command, ~r/\b(يسار|yasar)\s+(2|اثنان|ithnan)\s+(مرات|marrat)\b/) or String.match?(command, ~r/\b(2|اثنان|ithnan)\s+(مرات|marrat)\s+(يسار|yasar)\b/) -> {:move, :west, 2}
+      String.match?(command, ~r/\b(يسار|yasar)\s+(3|ثلاثة|thalatha)\s+(مرات|marrat)\b/) or String.match?(command, ~r/\b(3|ثلاثة|thalatha)\s+(مرات|marrat)\s+(يسار|yasar)\b/) -> {:move, :west, 3}
+      true -> :unknown
+    end
+  end
+
+  defp parse_portuguese_numbered_movement(command) do
+    cond do
+      String.match?(command, ~r/\b(esquerda|oeste)\s+(1|um|uma)\s+(vez|vezes)\b/) or String.match?(command, ~r/\b(1|um|uma)\s+(vez|vezes)\s+(esquerda|oeste)\b/) -> {:move, :west, 1}
+      String.match?(command, ~r/\b(esquerda|oeste)\s+(2|dois|duas)\s+(vezes)\b/) or String.match?(command, ~r/\b(2|dois|duas)\s+(vezes)\s+(esquerda|oeste)\b/) -> {:move, :west, 2}
+      String.match?(command, ~r/\b(esquerda|oeste)\s+(3|três)\s+(vezes)\b/) or String.match?(command, ~r/\b(3|três)\s+(vezes)\s+(esquerda|oeste)\b/) -> {:move, :west, 3}
+      true -> :unknown
+    end
   end
 end

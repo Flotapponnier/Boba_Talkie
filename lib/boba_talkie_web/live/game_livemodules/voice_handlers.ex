@@ -48,6 +48,12 @@ defmodule BobaTalkieWeb.GameLive.VoiceHandlers do
   Handle voice audio data from MediaRecorder
   """
   def handle_voice_audio(socket, audio_params, live_view_pid) do
+    learning_language = socket.assigns[:learning_language] || "en"
+    require Logger
+    Logger.info("VoiceHandlers: learning_language from socket.assigns = #{learning_language}")
+    Logger.info("VoiceHandlers: all socket assigns = #{inspect(Map.keys(socket.assigns))}")
+    DebugLogger.voice_debug("Using learning language for voice recognition", %{learning_language: learning_language})
+    
     {audio_base64, mime_type} = case audio_params do
       %{"audio" => audio, "mime_type" => mime, "size" => size} ->
         DebugLogger.voice_debug("Received voice audio data", %{
@@ -67,9 +73,9 @@ defmodule BobaTalkieWeb.GameLive.VoiceHandlers do
       {:ok, audio_data} ->
         DebugLogger.voice_debug("Audio decoded successfully", %{decoded_size: byte_size(audio_data)})
         
-        # Process with Deepgram in background
+        # Process with Deepgram in background using learning language
         task = Task.async(fn -> 
-          Deepgram.transcribe_audio(audio_data, mime_type) 
+          Deepgram.transcribe_audio(audio_data, mime_type, learning_language) 
         end)
         
         case Task.await(task, 5000) do
@@ -113,14 +119,16 @@ defmodule BobaTalkieWeb.GameLive.VoiceHandlers do
   Handle async voice transcription results
   """
   def handle_voice_result(socket, command, confidence, world, player) do
-    DebugLogger.voice_debug("Processing async voice result", %{command: command, confidence: confidence})
+    learning_language = socket.assigns[:learning_language] || "en"
+    DebugLogger.voice_debug("Processing async voice result", %{command: command, confidence: confidence, learning_language: learning_language})
     
-    # Process the transcribed command using movement handlers
+    # Process the transcribed command using movement handlers with learning language
     {new_world, new_player, message} = BobaTalkieWeb.GameLive.MovementHandlers.process_command(
       world, 
       player, 
       command,
-      confidence
+      confidence,
+      learning_language
     )
 
     socket

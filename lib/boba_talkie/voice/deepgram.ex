@@ -11,12 +11,13 @@ defmodule BobaTalkie.Voice.Deepgram do
   @deepgram_url "https://api.deepgram.com/v1/listen"
   
   @doc """
-  Transcribe audio using Deepgram API
+  Transcribe audio using Deepgram API with language-specific recognition
   """
-  def transcribe_audio(audio_data, mime_type \\ "audio/webm") when is_binary(audio_data) do
+  def transcribe_audio(audio_data, mime_type \\ "audio/webm", learning_language \\ "en") when is_binary(audio_data) do
     DebugLogger.voice_debug("Starting Deepgram transcription", %{
       audio_size: byte_size(audio_data),
-      mime_type: mime_type
+      mime_type: mime_type,
+      learning_language: learning_language
     })
     
     case get_api_key() do
@@ -39,9 +40,12 @@ defmodule BobaTalkie.Voice.Deepgram do
           {"Content-Type", content_type}
         ]
         
+        # Map learning language to Deepgram language code
+        deepgram_language = map_to_deepgram_language(learning_language)
+        
         query_params = URI.encode_query(%{
           "model" => "nova-2",
-          "language" => "en-US",
+          "language" => deepgram_language,
           "smart_format" => "true",
           "punctuate" => "true"
         })
@@ -51,6 +55,8 @@ defmodule BobaTalkie.Voice.Deepgram do
         DebugLogger.voice_debug("Sending request to Deepgram", %{
           url: url, 
           audio_size: byte_size(audio_data),
+          deepgram_language: deepgram_language,
+          learning_language: learning_language,
           headers: headers,
           first_bytes: binary_part(audio_data, 0, min(16, byte_size(audio_data))) |> Base.encode16()
         })
@@ -91,6 +97,22 @@ defmodule BobaTalkie.Voice.Deepgram do
       "" -> "audio/wav"
       # Default fallback
       _ -> "audio/webm"
+    end
+  end
+  
+  defp map_to_deepgram_language(learning_language) do
+    case learning_language do
+      "en" -> "en-US"    # English
+      "es" -> "es"       # Spanish
+      "fr" -> "fr"       # French  
+      "zh" -> "zh-CN"    # Chinese (Simplified)
+      "ru" -> "ru"       # Russian
+      "ja" -> "ja"       # Japanese
+      "it" -> "it"       # Italian
+      "ar" -> "ar"       # Arabic
+      "pt" -> "pt"       # Portuguese
+      # Fallback to English for unknown languages
+      _ -> "en-US"
     end
   end
 end

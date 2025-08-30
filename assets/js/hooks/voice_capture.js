@@ -11,6 +11,13 @@ export const VoiceCapture = {
     
     console.log('VoiceCapture mounted - Web Speech API with MediaRecorder fallback');
     
+    // Get learning language from the HTML element's data attribute or detect from URL
+    this.learningLanguage = this.el.dataset.learningLanguage || 
+                           new URLSearchParams(window.location.search).get('learning_language') || 
+                           'en';
+    
+    console.log('VoiceCapture: Learning language detected:', this.learningLanguage);
+    
     // Detect Brave browser - be more specific
     this.isBrave = (navigator.brave && navigator.brave.isBrave) || 
                    navigator.userAgent.includes('Brave');
@@ -21,7 +28,8 @@ export const VoiceCapture = {
     console.log('Browser detection:', {
       isBrave: this.isBrave,
       hasWebSpeech: this.hasWebSpeech,
-      willUseMediaRecorder: this.isBrave || !this.hasWebSpeech
+      willUseMediaRecorder: this.isBrave || !this.hasWebSpeech,
+      learningLanguage: this.learningLanguage
     });
     
     // Initialize modular components
@@ -36,9 +44,9 @@ export const VoiceCapture = {
     this.webSpeechHandler.init(this);
     this.mediaRecorderHandler.init(this);
     
-    // Initialize appropriate speech recognition method
+    // Initialize appropriate speech recognition method with learning language
     if (!this.isBrave && this.hasWebSpeech) {
-      this.webSpeechHandler.setup();
+      this.webSpeechHandler.setup(this.learningLanguage);
     }
     
     // Add event listeners for button interactions

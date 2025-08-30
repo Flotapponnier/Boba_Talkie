@@ -154,6 +154,7 @@
           <button 
             phx-hook="VoiceCapture"
             id="voice-btn"
+            data-learning-language={@learning_language}
             class={[
               "btn-cute w-full py-2 px-4 transition-all duration-200 text-base",
               if @listening do
