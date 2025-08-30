@@ -44,14 +44,14 @@
       <div class="col-span-2 space-y-2">
         <!-- Quick Commands -->
         <div class="card-cute p-3">
-          <h4 class="text-sm font-bold text-cute mb-2">Quick Commands:</h4>
+          <h4 class="text-sm font-bold text-cute mb-2"><%= gettext("Quick Commands:") %></h4>
           <div class="space-y-1 text-xs text-cute">
-            <div>"go north"</div>
-            <div>"go south"</div>
-            <div>"go east"</div>
-            <div>"go west"</div>
-            <div>"look around"</div>
-            <div>"help"</div>
+            <div>"<%= gettext("north") %>" / "<%= gettext("up") %>"</div>
+            <div>"<%= gettext("south") %>" / "<%= gettext("down") %>"</div>
+            <div>"<%= gettext("east") %>" / "<%= gettext("right") %>"</div>
+            <div>"<%= gettext("west") %>" / "<%= gettext("left") %>"</div>
+            <div>"3 <%= gettext("right") %>"</div>
+            <div>"2 <%= gettext("down") %>"</div>
           </div>
         </div>
 

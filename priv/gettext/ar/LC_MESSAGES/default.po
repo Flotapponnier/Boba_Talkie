@@ -52,6 +52,8 @@ msgid "Select the language you want to learn"
 msgstr "اختر اللغة التي تريد تعلمها"
 
 # Game interface
+#: lib/boba_talkie_web/live/game_live.html.heex:47
+#, elixir-autogen
 msgid "Quick Commands:"
 msgstr "أوامر سريعة:"
 
@@ -438,3 +440,45 @@ msgstr "مطعم"
 #, elixir-autogen, elixir-format
 msgid "Self-Introduction"
 msgstr "تقديم الذات"
+
+#: lib/boba_talkie_web/live/game_live.html.heex:50
+#: lib/boba_talkie_web/live/game_live.html.heex:54
+#, elixir-autogen, elixir-format
+msgid "down"
+msgstr "أسفل"
+
+#: lib/boba_talkie_web/live/game_live.html.heex:51
+#, elixir-autogen, elixir-format
+msgid "east"
+msgstr "شرق"
+
+#: lib/boba_talkie_web/live/game_live.html.heex:52
+#, elixir-autogen, elixir-format
+msgid "left"
+msgstr "يسار"
+
+#: lib/boba_talkie_web/live/game_live.html.heex:49
+#, elixir-autogen, elixir-format, fuzzy
+msgid "north"
+msgstr "شمال"
+
+#: lib/boba_talkie_web/live/game_live.html.heex:51
+#: lib/boba_talkie_web/live/game_live.html.heex:53
+#, elixir-autogen, elixir-format
+msgid "right"
+msgstr "يمين"
+
+#: lib/boba_talkie_web/live/game_live.html.heex:50
+#, elixir-autogen, elixir-format
+msgid "south"
+msgstr "جنوب"
+
+#: lib/boba_talkie_web/live/game_live.html.heex:49
+#, elixir-autogen, elixir-format
+msgid "up"
+msgstr "أعلى"
+
+#: lib/boba_talkie_web/live/game_live.html.heex:52
+#, elixir-autogen, elixir-format
+msgid "west"
+msgstr "غرب"

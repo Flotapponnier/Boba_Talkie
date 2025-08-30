@@ -118,10 +118,10 @@ defmodule BobaTalkieWeb.GameLive.MovementHandlers do
     help_text = """
     BobaTalkie Card Challenge Game:
     
-    Movement Commands:
-    • "north/south/east/west" or "up/down/left/right" - Move 1 step
-    • "2 north", "3 right", "tree left" - Move multiple steps (1-3 max)
-    • "move three times right" - Natural sentences work!
+    Quick Movement Commands:
+    • "north", "south", "east", "west" - Move 1 step
+    • "up", "down", "left", "right" - Alternative directions
+    • "3 right", "2 down", "1 left" - Move multiple steps (1-3 max)
     
     Card Challenge System:
     1. Click a card to select it
@@ -153,6 +153,25 @@ defmodule BobaTalkieWeb.GameLive.MovementHandlers do
     |> String.trim()
     
     cond do
+      # Priority: Simple single-word directional commands (new prioritized patterns)
+      clean_command in ["north", "up"] -> {:move, :north, 1}
+      clean_command in ["south", "down"] -> {:move, :south, 1}
+      clean_command in ["east", "right"] -> {:move, :east, 1}
+      clean_command in ["west", "left"] -> {:move, :west, 1}
+      
+      # Priority: Multi-step movement commands (cleaner patterns)
+      String.match?(clean_command, ~r/^\s*(1|one)\s+(north|up)\s*$/) -> {:move, :north, 1}
+      String.match?(clean_command, ~r/^\s*(2|two)\s+(north|up)\s*$/) -> {:move, :north, 2}
+      String.match?(clean_command, ~r/^\s*(3|three|tree)\s+(north|up)\s*$/) -> {:move, :north, 3}
+      String.match?(clean_command, ~r/^\s*(1|one)\s+(south|down)\s*$/) -> {:move, :south, 1}
+      String.match?(clean_command, ~r/^\s*(2|two)\s+(south|down)\s*$/) -> {:move, :south, 2}
+      String.match?(clean_command, ~r/^\s*(3|three|tree)\s+(south|down)\s*$/) -> {:move, :south, 3}
+      String.match?(clean_command, ~r/^\s*(1|one)\s+(east|right)\s*$/) -> {:move, :east, 1}
+      String.match?(clean_command, ~r/^\s*(2|two)\s+(east|right)\s*$/) -> {:move, :east, 2}
+      String.match?(clean_command, ~r/^\s*(3|three|tree)\s+(east|right)\s*$/) -> {:move, :east, 3}
+      String.match?(clean_command, ~r/^\s*(1|one)\s+(west|left)\s*$/) -> {:move, :west, 1}
+      String.match?(clean_command, ~r/^\s*(2|two)\s+(west|left)\s*$/) -> {:move, :west, 2}
+      String.match?(clean_command, ~r/^\s*(3|three|tree)\s+(west|left)\s*$/) -> {:move, :west, 3}
       # Check for numbered movement commands anywhere in sentence (close together)
       String.match?(clean_command, ~r/(1|one)\s+.{0,20}\s*(north|up)|(north|up)\s+.{0,20}\s*(1|one)/) -> {:move, :north, 1}
       String.match?(clean_command, ~r/(2|two)\s+.{0,20}\s*(north|up)|(north|up)\s+.{0,20}\s*(2|two)/) -> {:move, :north, 2}
