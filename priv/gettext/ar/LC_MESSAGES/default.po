@@ -22,28 +22,28 @@ msgstr "اختر مغامرتك التعليمية"
 msgid "Select a topic to start your voice-controlled journey"
 msgstr "حدد موضوعًا لبدء رحلتك المتحكم بها بالصوت"
 
-#: lib/boba_talkie_web/live/map_selection_live.html.heex:84
+#: lib/boba_talkie_web/live/map_selection_live.html.heex:75
 #, elixir-autogen
 msgid "Back to Home"
 msgstr "عد إلى الرئيسية"
 
-#: lib/boba_talkie_web/live/map_selection_live.html.heex:63
+#: lib/boba_talkie_web/live/map_selection_live.html.heex:54
 #, elixir-autogen
 msgid "Learn"
 msgstr "تعلّم"
 
-#: lib/boba_talkie_web/live/map_selection_live.html.heex:71
+#: lib/boba_talkie_web/live/map_selection_live.html.heex:62
 #, elixir-autogen
 msgid "Play"
 msgstr "العب"
 
 # Language selection
-#: lib/boba_talkie_web/components/language_selector.ex:19
+#: lib/boba_talkie_web/components/language_selector.ex:21
 #, elixir-autogen
 msgid "Interface Language"
 msgstr "لغة الواجهة"
 
-#: lib/boba_talkie_web/components/language_selector.ex:45
+#: lib/boba_talkie_web/components/language_selector.ex:48
 #, elixir-autogen
 msgid "Learning Language"
 msgstr "لغة التعلم"
@@ -92,6 +92,8 @@ msgid "Select a card!"
 msgstr "اختر بطاقة!"
 
 # Tutorial interface
+#: lib/boba_talkie_web/live/tutorial_live.html.heex:14
+#, elixir-autogen
 msgid "Tutorial"
 msgstr "درس تعليمي"
 
@@ -149,6 +151,8 @@ msgstr "اكتشف مفردات الحيوانات والأوصاف"
 msgid "Practice ordering food and restaurant phrases"
 msgstr "تدرّب على طلب الطعام وعبارات المطعم"
 
+#: lib/boba_talkie_web/live/tutorial_live.ex:168
+#, elixir-autogen
 msgid "Learn family relationships and descriptions"
 msgstr "تعلّم علاقات العائلة والأوصاف"
 
@@ -166,7 +170,7 @@ msgid "How it works"
 msgstr "كيف يعمل"
 
 #: lib/boba_talkie_web/components/core_components.ex:342
-#: lib/boba_talkie_web/live/index_live.html.heex:75
+#: lib/boba_talkie_web/live/index_live.html.heex:84
 #, elixir-autogen, elixir-format
 msgid "Actions"
 msgstr "إجراءات"
@@ -192,7 +196,7 @@ msgstr "لا يمكننا العثور على الإنترنت"
 msgid "close"
 msgstr "إغلاق"
 
-#: lib/boba_talkie_web/live/index_live.html.heex:88
+#: lib/boba_talkie_web/live/index_live.html.heex:97
 #, elixir-autogen, elixir-format
 msgid "Built with Phoenix LiveView • Real-time voice recognition"
 msgstr "بني باستخدام Phoenix LiveView • تمييز صوتي في الوقت الفعلي"
@@ -212,7 +216,7 @@ msgstr "تعلّم وتحسّن"
 msgid "Move through a 2D grid world"
 msgstr "انتقل عبر عالم شبكي ثنائي الأبعاد"
 
-#: lib/boba_talkie_web/live/index_live.html.heex:67
+#: lib/boba_talkie_web/live/index_live.html.heex:76
 #, elixir-autogen, elixir-format
 msgid "Movement"
 msgstr "حركة"
@@ -242,86 +246,195 @@ msgstr "أوامر صوتية"
 msgid "Use your voice to control your character"
 msgstr "استخدم صوتك للتحكم في شخصيتك"
 
-#: lib/boba_talkie_web/live/index_live.html.heex:64
+#: lib/boba_talkie_web/live/index_live.html.heex:73
 #, elixir-autogen, elixir-format
 msgid "Voice Commands You'll Use"
 msgstr "الأوامر الصوتية التي ستستخدمها"
 
-#: lib/boba_talkie_web/live/index_live.html.heex:69
+#: lib/boba_talkie_web/live/index_live.html.heex:78
 #, elixir-autogen, elixir-format
 msgid "go north"
 msgstr "اذهب شمالاً"
 
-#: lib/boba_talkie_web/live/index_live.html.heex:79
+#: lib/boba_talkie_web/live/index_live.html.heex:88
 #, elixir-autogen, elixir-format
 msgid "help"
 msgstr "مساعدة"
 
-#: lib/boba_talkie_web/live/index_live.html.heex:77
+#: lib/boba_talkie_web/live/index_live.html.heex:86
 #, elixir-autogen, elixir-format
 msgid "look around"
 msgstr "انظر حولك"
 
-#: lib/boba_talkie_web/live/index_live.html.heex:70
+#: lib/boba_talkie_web/live/index_live.html.heex:79
 #, elixir-autogen, elixir-format
 msgid "move east"
 msgstr "تحرّك شرقاً"
 
-#: lib/boba_talkie_web/live/index_live.html.heex:78
+#: lib/boba_talkie_web/live/index_live.html.heex:87
 #, elixir-autogen, elixir-format
 msgid "pick up item"
 msgstr "التقط عنصراً"
 
-#: lib/boba_talkie_web/live/index_live.html.heex:71
+#: lib/boba_talkie_web/live/index_live.html.heex:80
 #, elixir-autogen, elixir-format
 msgid "turn around"
 msgstr "استدر"
 
-#: lib/boba_talkie_web/live/map_selection_live.html.heex:46
+#: lib/boba_talkie_web/live/map_selection_live.html.heex:37
 #, elixir-autogen, elixir-format
 msgid "Level:"
 msgstr "المستوى:"
 
-#: lib/boba_talkie_web/live/map_selection_live.html.heex:50
+#: lib/boba_talkie_web/live/map_selection_live.html.heex:41
 #, elixir-autogen, elixir-format
 msgid "Words:"
 msgstr "كلمات:"
 
-# Level difficulty translations
-msgid "Beginner"
-msgstr "مبتدئ"
+#: lib/boba_talkie_web/live/tutorial_live.html.heex:134
+#, elixir-autogen, elixir-format
+msgid "Back to Maps"
+msgstr "العودة إلى الخرائط"
 
-msgid "Intermediate"
-msgstr "متوسط"
+#: lib/boba_talkie_web/live/tutorial_live.html.heex:81
+#, elixir-autogen, elixir-format
+msgid "Example Usage"
+msgstr "مثال الاستخدام"
 
-# Level title translations
-msgid "Numbers"
-msgstr "الأرقام"
+#: lib/boba_talkie_web/live/tutorial_live.html.heex:61
+#, elixir-autogen, elixir-format
+msgid "Hide Pronunciation"
+msgstr "إخفاء النطق"
 
-msgid "Self-Introduction"
-msgstr "تقديم الذات"
+# Language selection for main page
+#: lib/boba_talkie_web/live/index_live.html.heex:63
+#, elixir-autogen, elixir-format
+msgid "Language I want to learn:"
+msgstr "اللغة التي أريد تعلمها:"
 
-msgid "Fruits & Food"
-msgstr "الفواكه والطعام"
+#: lib/boba_talkie_web/live/tutorial_live.html.heex:123
+#, elixir-autogen, elixir-format
+msgid "Next"
+msgstr "التالي"
 
-msgid "Colors"
-msgstr "الألوان"
+#: lib/boba_talkie_web/live/tutorial_live.html.heex:148
+#, elixir-autogen, elixir-format
+msgid "Practice saying each word out loud to improve your pronunciation!"
+msgstr "مارس قول كل كلمة بصوت عالٍ لتحسين نطقك!"
 
+#: lib/boba_talkie_web/live/tutorial_live.html.heex:109
+#, elixir-autogen, elixir-format
+msgid "Previous"
+msgstr "السابق"
+
+#: lib/boba_talkie_web/live/tutorial_live.html.heex:25
+#, elixir-autogen, elixir-format
+msgid "Progress"
+msgstr "التقدم"
+
+#: lib/boba_talkie_web/live/tutorial_live.html.heex:72
+#: lib/boba_talkie_web/live/tutorial_live.html.heex:90
+#, elixir-autogen, elixir-format
+msgid "Romanization"
+msgstr "النقل بالحروف اللاتينية"
+
+#: lib/boba_talkie_web/live/tutorial_live.html.heex:63
+#, elixir-autogen, elixir-format
+msgid "Show Pronunciation"
+msgstr "إظهار النطق"
+
+#: lib/boba_talkie_web/live/tutorial_live.html.heex:140
+#, elixir-autogen, elixir-format
+msgid "Start Playing"
+msgstr "بدء اللعب"
+
+#: lib/boba_talkie_web/live/tutorial_live.html.heex:148
+#, elixir-autogen, elixir-format
+msgid "Tip"
+msgstr "نصيحة"
+
+#: lib/boba_talkie_web/live/tutorial_live.ex:150
+#, elixir-autogen, elixir-format
+msgid "Animals"
+msgstr "حيوانات"
+
+#: lib/boba_talkie_web/live/tutorial_live.ex:142
+#, elixir-autogen, elixir-format
 msgid "Bakery"
 msgstr "مخبز"
 
-msgid "Animals"
-msgstr "الحيوانات"
+#: lib/boba_talkie_web/live/tutorial_live.ex:134
+#, elixir-autogen, elixir-format
+msgid "Colors"
+msgstr "ألوان"
 
+#: lib/boba_talkie_web/live/tutorial_live.ex:174
+#, elixir-autogen, elixir-format
+msgid "Countries"
+msgstr "بلدان"
+
+#: lib/boba_talkie_web/live/tutorial_live.ex:152
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Discover animal vocabulary and their characteristics"
+msgstr "اكتشف مفردات الحيوانات والأوصاف"
+
+#: lib/boba_talkie_web/live/tutorial_live.ex:120
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Discover delicious fruits and food vocabulary"
+msgstr "اكتشف مفردات الفواكه والطعام"
+
+#: lib/boba_talkie_web/live/tutorial_live.ex:176
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Explore countries, nationalities, and cultural expressions"
+msgstr "استكشف البلدان والجنسيات والثقافات"
+
+#: lib/boba_talkie_web/live/tutorial_live.ex:136
+#, elixir-autogen, elixir-format
+msgid "Explore vibrant colors and color descriptions"
+msgstr "استكشف الألوان الزاهية وأوصاف الألوان"
+
+#: lib/boba_talkie_web/live/tutorial_live.ex:166
+#, elixir-autogen, elixir-format
+msgid "Family"
+msgstr "عائلة"
+
+#: lib/boba_talkie_web/live/tutorial_live.ex:118
+#, elixir-autogen, elixir-format
+msgid "Fruits & Food"
+msgstr "فواكه وطعام"
+
+#: lib/boba_talkie_web/live/tutorial_live.ex:144
+#, elixir-autogen, elixir-format
+msgid "Learn essential bakery vocabulary and ordering phrases"
+msgstr "تعلّم مفردات المخبز الأساسية وعبارات الطلب"
+
+# Level descriptions
+#: lib/boba_talkie_web/live/tutorial_live.ex:112
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Learn essential phrases to introduce yourself"
+msgstr "تعلّم عبارات أساسية لتقديم نفسك"
+
+#: lib/boba_talkie_web/live/tutorial_live.ex:128
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Master counting and number vocabulary"
+msgstr "تدرّب على العد ومفردات الأرقام"
+
+#: lib/boba_talkie_web/live/tutorial_live.ex:160
+#, elixir-autogen, elixir-format
+msgid "Master restaurant vocabulary and ordering phrases"
+msgstr "أتقن مفردات المطعم وعبارات الطلب"
+
+#: lib/boba_talkie_web/live/tutorial_live.ex:126
+#, elixir-autogen, elixir-format
+msgid "Numbers"
+msgstr "أرقام"
+
+#: lib/boba_talkie_web/live/tutorial_live.ex:158
+#, elixir-autogen, elixir-format
 msgid "Restaurant"
 msgstr "مطعم"
 
-msgid "Family"
-msgstr "العائلة"
-
-msgid "Countries"
-msgstr "البلدان"
-
-# Language selection for main page
-msgid "Language I want to learn:"
-msgstr "اللغة التي أريد تعلمها:"
+#: lib/boba_talkie_web/live/tutorial_live.ex:110
+#, elixir-autogen, elixir-format
+msgid "Self-Introduction"
+msgstr "تقديم الذات"

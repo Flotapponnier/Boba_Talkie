@@ -107,73 +107,73 @@ defmodule BobaTalkieWeb.TutorialLive do
   # Tutorial metadata (language-independent)
   defp get_tutorial_metadata("introduction") do
     %{
-      title: "Self-Introduction",
+      title: gettext("Self-Introduction"),
       emoji: "👋",
-      description: "Learn essential phrases to introduce yourself"
+      description: gettext("Learn essential phrases to introduce yourself")
     }
   end
 
   defp get_tutorial_metadata("fruits") do
     %{
-      title: "Fruits & Food",
+      title: gettext("Fruits & Food"),
       emoji: "🍎",
-      description: "Discover delicious fruits and food vocabulary"
+      description: gettext("Discover delicious fruits and food vocabulary")
     }
   end
 
   defp get_tutorial_metadata("numbers") do
     %{
-      title: "Numbers",
+      title: gettext("Numbers"),
       emoji: "1️⃣",
-      description: "Master counting and number vocabulary"
+      description: gettext("Master counting and number vocabulary")
     }
   end
 
   defp get_tutorial_metadata("colors") do
     %{
-      title: "Colors",
+      title: gettext("Colors"),
       emoji: "🌈",
-      description: "Explore vibrant colors and color descriptions"
+      description: gettext("Explore vibrant colors and color descriptions")
     }
   end
 
   defp get_tutorial_metadata("bakery") do
     %{
-      title: "Bakery",
+      title: gettext("Bakery"),
       emoji: "🥐",
-      description: "Learn essential bakery vocabulary and ordering phrases"
+      description: gettext("Learn essential bakery vocabulary and ordering phrases")
     }
   end
 
   defp get_tutorial_metadata("animals") do
     %{
-      title: "Animals",
+      title: gettext("Animals"),
       emoji: "🐶",
-      description: "Discover animal vocabulary and their characteristics"
+      description: gettext("Discover animal vocabulary and their characteristics")
     }
   end
 
   defp get_tutorial_metadata("restaurant") do
     %{
-      title: "Restaurant",
+      title: gettext("Restaurant"),
       emoji: "🍕",
-      description: "Master restaurant vocabulary and ordering phrases"
+      description: gettext("Master restaurant vocabulary and ordering phrases")
     }
   end
 
   defp get_tutorial_metadata("family") do
     %{
-      title: "Family",
+      title: gettext("Family"),
       emoji: "👨‍👩‍👧‍👦",
-      description: "Learn family relationships and descriptions"
+      description: gettext("Learn family relationships and descriptions")
     }
   end
 
   defp get_tutorial_metadata("countries") do
     %{
-      title: "Countries",
+      title: gettext("Countries"),
       emoji: "🇹🇼",
-      description: "Explore countries, nationalities, and cultural expressions"
+      description: gettext("Explore countries, nationalities, and cultural expressions")
     }
   end
 

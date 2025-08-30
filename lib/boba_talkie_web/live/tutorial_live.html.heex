@@ -11,7 +11,7 @@
     <!-- Header -->
     <div class="text-center space-y-3">
       <div class="text-5xl"><%= @content.emoji %></div>
-      <h1 class="text-2xl font-bold text-cute">Tutorial: <%= @content.title %></h1>
+      <h1 class="text-2xl font-bold text-cute"><%= gettext("Tutorial") %>: <%= @content.title %></h1>
       <p class="text-cute opacity-80"><%= @content.description %></p>
     </div>
 
@@ -22,7 +22,7 @@
       <!-- Progress Bar -->
       <div class="space-y-2">
         <div class="flex justify-between text-sm text-cute opacity-70">
-          <span>Progress</span>
+          <span><%= gettext("Progress") %></span>
           <span><%= @current_item + 1 %> / <%= length(@content.vocabulary) %></span>
         </div>
         <div class="w-full bg-boba-cream rounded-full h-2">
@@ -58,9 +58,9 @@
             class="btn-cute text-sm bg-boba-cream hover:bg-boba-orange-10 text-boba-orange border-boba-orange"
           >
             <%= if @show_pronunciation do %>
-              Hide Pronunciation
+              <%= gettext("Hide Pronunciation") %>
             <% else %>
-              Show Pronunciation
+              <%= gettext("Show Pronunciation") %>
             <% end %>
           </button>
           
@@ -69,7 +69,7 @@
               <div>/<%= current_item.pronunciation %>/</div>
               <%= if Map.has_key?(current_item, :romanization) do %>
                 <div class="text-sm opacity-80">
-                  <span class="font-semibold">Romanization:</span> <%= current_item.romanization %>
+                  <span class="font-semibold"><%= gettext("Romanization") %>:</span> <%= current_item.romanization %>
                 </div>
               <% end %>
             </div>
@@ -78,7 +78,7 @@
 
         <!-- Example Usage - Dual Language -->
         <div class="bg-blue-50 rounded-lg p-4 border-2 border-blue-200 space-y-3">
-          <h3 class="text-sm font-semibold text-blue-800">Example Usage:</h3>
+          <h3 class="text-sm font-semibold text-blue-800"><%= gettext("Example Usage") %>:</h3>
           
           <!-- Learning Language Example -->
           <div class="space-y-1">
@@ -87,7 +87,7 @@
             <!-- Romanization for learning language example -->
             <%= if Map.has_key?(current_item, :example_romanization) do %>
               <p class="text-blue-600 text-sm font-mono opacity-70">
-                <span class="font-semibold">Romanization:</span> <%= current_item.example_romanization %>
+                <span class="font-semibold"><%= gettext("Romanization") %>:</span> <%= current_item.example_romanization %>
               </p>
             <% end %>
             
@@ -106,7 +106,7 @@
           disabled={@current_item == 0}
           class="btn-cute px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed bg-gray-200 hover:bg-gray-300 text-gray-700"
         >
-          Previous
+          <%= gettext("Previous") %>
         </button>
 
         <div class="flex space-x-2">
@@ -120,7 +120,7 @@
           disabled={@current_item == length(@content.vocabulary) - 1}
           class="btn-cute px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Next
+          <%= gettext("Next") %>
         </button>
       </div>
     </div>
@@ -131,13 +131,13 @@
         phx-click="back_to_maps"
         class="btn-cute flex-1 bg-white hover:bg-gray-50 border-2 border-boba-orange text-boba-orange py-3 px-6"
       >
-        Back to Maps
+        <%= gettext("Back to Maps") %>
       </button>
       <button 
         phx-click="start_game"
         class="btn-cute flex-1 py-3 px-6 bounce-cute"
       >
-        Start Playing
+        <%= gettext("Start Playing") %>
       </button>
     </div>
 
@@ -145,7 +145,7 @@
     <div class="text-center space-y-2">
       <div class="bg-yellow-50 border-2 border-yellow-200 rounded-lg p-3">
         <p class="text-sm text-yellow-800">
-          <strong>Tip:</strong> Practice saying each word out loud to improve your pronunciation!
+          <strong><%= gettext("Tip") %>:</strong> <%= gettext("Practice saying each word out loud to improve your pronunciation!") %>
         </p>
       </div>
     </div>

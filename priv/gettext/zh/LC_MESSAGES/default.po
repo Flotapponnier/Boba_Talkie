@@ -14,27 +14,27 @@ msgstr "选择您的学习冒险"
 msgid "Select a topic to start your voice-controlled journey"
 msgstr "选择一个主题开始您的语音控制之旅"
 
-#: lib/boba_talkie_web/live/map_selection_live.html.heex:84
+#: lib/boba_talkie_web/live/map_selection_live.html.heex:75
 #, elixir-autogen
 msgid "Back to Home"
 msgstr "返回主页"
 
-#: lib/boba_talkie_web/live/map_selection_live.html.heex:63
+#: lib/boba_talkie_web/live/map_selection_live.html.heex:54
 #, elixir-autogen
 msgid "Learn"
 msgstr "学习"
 
-#: lib/boba_talkie_web/live/map_selection_live.html.heex:71
+#: lib/boba_talkie_web/live/map_selection_live.html.heex:62
 #, elixir-autogen
 msgid "Play"
 msgstr "游戏"
 
-#: lib/boba_talkie_web/components/language_selector.ex:19
+#: lib/boba_talkie_web/components/language_selector.ex:21
 #, elixir-autogen
 msgid "Interface Language"
 msgstr "界面语言"
 
-#: lib/boba_talkie_web/components/language_selector.ex:45
+#: lib/boba_talkie_web/components/language_selector.ex:48
 #, elixir-autogen
 msgid "Learning Language"
 msgstr "学习语言"
@@ -83,6 +83,8 @@ msgid "Select a card!"
 msgstr "选择一张卡片！"
 
 # Tutorial interface
+#: lib/boba_talkie_web/live/tutorial_live.html.heex:14
+#, elixir-autogen
 msgid "Tutorial"
 msgstr "教程"
 
@@ -139,6 +141,8 @@ msgstr "探索动物词汇和描述"
 msgid "Practice ordering food and restaurant phrases"
 msgstr "练习点餐和餐厅用语"
 
+#: lib/boba_talkie_web/live/tutorial_live.ex:168
+#, elixir-autogen
 msgid "Learn family relationships and descriptions"
 msgstr "学习家庭关系和描述"
 
@@ -156,7 +160,7 @@ msgid "How it works"
 msgstr "如何使用"
 
 #: lib/boba_talkie_web/components/core_components.ex:342
-#: lib/boba_talkie_web/live/index_live.html.heex:75
+#: lib/boba_talkie_web/live/index_live.html.heex:84
 #, elixir-autogen, elixir-format
 msgid "Actions"
 msgstr "动作"
@@ -182,7 +186,7 @@ msgstr "找不到网络连接"
 msgid "close"
 msgstr "关闭"
 
-#: lib/boba_talkie_web/live/index_live.html.heex:88
+#: lib/boba_talkie_web/live/index_live.html.heex:97
 #, elixir-autogen, elixir-format
 msgid "Built with Phoenix LiveView • Real-time voice recognition"
 msgstr "使用Phoenix LiveView构建 • 实时语音识别"
@@ -202,7 +206,7 @@ msgstr "学习和改进"
 msgid "Move through a 2D grid world"
 msgstr "在2D网格世界中移动"
 
-#: lib/boba_talkie_web/live/index_live.html.heex:67
+#: lib/boba_talkie_web/live/index_live.html.heex:76
 #, elixir-autogen, elixir-format
 msgid "Movement"
 msgstr "移动"
@@ -232,86 +236,195 @@ msgstr "语音命令"
 msgid "Use your voice to control your character"
 msgstr "用声音控制你的角色"
 
-#: lib/boba_talkie_web/live/index_live.html.heex:64
+#: lib/boba_talkie_web/live/index_live.html.heex:73
 #, elixir-autogen, elixir-format
 msgid "Voice Commands You'll Use"
 msgstr "你将使用的语音命令"
 
-#: lib/boba_talkie_web/live/index_live.html.heex:69
+#: lib/boba_talkie_web/live/index_live.html.heex:78
 #, elixir-autogen, elixir-format
 msgid "go north"
 msgstr "向北走"
 
-#: lib/boba_talkie_web/live/index_live.html.heex:79
+#: lib/boba_talkie_web/live/index_live.html.heex:88
 #, elixir-autogen, elixir-format
 msgid "help"
 msgstr "帮助"
 
-#: lib/boba_talkie_web/live/index_live.html.heex:77
+#: lib/boba_talkie_web/live/index_live.html.heex:86
 #, elixir-autogen, elixir-format
 msgid "look around"
 msgstr "环顾四周"
 
-#: lib/boba_talkie_web/live/index_live.html.heex:70
+#: lib/boba_talkie_web/live/index_live.html.heex:79
 #, elixir-autogen, elixir-format
 msgid "move east"
 msgstr "向东移动"
 
-#: lib/boba_talkie_web/live/index_live.html.heex:78
+#: lib/boba_talkie_web/live/index_live.html.heex:87
 #, elixir-autogen, elixir-format
 msgid "pick up item"
 msgstr "拾取物品"
 
-#: lib/boba_talkie_web/live/index_live.html.heex:71
+#: lib/boba_talkie_web/live/index_live.html.heex:80
 #, elixir-autogen, elixir-format
 msgid "turn around"
 msgstr "转身"
 
-#: lib/boba_talkie_web/live/map_selection_live.html.heex:46
+#: lib/boba_talkie_web/live/map_selection_live.html.heex:37
 #, elixir-autogen, elixir-format
 msgid "Level:"
 msgstr "等级："
 
-#: lib/boba_talkie_web/live/map_selection_live.html.heex:50
+#: lib/boba_talkie_web/live/map_selection_live.html.heex:41
 #, elixir-autogen, elixir-format
 msgid "Words:"
 msgstr "词汇："
 
-# Level difficulty translations
-msgid "Beginner"
-msgstr "初级"
+#: lib/boba_talkie_web/live/tutorial_live.html.heex:134
+#, elixir-autogen, elixir-format
+msgid "Back to Maps"
+msgstr "返回地图"
 
-msgid "Intermediate"
-msgstr "中级"
+#: lib/boba_talkie_web/live/tutorial_live.html.heex:81
+#, elixir-autogen, elixir-format
+msgid "Example Usage"
+msgstr "使用示例"
 
-# Level title translations
-msgid "Numbers"
-msgstr "数字"
+#: lib/boba_talkie_web/live/tutorial_live.html.heex:61
+#, elixir-autogen, elixir-format
+msgid "Hide Pronunciation"
+msgstr "隐藏发音"
 
-msgid "Self-Introduction"
-msgstr "自我介绍"
+# Language selection for main page
+#: lib/boba_talkie_web/live/index_live.html.heex:63
+#, elixir-autogen, elixir-format
+msgid "Language I want to learn:"
+msgstr "我想学习的语言："
 
-msgid "Fruits & Food"
-msgstr "水果和食物"
+#: lib/boba_talkie_web/live/tutorial_live.html.heex:123
+#, elixir-autogen, elixir-format
+msgid "Next"
+msgstr "下一个"
 
-msgid "Colors"
-msgstr "颜色"
+#: lib/boba_talkie_web/live/tutorial_live.html.heex:148
+#, elixir-autogen, elixir-format
+msgid "Practice saying each word out loud to improve your pronunciation!"
+msgstr "大声练习说每个单词来提高您的发音！"
 
-msgid "Bakery"
-msgstr "烘焙店"
+#: lib/boba_talkie_web/live/tutorial_live.html.heex:109
+#, elixir-autogen, elixir-format
+msgid "Previous"
+msgstr "上一个"
 
+#: lib/boba_talkie_web/live/tutorial_live.html.heex:25
+#, elixir-autogen, elixir-format
+msgid "Progress"
+msgstr "进度"
+
+#: lib/boba_talkie_web/live/tutorial_live.html.heex:72
+#: lib/boba_talkie_web/live/tutorial_live.html.heex:90
+#, elixir-autogen, elixir-format
+msgid "Romanization"
+msgstr "拼音"
+
+#: lib/boba_talkie_web/live/tutorial_live.html.heex:63
+#, elixir-autogen, elixir-format
+msgid "Show Pronunciation"
+msgstr "显示发音"
+
+#: lib/boba_talkie_web/live/tutorial_live.html.heex:140
+#, elixir-autogen, elixir-format
+msgid "Start Playing"
+msgstr "开始游戏"
+
+#: lib/boba_talkie_web/live/tutorial_live.html.heex:148
+#, elixir-autogen, elixir-format
+msgid "Tip"
+msgstr "提示"
+
+#: lib/boba_talkie_web/live/tutorial_live.ex:150
+#, elixir-autogen, elixir-format
 msgid "Animals"
 msgstr "动物"
 
-msgid "Restaurant"
-msgstr "餐厅"
+#: lib/boba_talkie_web/live/tutorial_live.ex:142
+#, elixir-autogen, elixir-format
+msgid "Bakery"
+msgstr "面包店"
 
-msgid "Family"
-msgstr "家庭"
+#: lib/boba_talkie_web/live/tutorial_live.ex:134
+#, elixir-autogen, elixir-format
+msgid "Colors"
+msgstr "颜色"
 
+#: lib/boba_talkie_web/live/tutorial_live.ex:174
+#, elixir-autogen, elixir-format
 msgid "Countries"
 msgstr "国家"
 
-# Language selection for main page
-msgid "Language I want to learn:"
-msgstr "我想学习的语言："
+#: lib/boba_talkie_web/live/tutorial_live.ex:152
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Discover animal vocabulary and their characteristics"
+msgstr "探索动物词汇和描述"
+
+#: lib/boba_talkie_web/live/tutorial_live.ex:120
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Discover delicious fruits and food vocabulary"
+msgstr "探索水果和食物词汇"
+
+#: lib/boba_talkie_web/live/tutorial_live.ex:176
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Explore countries, nationalities, and cultural expressions"
+msgstr "探索国家、民族和文化"
+
+#: lib/boba_talkie_web/live/tutorial_live.ex:136
+#, elixir-autogen, elixir-format
+msgid "Explore vibrant colors and color descriptions"
+msgstr "探索丰富的颜色和颜色描述"
+
+#: lib/boba_talkie_web/live/tutorial_live.ex:166
+#, elixir-autogen, elixir-format
+msgid "Family"
+msgstr "家庭"
+
+#: lib/boba_talkie_web/live/tutorial_live.ex:118
+#, elixir-autogen, elixir-format
+msgid "Fruits & Food"
+msgstr "水果和食物"
+
+#: lib/boba_talkie_web/live/tutorial_live.ex:144
+#, elixir-autogen, elixir-format
+msgid "Learn essential bakery vocabulary and ordering phrases"
+msgstr "学习基本的面包店词汇和点餐用语"
+
+# Level descriptions
+#: lib/boba_talkie_web/live/tutorial_live.ex:112
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Learn essential phrases to introduce yourself"
+msgstr "学习基本的自我介绍短语"
+
+#: lib/boba_talkie_web/live/tutorial_live.ex:128
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Master counting and number vocabulary"
+msgstr "练习计数和数字词汇"
+
+#: lib/boba_talkie_web/live/tutorial_live.ex:160
+#, elixir-autogen, elixir-format
+msgid "Master restaurant vocabulary and ordering phrases"
+msgstr "掌握餐厅词汇和点餐用语"
+
+#: lib/boba_talkie_web/live/tutorial_live.ex:126
+#, elixir-autogen, elixir-format
+msgid "Numbers"
+msgstr "数字"
+
+#: lib/boba_talkie_web/live/tutorial_live.ex:158
+#, elixir-autogen, elixir-format
+msgid "Restaurant"
+msgstr "餐厅"
+
+#: lib/boba_talkie_web/live/tutorial_live.ex:110
+#, elixir-autogen, elixir-format
+msgid "Self-Introduction"
+msgstr "自我介绍"
