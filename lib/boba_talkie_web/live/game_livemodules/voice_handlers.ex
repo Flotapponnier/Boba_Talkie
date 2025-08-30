@@ -120,15 +120,17 @@ defmodule BobaTalkieWeb.GameLive.VoiceHandlers do
   """
   def handle_voice_result(socket, command, confidence, world, player) do
     learning_language = socket.assigns[:learning_language] || "en"
+    interface_language = socket.assigns[:interface_language] || "en"
     DebugLogger.voice_debug("Processing async voice result", %{command: command, confidence: confidence, learning_language: learning_language})
     
-    # Process the transcribed command using movement handlers with learning language
+    # Process the transcribed command using movement handlers with both languages
     {new_world, new_player, message} = BobaTalkieWeb.GameLive.MovementHandlers.process_command(
       world, 
       player, 
       command,
       confidence,
-      learning_language
+      learning_language,
+      interface_language
     )
 
     socket

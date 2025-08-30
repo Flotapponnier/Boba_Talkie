@@ -116,7 +116,7 @@
         <!-- Game World Grid -->
         <div class="rounded-xl p-6 flex-1 flex flex-col border-4 border-orange-500" style="background-image: url('/images/game/boba_wallpaper.png'); background-size: cover; background-position: center; background-repeat: no-repeat;">
           <!-- Discovery Message -->
-          <%= case UIHelpers.get_discovery_message(@world) do %>
+          <%= case UIHelpers.get_discovery_message(@world, @interface_language) do %>
             <% nil -> %>
               <div class="text-center mb-4 h-6"></div>
             <% discovery_msg -> %>

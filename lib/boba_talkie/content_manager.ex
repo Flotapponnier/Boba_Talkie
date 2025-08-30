@@ -36,6 +36,32 @@ defmodule BobaTalkie.ContentManager do
     VocabularyTranslations.get_all_translations()
   end
 
+  @doc """
+  Get vocabulary item by object type and learning language
+  """
+  def get_vocabulary_item_by_type(object_type, learning_language) do
+    # Determine topic from object type (simplified mapping)
+    topic = case object_type do
+      type when type in [:apple, :banana, :orange, :grape, :strawberry, :cherry, :peach, :pineapple, :watermelon, :lemon, :avocado, :coconut, :mango, :kiwi, :tomato, :carrot, :bread, :milk, :cheese, :egg] -> "fruits"
+      type when type in [:hello, :name, :nice_to_meet, :how_are_you, :fine, :thank_you, :please, :excuse_me, :sorry, :yes, :no, :goodbye, :see_you_later, :where, :from] -> "introduction"
+      type when type in [:one, :two, :three, :four, :five, :six, :seven, :eight, :nine, :ten] -> "numbers"
+      type when type in [:red, :blue, :green, :yellow, :orange, :purple, :pink, :brown, :black, :white, :gray] -> "colors"
+      type when type in [:croissant, :bagel, :pretzel, :baguette, :cake, :cupcake, :donut, :cookie, :pie] -> "bakery"
+      type when type in [:dog, :cat, :rabbit, :bear, :panda, :lion, :tiger, :elephant, :monkey, :horse, :cow, :pig] -> "animals"
+      type when type in [:menu, :pizza, :burger, :fries, :pasta, :salad, :soup, :coffee, :water, :bill] -> "restaurant"
+      type when type in [:mother, :father, :sister, :brother, :grandmother, :grandfather, :baby, :family, :aunt, :uncle] -> "family"
+      type when type in [:taiwan, :france, :germany, :japan, :usa, :uk, :italy, :spain, :china, :canada] -> "countries"
+      _ -> "fruits"
+    end
+    
+    content = get_learning_content(topic, learning_language)
+    object_id = "#{topic}_#{object_type}"
+    
+    Enum.find(content.tutorial, fn item -> 
+      item.id == object_id or String.contains?(item.id, Atom.to_string(object_type))
+    end)
+  end
+
   # Backward compatibility functions (can be removed after migration)
   
   @doc """

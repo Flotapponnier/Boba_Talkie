@@ -10,7 +10,7 @@ defmodule BobaTalkieWeb.GameLive.MovementHandlers do
   @doc """
   Process voice commands and execute game actions
   """
-  def process_command(world, player, command, confidence, learning_language \\ "en") do
+  def process_command(world, player, command, confidence, learning_language \\ "en", interface_language \\ "en") do
     DebugLogger.voice_debug("Processing voice command", %{command: command, confidence: confidence, learning_language: learning_language})
     
     # Update player stats
@@ -22,10 +22,10 @@ defmodule BobaTalkieWeb.GameLive.MovementHandlers do
         handle_movement(world, new_player, direction, steps)
       
       {:card_challenge} ->
-        handle_card_challenge(world, new_player, command)
+        handle_card_challenge(world, new_player, command, learning_language)
       
       :look ->
-        handle_look_around(world, new_player)
+        handle_look_around(world, new_player, interface_language)
       
       :help ->
         handle_help(world, new_player)
@@ -93,15 +93,27 @@ defmodule BobaTalkieWeb.GameLive.MovementHandlers do
     end
   end
 
-  defp handle_look_around(world, player) do
-    surroundings = World.describe_surroundings(world)
-    message = "You look around: " <> Enum.join(surroundings, ", ")
+  defp handle_look_around(world, player, interface_language \\ "en") do
+    surroundings = World.describe_surroundings(world, interface_language)
+    # Translate "You look around" to interface language
+    look_text = case interface_language do
+      "fr" -> "Vous regardez autour:"
+      "es" -> "Miras alrededor:"
+      "zh" -> "你环顾四周:"
+      "ru" -> "Вы осматриваетесь:"
+      "ja" -> "周りを見回す:"
+      "it" -> "Ti guardi intorno:"
+      "ar" -> "تنظر حولك:"
+      "pt" -> "Você olha ao redor:"
+      _ -> "You look around:"
+    end
+    message = look_text <> " " <> Enum.join(surroundings, ", ")
     DebugLogger.game_debug("Player looked around", %{surroundings: surroundings})
     {world, player, message}
   end
 
-  defp handle_card_challenge(world, player, voice_command) do
-    case World.complete_card_challenge(world, voice_command) do
+  defp handle_card_challenge(world, player, voice_command, learning_language \\ "en") do
+    case World.complete_card_challenge(world, voice_command, learning_language) do
       {:ok, new_world, completed_card} ->
         updated_player = Player.increment_completed_challenges(player)
         message = "Card completed: '#{completed_card.template}'! #{get_completion_status(new_world)}"
@@ -469,6 +481,23 @@ defmodule BobaTalkieWeb.GameLive.MovementHandlers do
 
   defp parse_french_numbered_movement(command) do
     cond do
+      # Pattern: "2 droites" / "3 gauches" etc. (number + direction plural)
+      String.match?(command, ~r/\b(1|un|une)\s+(gauches?)\b/) -> {:move, :west, 1}
+      String.match?(command, ~r/\b(2|deux)\s+(gauches?)\b/) -> {:move, :west, 2}
+      String.match?(command, ~r/\b(3|trois)\s+(gauches?)\b/) -> {:move, :west, 3}
+      
+      String.match?(command, ~r/\b(1|un|une)\s+(droites?)\b/) -> {:move, :east, 1}
+      String.match?(command, ~r/\b(2|deux)\s+(droites?)\b/) -> {:move, :east, 2}
+      String.match?(command, ~r/\b(3|trois)\s+(droites?)\b/) -> {:move, :east, 3}
+      
+      String.match?(command, ~r/\b(1|un|une)\s+(hauts?|nords?)\b/) -> {:move, :north, 1}
+      String.match?(command, ~r/\b(2|deux)\s+(hauts?|nords?)\b/) -> {:move, :north, 2}
+      String.match?(command, ~r/\b(3|trois)\s+(hauts?|nords?)\b/) -> {:move, :north, 3}
+      
+      String.match?(command, ~r/\b(1|un|une)\s+(bas|suds?)\b/) -> {:move, :south, 1}
+      String.match?(command, ~r/\b(2|deux)\s+(bas|suds?)\b/) -> {:move, :south, 2}
+      String.match?(command, ~r/\b(3|trois)\s+(bas|suds?)\b/) -> {:move, :south, 3}
+      
       # "à gauche 3 fois" or "3 fois à gauche"
       String.match?(command, ~r/\b(à gauche|gauche)\s+(1|un|une)\s+fois\b/) or String.match?(command, ~r/\b(1|un|une)\s+fois\s+(à gauche|gauche)\b/) -> {:move, :west, 1}
       String.match?(command, ~r/\b(à gauche|gauche)\s+(2|deux)\s+fois\b/) or String.match?(command, ~r/\b(2|deux)\s+fois\s+(à gauche|gauche)\b/) -> {:move, :west, 2}
@@ -492,6 +521,24 @@ defmodule BobaTalkieWeb.GameLive.MovementHandlers do
 
   defp parse_spanish_numbered_movement(command) do
     cond do
+      # Pattern: "2 derechas" / "3 izquierdas" etc.
+      String.match?(command, ~r/\b(1|uno|una)\s+(izquierdas?)\b/) -> {:move, :west, 1}
+      String.match?(command, ~r/\b(2|dos)\s+(izquierdas?)\b/) -> {:move, :west, 2}
+      String.match?(command, ~r/\b(3|tres)\s+(izquierdas?)\b/) -> {:move, :west, 3}
+      
+      String.match?(command, ~r/\b(1|uno|una)\s+(derechas?)\b/) -> {:move, :east, 1}
+      String.match?(command, ~r/\b(2|dos)\s+(derechas?)\b/) -> {:move, :east, 2}
+      String.match?(command, ~r/\b(3|tres)\s+(derechas?)\b/) -> {:move, :east, 3}
+      
+      String.match?(command, ~r/\b(1|uno|una)\s+(arriba|nortes?)\b/) -> {:move, :north, 1}
+      String.match?(command, ~r/\b(2|dos)\s+(arriba|nortes?)\b/) -> {:move, :north, 2}
+      String.match?(command, ~r/\b(3|tres)\s+(arriba|nortes?)\b/) -> {:move, :north, 3}
+      
+      String.match?(command, ~r/\b(1|uno|una)\s+(abajo|sures?)\b/) -> {:move, :south, 1}
+      String.match?(command, ~r/\b(2|dos)\s+(abajo|sures?)\b/) -> {:move, :south, 2}
+      String.match?(command, ~r/\b(3|tres)\s+(abajo|sures?)\b/) -> {:move, :south, 3}
+      
+      # Traditional "vez/veces" pattern
       String.match?(command, ~r/\b(izquierda|oeste)\s+(1|uno|una)\s+(vez|veces)\b/) or String.match?(command, ~r/\b(1|uno|una)\s+(vez|veces)\s+(izquierda|oeste)\b/) -> {:move, :west, 1}
       String.match?(command, ~r/\b(izquierda|oeste)\s+(2|dos)\s+(veces)\b/) or String.match?(command, ~r/\b(2|dos)\s+(veces)\s+(izquierda|oeste)\b/) -> {:move, :west, 2}
       String.match?(command, ~r/\b(izquierda|oeste)\s+(3|tres)\s+(veces)\b/) or String.match?(command, ~r/\b(3|tres)\s+(veces)\s+(izquierda|oeste)\b/) -> {:move, :west, 3}
@@ -501,6 +548,24 @@ defmodule BobaTalkieWeb.GameLive.MovementHandlers do
 
   defp parse_chinese_numbered_movement(command) do
     cond do
+      # Pattern: "2个左" / "3个右" etc.
+      String.match?(command, ~r/\b(1|一|yi)\s*个?\s*(左|zuo)\b/) -> {:move, :west, 1}
+      String.match?(command, ~r/\b(2|二|er)\s*个?\s*(左|zuo)\b/) -> {:move, :west, 2}
+      String.match?(command, ~r/\b(3|三|san)\s*个?\s*(左|zuo)\b/) -> {:move, :west, 3}
+      
+      String.match?(command, ~r/\b(1|一|yi)\s*个?\s*(右|you)\b/) -> {:move, :east, 1}
+      String.match?(command, ~r/\b(2|二|er)\s*个?\s*(右|you)\b/) -> {:move, :east, 2}
+      String.match?(command, ~r/\b(3|三|san)\s*个?\s*(右|you)\b/) -> {:move, :east, 3}
+      
+      String.match?(command, ~r/\b(1|一|yi)\s*个?\s*(上|shang|北|bei)\b/) -> {:move, :north, 1}
+      String.match?(command, ~r/\b(2|二|er)\s*个?\s*(上|shang|北|bei)\b/) -> {:move, :north, 2}
+      String.match?(command, ~r/\b(3|三|san)\s*个?\s*(上|shang|北|bei)\b/) -> {:move, :north, 3}
+      
+      String.match?(command, ~r/\b(1|一|yi)\s*个?\s*(下|xia|南|nan)\b/) -> {:move, :south, 1}
+      String.match?(command, ~r/\b(2|二|er)\s*个?\s*(下|xia|南|nan)\b/) -> {:move, :south, 2}
+      String.match?(command, ~r/\b(3|三|san)\s*个?\s*(下|xia|南|nan)\b/) -> {:move, :south, 3}
+      
+      # Traditional "次" pattern
       String.match?(command, ~r/\b(左|zuo)\s+(1|一|yi)\s+(次|ci)\b/) or String.match?(command, ~r/\b(1|一|yi)\s+(次|ci)\s+(左|zuo)\b/) -> {:move, :west, 1}
       String.match?(command, ~r/\b(左|zuo)\s+(2|二|er)\s+(次|ci)\b/) or String.match?(command, ~r/\b(2|二|er)\s+(次|ci)\s+(左|zuo)\b/) -> {:move, :west, 2}
       String.match?(command, ~r/\b(左|zuo)\s+(3|三|san)\s+(次|ci)\b/) or String.match?(command, ~r/\b(3|三|san)\s+(次|ci)\s+(左|zuo)\b/) -> {:move, :west, 3}
@@ -546,6 +611,24 @@ defmodule BobaTalkieWeb.GameLive.MovementHandlers do
 
   defp parse_portuguese_numbered_movement(command) do
     cond do
+      # Pattern: "2 direitas" / "3 esquerdas" etc.
+      String.match?(command, ~r/\b(1|um|uma)\s+(esquerdas?)\b/) -> {:move, :west, 1}
+      String.match?(command, ~r/\b(2|dois|duas)\s+(esquerdas?)\b/) -> {:move, :west, 2}
+      String.match?(command, ~r/\b(3|três)\s+(esquerdas?)\b/) -> {:move, :west, 3}
+      
+      String.match?(command, ~r/\b(1|um|uma)\s+(direitas?)\b/) -> {:move, :east, 1}
+      String.match?(command, ~r/\b(2|dois|duas)\s+(direitas?)\b/) -> {:move, :east, 2}
+      String.match?(command, ~r/\b(3|três)\s+(direitas?)\b/) -> {:move, :east, 3}
+      
+      String.match?(command, ~r/\b(1|um|uma)\s+(cimas?|nortes?)\b/) -> {:move, :north, 1}
+      String.match?(command, ~r/\b(2|dois|duas)\s+(cimas?|nortes?)\b/) -> {:move, :north, 2}
+      String.match?(command, ~r/\b(3|três)\s+(cimas?|nortes?)\b/) -> {:move, :north, 3}
+      
+      String.match?(command, ~r/\b(1|um|uma)\s+(baixos?|suis?)\b/) -> {:move, :south, 1}
+      String.match?(command, ~r/\b(2|dois|duas)\s+(baixos?|suis?)\b/) -> {:move, :south, 2}
+      String.match?(command, ~r/\b(3|três)\s+(baixos?|suis?)\b/) -> {:move, :south, 3}
+      
+      # Traditional "vez/vezes" pattern
       String.match?(command, ~r/\b(esquerda|oeste)\s+(1|um|uma)\s+(vez|vezes)\b/) or String.match?(command, ~r/\b(1|um|uma)\s+(vez|vezes)\s+(esquerda|oeste)\b/) -> {:move, :west, 1}
       String.match?(command, ~r/\b(esquerda|oeste)\s+(2|dois|duas)\s+(vezes)\b/) or String.match?(command, ~r/\b(2|dois|duas)\s+(vezes)\s+(esquerda|oeste)\b/) -> {:move, :west, 2}
       String.match?(command, ~r/\b(esquerda|oeste)\s+(3|três)\s+(vezes)\b/) or String.match?(command, ~r/\b(3|três)\s+(vezes)\s+(esquerda|oeste)\b/) -> {:move, :west, 3}

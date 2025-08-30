@@ -152,10 +152,27 @@ defmodule BobaTalkieWeb.GameLive.UIHelpers do
   @doc """
   Get discovery message when player is on an emoji object
   """
-  def get_discovery_message(world) do
+  def get_discovery_message(world, interface_language \\ "en") do
     case Map.get(world.items, world.player_pos) do
       %{emoji: emoji, type: type} ->
-        "You found a #{emoji} (#{type})!"
+        # Get interface language translation for this item
+        vocab_translation = BobaTalkie.ContentManager.get_vocabulary_translation("#{world.topic || "fruits"}_#{type}", interface_language)
+        translated_name = if vocab_translation, do: vocab_translation.word, else: Atom.to_string(type)
+        
+        # Translate "You found a" to interface language
+        found_text = case interface_language do
+          "fr" -> "Vous avez trouvé"
+          "es" -> "Encontraste"
+          "zh" -> "你发现了"
+          "ru" -> "Вы нашли"
+          "ja" -> "見つけました"
+          "it" -> "Hai trovato"
+          "ar" -> "وجدت"
+          "pt" -> "Você encontrou"
+          _ -> "You found a"
+        end
+        
+        "#{found_text} #{emoji} (#{translated_name})!"
       _ ->
         nil
     end

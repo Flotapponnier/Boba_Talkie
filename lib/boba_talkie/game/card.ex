@@ -414,7 +414,7 @@ defmodule BobaTalkie.Game.Card do
   @doc """
   Check if a voice command matches a card's template for a specific object
   """
-  def matches_card?(card, voice_command, object_type) do
+  def matches_card?(card, voice_command, object_type, learning_language \\ "en") do
     # Check if object is applicable for this card
     if object_type not in card.applicable_objects do
       false
@@ -442,10 +442,10 @@ defmodule BobaTalkie.Game.Card do
       |> String.replace(~r/\b9\b/, "nine")
       |> String.replace(~r/\b10\b/, "ten")
       
-      # Get object name for matching
-      object_name = get_object_name(object_type)
+      # Get object name in the learning language
+      object_name = get_object_name_in_language(object_type, learning_language)
       
-      # Create expected sentence from template
+      # Create expected sentence from template (template is in learning language)
       expected_sentence = String.replace(card.template, "_", object_name)
       |> String.downcase()
       
@@ -647,5 +647,29 @@ defmodule BobaTalkie.Game.Card do
       :china -> "china"
       :canada -> "canada"
     end
+  end
+
+  @doc """
+  Get object name in specific learning language
+  """
+  def get_object_name_in_language(object_type, learning_language) do
+    # Get learning content to find the translated word
+    content_item = case BobaTalkie.ContentManager.get_vocabulary_item_by_type(object_type, learning_language) do
+      nil -> 
+        # Fallback to English name
+        get_object_name(object_type)
+      item -> 
+        item.word
+    end
+    
+    content_item
+  end
+
+  @doc """
+  Get expected answer for a card in the learning language
+  """
+  def get_expected_answer(card, object_type, learning_language) do
+    object_name = get_object_name_in_language(object_type, learning_language)
+    String.replace(card.template, "_", object_name)
   end
 end
