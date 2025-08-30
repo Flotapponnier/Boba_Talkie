@@ -26,21 +26,40 @@ defmodule BobaTalkie.ContentManagerModules.BakeryContent do
       description: "Learn bakery items and ordering at a bakery",
       emoji: "🥐",
       vocabulary: [
-        %{id: "bakery_bread", word: "Bread", emoji: "🍞", pronunciation: "BRED", meaning: "Baked food item", example: "Fresh bread smells amazing"},
-        %{id: "bakery_croissant", word: "Croissant", emoji: "🥐", pronunciation: "kwah-SAHN", meaning: "French pastry", example: "A buttery French croissant"},
-        %{id: "bakery_cake", word: "Cake", emoji: "🎂", pronunciation: "KAYK", meaning: "Sweet dessert", example: "Birthday cake with candles"},
-        %{id: "bakery_cookie", word: "Cookie", emoji: "🍪", pronunciation: "KUK-ee", meaning: "Sweet baked treat", example: "Chocolate chip cookie"}
+        %{id: "bakery_bread", word: "Bread", emoji: "🍞", pronunciation: "bred", meaning: "Basic baked item", example: "I buy fresh bread"},
+        %{id: "bakery_croissant", word: "Croissant", emoji: "🥐", pronunciation: "kwah-SAHN", meaning: "French pastry", example: "The croissant is buttery"},
+        %{id: "bakery_bagel", word: "Bagel", emoji: "🥯", pronunciation: "BAY-guhl", meaning: "Ring-shaped bread", example: "I like bagels with cream cheese"},
+        %{id: "bakery_pretzel", word: "Pretzel", emoji: "🥨", pronunciation: "PRET-suhl", meaning: "Twisted bread", example: "The pretzel is salty"},
+        %{id: "bakery_baguette", word: "Baguette", emoji: "🥖", pronunciation: "ba-GET", meaning: "French bread", example: "The baguette is long"},
+        %{id: "bakery_cake", word: "Cake", emoji: "🎂", pronunciation: "kayk", meaning: "Sweet dessert", example: "The birthday cake is delicious"},
+        %{id: "bakery_cupcake", word: "Cupcake", emoji: "🧁", pronunciation: "KUP-kayk", meaning: "Small cake", example: "The cupcake has frosting"},
+        %{id: "bakery_donut", word: "Donut", emoji: "🍩", pronunciation: "DOH-nut", meaning: "Ring-shaped sweet", example: "The donut is glazed"},
+        %{id: "bakery_cookie", word: "Cookie", emoji: "🍪", pronunciation: "KUK-ee", meaning: "Sweet biscuit", example: "I love chocolate chip cookies"},
+        %{id: "bakery_pie", word: "Pie", emoji: "🥧", pronunciation: "pahy", meaning: "Baked dessert", example: "The apple pie smells good"}
       ],
       game_objects: [
-        %{id: "bakery_bread", emoji: "🍞", word: "Bread", pronunciation: "BRED"},
+        %{id: "bakery_bread", emoji: "🍞", word: "Bread", pronunciation: "bred"},
         %{id: "bakery_croissant", emoji: "🥐", word: "Croissant", pronunciation: "kwah-SAHN"},
-        %{id: "bakery_cake", emoji: "🎂", word: "Cake", pronunciation: "KAYK"},
-        %{id: "bakery_cookie", emoji: "🍪", word: "Cookie", pronunciation: "KUK-ee"}
+        %{id: "bakery_bagel", emoji: "🥯", word: "Bagel", pronunciation: "BAY-guhl"},
+        %{id: "bakery_pretzel", emoji: "🥨", word: "Pretzel", pronunciation: "PRET-suhl"},
+        %{id: "bakery_baguette", emoji: "🥖", word: "Baguette", pronunciation: "ba-GET"},
+        %{id: "bakery_cake", emoji: "🎂", word: "Cake", pronunciation: "kayk"},
+        %{id: "bakery_cupcake", emoji: "🧁", word: "Cupcake", pronunciation: "KUP-kayk"},
+        %{id: "bakery_donut", emoji: "🍩", word: "Donut", pronunciation: "DOH-nut"},
+        %{id: "bakery_cookie", emoji: "🍪", word: "Cookie", pronunciation: "KUK-ee"},
+        %{id: "bakery_pie", emoji: "🥧", word: "Pie", pronunciation: "pahy"}
       ],
       cards: [
-        %{id: "bakery_bread", template: "I want fresh _", answer: "bread", description: "Ordering at bakery"},
-        %{id: "bakery_croissant", template: "A buttery _", answer: "croissant", description: "Describing pastry"},
-        %{id: "bakery_cake", template: "Birthday _ with candles", answer: "cake", description: "Celebration food"}
+        %{id: "bakery_bread", template: "I want a _", answer: "Bread", description: "Ordering bakery items"},
+        %{id: "bakery_croissant", template: "The _ is buttery", answer: "Croissant", description: "Describing pastries"},
+        %{id: "bakery_bagel", template: "This _ is delicious", answer: "Bagel", description: "Expressing preferences"},
+        %{id: "bakery_pretzel", template: "How much is the _", answer: "Pretzel", description: "Asking prices"},
+        %{id: "bakery_baguette", template: "I'll take two _", answer: "Baguettes", description: "Ordering quantities"},
+        %{id: "bakery_cake", template: "The birthday _ is ready", answer: "Cake", description: "Special occasions"},
+        %{id: "bakery_cupcake", template: "I'd like a chocolate _", answer: "Cupcake", description: "Flavor preferences"},
+        %{id: "bakery_donut", template: "The glazed _ looks good", answer: "Donut", description: "Visual descriptions"},
+        %{id: "bakery_cookie", template: "These _ are fresh", answer: "Cookies", description: "Quality descriptions"},
+        %{id: "bakery_pie", template: "The apple _ smells amazing", answer: "Pie", description: "Sensory descriptions"}
       ]
     }
   end
@@ -52,10 +71,16 @@ defmodule BobaTalkie.ContentManagerModules.BakeryContent do
       description: "Aprende productos de panadería y cómo pedir en una panadería",
       emoji: "🥐",
       vocabulary: [
-        %{id: "bakery_bread", word: "Pan", emoji: "🍞", pronunciation: "pahn", meaning: "Alimento horneado", example: "Pan fresco huele increíble"},
-        %{id: "bakery_croissant", word: "Croissant", emoji: "🥐", pronunciation: "krwa-SAHN", meaning: "Pastel francés", example: "Un croissant francés con mantequilla"},
-        %{id: "bakery_cake", word: "Pastel", emoji: "🎂", pronunciation: "pas-TEHL", meaning: "Postre dulce", example: "Pastel de cumpleaños con velas"},
-        %{id: "bakery_cookie", word: "Galleta", emoji: "🍪", pronunciation: "ga-YEH-ta", meaning: "Dulce horneado", example: "Galleta con chips de chocolate"}
+        %{id: "bakery_bread", word: "Pan", emoji: "🍞", pronunciation: "pahn", meaning: "Producto básico horneado", example: "Compro pan fresco"},
+        %{id: "bakery_croissant", word: "Croissant", emoji: "🥐", pronunciation: "krwah-SAHN", meaning: "Pastelería francesa", example: "El croissant está mantecoso"},
+        %{id: "bakery_bagel", word: "Bagel", emoji: "🥯", pronunciation: "BAY-guhl", meaning: "Pan en forma de anillo", example: "Me gustan los bagels con queso crema"},
+        %{id: "bakery_pretzel", word: "Pretzel", emoji: "🥨", pronunciation: "PRET-sel", meaning: "Pan trenzado", example: "El pretzel está salado"},
+        %{id: "bakery_baguette", word: "Baguette", emoji: "🥖", pronunciation: "ba-GET", meaning: "Pan francés", example: "La baguette es larga"},
+        %{id: "bakery_cake", word: "Pastel", emoji: "🎂", pronunciation: "pas-TEHL", meaning: "Postre dulce", example: "El pastel de cumpleaños está delicioso"},
+        %{id: "bakery_cupcake", word: "Magdalena", emoji: "🧁", pronunciation: "mag-da-LEH-na", meaning: "Pastel pequeño", example: "La magdalena tiene glaseado"},
+        %{id: "bakery_donut", word: "Dona", emoji: "🍩", pronunciation: "DOH-na", meaning: "Dulce en forma de anillo", example: "La dona está glaseada"},
+        %{id: "bakery_cookie", word: "Galleta", emoji: "🍪", pronunciation: "ga-YEH-ta", meaning: "Galleta dulce", example: "Me encantan las galletas de chocolate"},
+        %{id: "bakery_pie", word: "Tarta", emoji: "🥧", pronunciation: "TAHR-ta", meaning: "Postre horneado", example: "La tarta de manzana huele bien"}
       ],
       game_objects: [
         %{id: "bakery_bread", emoji: "🍞", word: "Pan", pronunciation: "pahn"},

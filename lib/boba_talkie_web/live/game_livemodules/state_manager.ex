@@ -13,6 +13,9 @@ defmodule BobaTalkieWeb.GameLive.StateManager do
   def initialize_game_state(socket, topic \\ "fruits", learning_language \\ "en") do
     DebugLogger.live_debug("GameLive mounting with topic: #{topic}, learning language: #{learning_language}")
     
+    # Get learning content for vocabulary translations
+    learning_content = BobaTalkie.ContentManager.get_learning_content(topic, learning_language)
+    
     # Initialize game state with topic-specific content and learning language
     world = World.new(6, 6, topic, learning_language)
     player = Player.new()
@@ -41,6 +44,7 @@ defmodule BobaTalkieWeb.GameLive.StateManager do
     socket
     |> assign(:page_title, "BobaTalkie - #{topic_title}")
     |> assign(:topic, topic)
+    |> assign(:learning_content, learning_content)
     |> assign(:world, world)
     |> assign(:player, player)
     |> assign(:game_messages, [welcome_message])

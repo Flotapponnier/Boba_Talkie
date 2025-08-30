@@ -167,4 +167,21 @@ defmodule BobaTalkieWeb.GameLive.UIHelpers do
   def get_effect_circle_class(_world, _position) do
     ""
   end
+
+  @doc """
+  Get vocabulary item with interface language translation for card display.
+  Returns vocabulary item with added :translation field containing interface language word and example.
+  """
+  def get_card_vocabulary_with_translation(card_id, learning_content, interface_language) do
+    # Find vocabulary item by ID
+    vocab_item = Enum.find(learning_content.vocabulary || [], fn item -> item.id == card_id end)
+    
+    if vocab_item do
+      # Get interface language translation
+      translation = BobaTalkie.ContentManager.get_vocabulary_translation(card_id, interface_language)
+      Map.put(vocab_item, :translation, translation)
+    else
+      nil
+    end
+  end
 end
