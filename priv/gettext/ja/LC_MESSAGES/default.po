@@ -52,44 +52,68 @@ msgid "Select the language you want to learn"
 msgstr "学習したい言語を選んでください"
 
 # Game interface
-#: lib/boba_talkie_web/live/game_live.html.heex:47
+#: lib/boba_talkie_web/live/game_live.html.heex:46
 #, elixir-autogen
 msgid "Quick Commands:"
 msgstr "クイックコマンド："
 
+#: lib/boba_talkie_web/live/game_live.html.heex:118
+#, elixir-autogen
 msgid "Stats"
 msgstr "統計"
 
+#: lib/boba_talkie_web/live/game_live.html.heex:121
+#, elixir-autogen
 msgid "Commands:"
 msgstr "コマンド："
 
+#: lib/boba_talkie_web/live/game_live.html.heex:125
+#, elixir-autogen
 msgid "Score:"
 msgstr "スコア："
 
+#: lib/boba_talkie_web/live/game_live.html.heex:133
+#, elixir-autogen
 msgid "Messages"
 msgstr "メッセージ"
 
+#: lib/boba_talkie_web/live/game_live.html.heex:164
+#, elixir-autogen
 msgid "Voice Recognition Ready"
 msgstr "音声認識準備完了"
 
+#: lib/boba_talkie_web/live/game_live.html.heex:152
+#, elixir-autogen
 msgid "Listening..."
 msgstr "聞いています..."
 
+#: lib/boba_talkie_web/live/game_live.html.heex:159
+#, elixir-autogen
 msgid "Speak a command..."
 msgstr "コマンドを話してください..."
 
+#: lib/boba_talkie_web/live/game_live.html.heex:167
+#, elixir-autogen
 msgid "Last:"
 msgstr "最後："
 
+#: lib/boba_talkie_web/live/game_live.html.heex:228
+#, elixir-autogen
 msgid "Recording... (Release to stop)"
 msgstr "録音中...（離すと停止）"
 
+#: lib/boba_talkie_web/live/game_live.html.heex:231
+#, elixir-autogen
 msgid "Hold to Speak (or R)"
 msgstr "話すために押し続ける（またはR）"
 
+#: lib/boba_talkie_web/live/game_live.html.heex:241
+#, elixir-autogen
 msgid "Challenges"
 msgstr "チャレンジ"
 
+#: lib/boba_talkie_web/live/game_live.html.heex:284
+#, elixir-autogen
 msgid "Select a card!"
 msgstr "カードを選んでください！"
 
@@ -112,15 +136,23 @@ msgid "Skip Tutorial"
 msgstr "チュートリアルをスキップ"
 
 # Completion messages
+#: lib/boba_talkie_web/live/game_live.html.heex:17
+#, elixir-autogen
 msgid "Congratulations!"
 msgstr "おめでとうございます！"
 
+#: lib/boba_talkie_web/live/game_live.html.heex:19
+#, elixir-autogen
 msgid "You completed all"
 msgstr "すべて完了しました"
 
+#: lib/boba_talkie_web/live/game_live.html.heex:19
+#, elixir-autogen
 msgid "cards! Your pronunciation score:"
 msgstr "カード！あなたの発音スコア："
 
+#: lib/boba_talkie_web/live/game_live.html.heex:25
+#, elixir-autogen
 msgid "Play Again"
 msgstr "もう一度プレイ"
 
@@ -298,6 +330,7 @@ msgstr "単語："
 msgid "Back to Maps"
 msgstr "マップに戻る"
 
+#: lib/boba_talkie_web/live/game_live.html.heex:316
 #: lib/boba_talkie_web/live/tutorial_live.html.heex:81
 #, elixir-autogen, elixir-format
 msgid "Example Usage"
@@ -340,6 +373,7 @@ msgstr "進行状況"
 msgid "Romanization"
 msgstr "ローマ字"
 
+#: lib/boba_talkie_web/live/game_live.html.heex:309
 #: lib/boba_talkie_web/live/tutorial_live.html.heex:63
 #, elixir-autogen, elixir-format
 msgid "Show Pronunciation"
@@ -441,44 +475,12 @@ msgstr "レストラン"
 msgid "Self-Introduction"
 msgstr "自己紹介"
 
-#: lib/boba_talkie_web/live/game_live.html.heex:50
-#: lib/boba_talkie_web/live/game_live.html.heex:54
+#: lib/boba_talkie_web/live/game_live.html.heex:266
 #, elixir-autogen, elixir-format
-msgid "down"
-msgstr "下"
+msgid "ACTIVE"
+msgstr "アクティブ"
 
-#: lib/boba_talkie_web/live/game_live.html.heex:51
+#: lib/boba_talkie_web/live/game_live.html.heex:16
 #, elixir-autogen, elixir-format
-msgid "east"
-msgstr "東"
-
-#: lib/boba_talkie_web/live/game_live.html.heex:52
-#, elixir-autogen, elixir-format
-msgid "left"
-msgstr "左"
-
-#: lib/boba_talkie_web/live/game_live.html.heex:49
-#, elixir-autogen, elixir-format, fuzzy
-msgid "north"
-msgstr "北"
-
-#: lib/boba_talkie_web/live/game_live.html.heex:51
-#: lib/boba_talkie_web/live/game_live.html.heex:53
-#, elixir-autogen, elixir-format
-msgid "right"
-msgstr "右"
-
-#: lib/boba_talkie_web/live/game_live.html.heex:50
-#, elixir-autogen, elixir-format
-msgid "south"
-msgstr "南"
-
-#: lib/boba_talkie_web/live/game_live.html.heex:49
-#, elixir-autogen, elixir-format
-msgid "up"
-msgstr "上"
-
-#: lib/boba_talkie_web/live/game_live.html.heex:52
-#, elixir-autogen, elixir-format
-msgid "west"
-msgstr "西"
+msgid "Trophy"
+msgstr "トロフィー"

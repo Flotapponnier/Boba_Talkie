@@ -49,14 +49,14 @@ export const WebSpeechHandler = {
       
       // Send interim results for real-time feedback
       if (interimTranscript) {
-        this.voiceCapture.pushEvent('voice_interim', { text: interimTranscript });
+        this.voiceCapture.safePushEvent('voice_interim', { text: interimTranscript });
       }
       
       // Send final result
       if (finalTranscript) {
         const confidence = event.results[0][0].confidence || 0.9;
         console.log('WebSpeechHandler: Result:', finalTranscript, 'confidence:', confidence);
-        this.voiceCapture.pushEvent('voice_command', { 
+        this.voiceCapture.safePushEvent('voice_command', { 
           command: finalTranscript.trim(),
           confidence: confidence
         });
@@ -65,7 +65,13 @@ export const WebSpeechHandler = {
     
     this.recognition.onerror = (event) => {
       console.warn('WebSpeechHandler: Error, trying fallback:', event.error);
-      // Try fallback if still recording
+      // Don't try fallback on network-abort or not-allowed errors
+      if (event.error === 'network' || event.error === 'not-allowed' || event.error === 'aborted') {
+        console.log('WebSpeechHandler: Stopping due to error:', event.error);
+        this.voiceCapture.safePushEvent('voice_error', { error: `Speech recognition error: ${event.error}` });
+        return;
+      }
+      // Try fallback if still recording for other errors
       if (this.voiceCapture.isRecording) {
         this.voiceCapture.startDeepgramStreaming();
       }
@@ -77,7 +83,7 @@ export const WebSpeechHandler = {
       if (this.voiceCapture.isRecording && !this.voiceCapture.deepgramSocket) {
         this.voiceCapture.isRecording = false;
         this.voiceCapture.buttonStateManager.updateRecordingState(false);
-        this.voiceCapture.pushEvent('stop_listening', {});
+        this.voiceCapture.safePushEvent('stop_listening', {});
       }
     };
     

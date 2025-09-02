@@ -10,14 +10,17 @@ defmodule BobaTalkieWeb.GameLive.MovementHandlers do
   @doc """
   Process voice commands and execute game actions
   """
-  def process_command(world, player, command, confidence, learning_language \\ "en", interface_language \\ "en") do
+  def process_command(world, player, command, confidence, learning_language, interface_language) do
+    require Logger
+    Logger.info("🔥 MovementHandlers: DEBUT process_command - #{command}")
     DebugLogger.voice_debug("Processing voice command", %{command: command, confidence: confidence, learning_language: learning_language})
     
-    # Update player stats
-    new_player = Player.record_voice_command(player, command, confidence)
-    
-    # Parse and execute command with learning language
-    case parse_voice_command(command, learning_language) do
+    try do
+      # Update player stats
+      new_player = Player.record_voice_command(player, command, confidence)
+      
+      # Parse and execute command with learning language
+      case parse_voice_command(command, learning_language) do
       {:move, direction, steps} ->
         handle_movement(world, new_player, direction, steps)
       
@@ -31,7 +34,18 @@ defmodule BobaTalkieWeb.GameLive.MovementHandlers do
         handle_help(world, new_player)
       
       :unknown ->
-        handle_unknown_command(world, new_player, command)
+        Logger.info("🔥 MovementHandlers: Command UNKNOWN - #{command}")
+        result = handle_unknown_command(world, new_player, command)
+        Logger.info("🔥 MovementHandlers: FIN process_command - UNKNOWN result: #{inspect(result)}")
+        result
+      end
+    rescue
+      e ->
+        Logger.error("🚨 MovementHandlers: ERREUR CRITIQUE in process_command - #{command}")
+        Logger.error("🚨 MovementHandlers: Error: #{inspect(e)}")
+        Logger.error("🚨 MovementHandlers: Stacktrace: #{Exception.format_stacktrace(__STACKTRACE__)}")
+        DebugLogger.error("Error in process_command", %{error: inspect(e), command: command}, :voice)
+        {world, player, "Voice processing error: #{command}"}
     end
   end
 
@@ -93,7 +107,7 @@ defmodule BobaTalkieWeb.GameLive.MovementHandlers do
     end
   end
 
-  defp handle_look_around(world, player, interface_language \\ "en") do
+  defp handle_look_around(world, player, interface_language) do
     surroundings = World.describe_surroundings(world, interface_language)
     # Translate "You look around" to interface language
     look_text = case interface_language do
@@ -112,8 +126,8 @@ defmodule BobaTalkieWeb.GameLive.MovementHandlers do
     {world, player, message}
   end
 
-  defp handle_card_challenge(world, player, voice_command, learning_language \\ "en") do
-    case World.complete_card_challenge(world, voice_command, learning_language) do
+  defp handle_card_challenge(world, player, voice_command, learning_language) do
+    case World.complete_card_challenge_auto(world, voice_command, learning_language) do
       {:ok, new_world, completed_card} ->
         updated_player = Player.increment_completed_challenges(player)
         message = "Card completed: '#{completed_card.template}'! #{get_completion_status(new_world)}"
@@ -136,9 +150,9 @@ defmodule BobaTalkieWeb.GameLive.MovementHandlers do
     • "3 right", "2 down", "1 left" - Move multiple steps (1-3 max)
     
     Card Challenge System:
-    1. Click a card to select it
-    2. Stand on the correct object
-    3. Say the complete sentence (e.g., "Eat the apple", "The banana is yellow")
+    1. Stand on any object
+    2. Say the complete sentence (e.g., "Eat the apple", "The banana is yellow")
+    3. Cards auto-complete when you say the right phrase!
     4. Complete all cards to win!
     
     Other Commands:
@@ -155,21 +169,39 @@ defmodule BobaTalkieWeb.GameLive.MovementHandlers do
     {world, player, message}
   end
 
-  defp parse_voice_command(command, learning_language \\ "en") do
+  defp parse_voice_command(command, learning_language) do
+    require Logger
+    Logger.info("🔥 MovementHandlers: DEBUT parse_voice_command - '#{command}' (#{learning_language})")
+    
     # Clean the command: lowercase, trim, remove punctuation, normalize common speech recognition mistakes
     clean_command = command
     |> String.downcase()
     |> String.trim()
-    |> String.replace(~r/[^\w\s]/, "")  # Remove punctuation
+    |> String.replace(~r/[.!?,:;]/, "")  # Only remove basic punctuation, preserve accented characters
     |> String.replace(~r/\bto\b/, "two")  # Normalize "to" to "two" for numbers
     |> String.trim()
     
+    Logger.info("🔥 MovementHandlers: Command cleaned: '#{clean_command}'")
+    
     cond do
+      # HIGHEST PRIORITY: Check for card challenge phrases first (before movement)
+      is_potential_card_sentence?(clean_command, learning_language) ->
+        Logger.info("🔥 MovementHandlers: Detected potential card sentence: #{clean_command}")
+        {:card_challenge}
+        
       # Priority: Simple single-word directional commands (multilingual)
-      clean_command in get_direction_words(:north, learning_language) -> {:move, :north, 1}
-      clean_command in get_direction_words(:south, learning_language) -> {:move, :south, 1}
-      clean_command in get_direction_words(:east, learning_language) -> {:move, :east, 1}
-      clean_command in get_direction_words(:west, learning_language) -> {:move, :west, 1}
+      clean_command in get_direction_words(:north, learning_language) -> 
+        Logger.info("🔥 MovementHandlers: Match NORTH direction")
+        {:move, :north, 1}
+      clean_command in get_direction_words(:south, learning_language) -> 
+        Logger.info("🔥 MovementHandlers: Match SOUTH direction")
+        {:move, :south, 1}
+      clean_command in get_direction_words(:east, learning_language) -> 
+        Logger.info("🔥 MovementHandlers: Match EAST direction")
+        {:move, :east, 1}
+      clean_command in get_direction_words(:west, learning_language) -> 
+        Logger.info("🔥 MovementHandlers: Match WEST direction")
+        {:move, :west, 1}
       
       # French numbered commands with "fois" (times)
       String.match?(clean_command, ~r/\b(à gauche|gauche)\s+(1|un|une)\s+fois\b/) or String.match?(clean_command, ~r/\b(1|un|une)\s+fois\s+(à gauche|gauche)\b/) -> {:move, :west, 1}
@@ -188,15 +220,13 @@ defmodule BobaTalkieWeb.GameLive.MovementHandlers do
       String.match?(clean_command, ~r/\b(en bas|bas|sud)\s+(2|deux)\s+fois\b/) or String.match?(clean_command, ~r/\b(2|deux)\s+fois\s+(en bas|bas|sud)\b/) -> {:move, :south, 2}
       String.match?(clean_command, ~r/\b(en bas|bas|sud)\s+(3|trois)\s+fois\b/) or String.match?(clean_command, ~r/\b(3|trois)\s+fois\s+(en bas|bas|sud)\b/) -> {:move, :south, 3}
 
-      # Check for "va en [direction]" pattern (French: "go to [direction]")
-      String.contains?(clean_command, "va en") and String.contains?(clean_command, "bas") -> {:move, :south, 1}
-      String.contains?(clean_command, "va en") and String.contains?(clean_command, "haut") -> {:move, :north, 1}
-      String.contains?(clean_command, "va en") and String.contains?(clean_command, "droite") -> {:move, :east, 1}
-      String.contains?(clean_command, "va en") and String.contains?(clean_command, "gauche") -> {:move, :west, 1}
-      String.contains?(clean_command, "va") and String.contains?(clean_command, "nord") -> {:move, :north, 1}
-      String.contains?(clean_command, "va") and String.contains?(clean_command, "sud") -> {:move, :south, 1}
-      String.contains?(clean_command, "va") and String.contains?(clean_command, "est") -> {:move, :east, 1}
-      String.contains?(clean_command, "va") and String.contains?(clean_command, "ouest") -> {:move, :west, 1}
+      # Check for "va en [direction]" pattern (French: "go to [direction]") - more strict
+      String.match?(clean_command, ~r/\bva\s+(en\s+)?(bas|sud)\b/) -> {:move, :south, 1}
+      String.match?(clean_command, ~r/\bva\s+(en\s+)?(haut|nord)\b/) -> {:move, :north, 1}
+      String.match?(clean_command, ~r/\bva\s+(en\s+)?(droite)\b/) -> {:move, :east, 1}
+      String.match?(clean_command, ~r/\bva\s+(en\s+)?(gauche)\b/) -> {:move, :west, 1}
+      String.match?(clean_command, ~r/\bva\s+(à\s+l')?(est)\b/) -> {:move, :east, 1}
+      String.match?(clean_command, ~r/\bva\s+(à\s+l')?(ouest)\b/) -> {:move, :west, 1}
       
       # Multilingual numbered movement commands
       parse_numbered_movement(clean_command, learning_language) != :unknown -> parse_numbered_movement(clean_command, learning_language)
@@ -431,12 +461,12 @@ defmodule BobaTalkieWeb.GameLive.MovementHandlers do
   defp get_direction_words(:east, learning_language) do
     case learning_language do
       "en" -> ["east", "right"]
-      "fr" -> ["est", "droite"]
+      "fr" -> ["droite"]  # Removed "est" to avoid conflict with French verb "est" (is)
       "es" -> ["este", "derecha"]
       "zh" -> ["东", "右", "dong", "you"]
       "ru" -> ["восток", "вправо", "vostok", "vpravo"]
       "ja" -> ["東", "右", "higashi", "migi"]
-      "it" -> ["est", "destra"]
+      "it" -> ["destra"]  # Removed "est" to avoid conflict with Italian verb "est" (is)
       "ar" -> ["شرق", "يمين", "sharq", "yameen"]
       "pt" -> ["leste", "direita"]
       _ -> ["east", "right"]
@@ -480,6 +510,7 @@ defmodule BobaTalkieWeb.GameLive.MovementHandlers do
   end
 
   defp parse_french_numbered_movement(command) do
+    require Logger
     cond do
       # Pattern: "2 droites" / "3 gauches" etc. (number + direction plural)
       String.match?(command, ~r/\b(1|un|une)\s+(gauches?)\b/) -> {:move, :west, 1}
@@ -495,7 +526,9 @@ defmodule BobaTalkieWeb.GameLive.MovementHandlers do
       String.match?(command, ~r/\b(3|trois)\s+(hauts?|nords?)\b/) -> {:move, :north, 3}
       
       String.match?(command, ~r/\b(1|un|une)\s+(bas|suds?)\b/) -> {:move, :south, 1}
-      String.match?(command, ~r/\b(2|deux)\s+(bas|suds?)\b/) -> {:move, :south, 2}
+      String.match?(command, ~r/\b(2|deux)\s+(bas|suds?)\b/) -> 
+        Logger.info("🔥 MovementHandlers: MATCH DEUX BAS detected!")
+        {:move, :south, 2}
       String.match?(command, ~r/\b(3|trois)\s+(bas|suds?)\b/) -> {:move, :south, 3}
       
       # "à gauche 3 fois" or "3 fois à gauche"
@@ -610,6 +643,7 @@ defmodule BobaTalkieWeb.GameLive.MovementHandlers do
   end
 
   defp parse_portuguese_numbered_movement(command) do
+    require Logger
     cond do
       # Pattern: "2 direitas" / "3 esquerdas" etc.
       String.match?(command, ~r/\b(1|um|uma)\s+(esquerdas?)\b/) -> {:move, :west, 1}
@@ -632,7 +666,81 @@ defmodule BobaTalkieWeb.GameLive.MovementHandlers do
       String.match?(command, ~r/\b(esquerda|oeste)\s+(1|um|uma)\s+(vez|vezes)\b/) or String.match?(command, ~r/\b(1|um|uma)\s+(vez|vezes)\s+(esquerda|oeste)\b/) -> {:move, :west, 1}
       String.match?(command, ~r/\b(esquerda|oeste)\s+(2|dois|duas)\s+(vezes)\b/) or String.match?(command, ~r/\b(2|dois|duas)\s+(vezes)\s+(esquerda|oeste)\b/) -> {:move, :west, 2}
       String.match?(command, ~r/\b(esquerda|oeste)\s+(3|três)\s+(vezes)\b/) or String.match?(command, ~r/\b(3|três)\s+(vezes)\s+(esquerda|oeste)\b/) -> {:move, :west, 3}
-      true -> :unknown
+      true -> 
+        Logger.info("🔥 MovementHandlers: Command not recognized - #{command}")
+        :unknown
+    end
+  end
+  
+  # Check if the command is likely a card challenge sentence
+  defp is_potential_card_sentence?(command, learning_language) do
+    case learning_language do
+      "fr" ->
+        # French card sentence patterns
+        String.contains?(command, "est") or String.starts_with?(command, "j'aime") or 
+        String.starts_with?(command, "mon ") or String.starts_with?(command, "ma ") or String.starts_with?(command, "mes ") or
+        String.starts_with?(command, "mange") or String.starts_with?(command, "cette") or String.starts_with?(command, "ce ") or
+        String.starts_with?(command, "je veux") or String.starts_with?(command, "j'ai") or 
+        String.starts_with?(command, "combien") or String.starts_with?(command, "compte") or
+        String.starts_with?(command, "dites") or String.starts_with?(command, "ravi") or
+        String.starts_with?(command, "voici") or String.starts_with?(command, "il mio") or String.starts_with?(command, "merci") or
+        String.contains?(command, "saute") or String.contains?(command, "fidèle") or String.contains?(command, "rapidement") or
+        String.contains?(command, "jungle") or String.contains?(command, "apporte") or
+        String.contains?(command, "a des") or String.contains?(command, "rayures") or String.contains?(command, "roi de") or
+        String.contains?(command, "se balance") or String.contains?(command, "dort") or String.contains?(command, "mange du") or
+        String.contains?(command, "bambou") or String.contains?(command, "arbres")
+      
+      "es" ->
+        # Spanish card sentence patterns
+        String.contains?(command, "es") or String.starts_with?(command, "me gusta") or 
+        String.starts_with?(command, "mi ") or String.starts_with?(command, "come") or
+        String.starts_with?(command, "esta ") or String.starts_with?(command, "este ") or
+        String.starts_with?(command, "quiero") or String.starts_with?(command, "tengo") or
+        String.starts_with?(command, "cuánto") or String.starts_with?(command, "cuenta") or String.starts_with?(command, "di ")
+      
+      "zh" ->
+        # Chinese card sentence patterns
+        String.contains?(command, "是") or String.contains?(command, "吃") or String.contains?(command, "我喜欢") or
+        String.contains?(command, "我的") or String.contains?(command, "这个") or String.contains?(command, "那个") or
+        String.contains?(command, "我要") or String.contains?(command, "我有") or String.contains?(command, "多少") or String.contains?(command, "数到")
+      
+      "ru" ->
+        # Russian card sentence patterns
+        String.contains?(command, "это") or String.contains?(command, "мой") or String.contains?(command, "моя") or 
+        String.contains?(command, "съешь") or String.contains?(command, "мне нравится") or
+        String.contains?(command, "я хочу") or String.contains?(command, "у меня") or String.contains?(command, "сколько")
+      
+      "ja" ->
+        # Japanese card sentence patterns
+        String.contains?(command, "は") or String.contains?(command, "です") or String.contains?(command, "を食べる") or
+        String.contains?(command, "が好き") or String.contains?(command, "私の") or
+        String.contains?(command, "がほしい") or String.contains?(command, "あります") or String.contains?(command, "いくつ")
+      
+      "it" ->
+        # Italian card sentence patterns
+        String.contains?(command, "è") or String.starts_with?(command, "mi piace") or 
+        String.starts_with?(command, "mio ") or String.starts_with?(command, "mangia") or
+        String.starts_with?(command, "voglio") or String.starts_with?(command, "ho ") or
+        String.starts_with?(command, "quanto") or String.starts_with?(command, "conta") or String.starts_with?(command, "di ")
+      
+      "ar" ->
+        # Arabic card sentence patterns
+        String.contains?(command, "هذا") or String.contains?(command, "أحب") or String.contains?(command, "كل") or
+        String.contains?(command, "أريد") or String.contains?(command, "عندي") or String.contains?(command, "قل")
+      
+      "pt" ->
+        # Portuguese card sentence patterns
+        String.contains?(command, "é") or String.starts_with?(command, "eu gosto") or 
+        String.starts_with?(command, "meu ") or String.starts_with?(command, "coma") or
+        String.starts_with?(command, "eu quero") or String.starts_with?(command, "eu tenho") or
+        String.starts_with?(command, "quanto") or String.starts_with?(command, "conte") or String.starts_with?(command, "diga ")
+      
+      _ ->
+        # English and default patterns
+        String.contains?(command, "is") or String.contains?(command, "the") or 
+        String.starts_with?(command, "my ") or String.starts_with?(command, "eat") or String.starts_with?(command, "i like") or
+        String.starts_with?(command, "i want") or String.starts_with?(command, "i have") or
+        String.starts_with?(command, "how much") or String.starts_with?(command, "count") or String.starts_with?(command, "say ")
     end
   end
 end

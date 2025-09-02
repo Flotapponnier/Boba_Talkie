@@ -55,10 +55,21 @@ defmodule BobaTalkie.ContentManager do
     end
     
     content = get_learning_content(topic, learning_language)
-    object_id = "#{topic}_#{object_type}"
     
-    Enum.find(content.tutorial, fn item -> 
-      item.id == object_id or String.contains?(item.id, Atom.to_string(object_type))
+    # Handle both singular and plural topic names
+    singular_topic = case topic do
+      "fruits" -> "fruit"
+      "animals" -> "animal"
+      "countries" -> "country"
+      other -> other
+    end
+    
+    object_id = "#{singular_topic}_#{object_type}"
+    
+    Enum.find(content.vocabulary, fn item -> 
+      item.id == object_id or 
+      item.id == "#{topic}_#{object_type}" or
+      String.contains?(item.id, Atom.to_string(object_type))
     end)
   end
 

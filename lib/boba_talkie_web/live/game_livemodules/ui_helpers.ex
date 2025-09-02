@@ -156,7 +156,8 @@ defmodule BobaTalkieWeb.GameLive.UIHelpers do
     case Map.get(world.items, world.player_pos) do
       %{emoji: emoji, type: type} ->
         # Get interface language translation for this item
-        vocab_translation = BobaTalkie.ContentManager.get_vocabulary_translation("#{world.topic || "fruits"}_#{type}", interface_language)
+        topic = world.topic || determine_topic_from_type(type)
+        vocab_translation = BobaTalkie.ContentManager.get_vocabulary_translation("#{topic}_#{type}", interface_language)
         translated_name = if vocab_translation, do: vocab_translation.word, else: Atom.to_string(type)
         
         # Translate "You found a" to interface language
@@ -199,6 +200,22 @@ defmodule BobaTalkieWeb.GameLive.UIHelpers do
       Map.put(vocab_item, :translation, translation)
     else
       nil
+    end
+  end
+
+  # Helper function to determine topic from object type
+  defp determine_topic_from_type(type) do
+    case type do
+      type when type in [:red, :blue, :green, :yellow, :orange, :purple, :pink, :brown, :black, :white, :gray] -> "colors"
+      type when type in [:apple, :banana, :orange, :grape, :strawberry, :cherry, :peach, :pineapple, :watermelon, :lemon, :avocado, :coconut, :mango, :kiwi, :tomato, :carrot, :bread, :milk, :cheese, :egg] -> "fruits"
+      type when type in [:hello, :name, :nice_to_meet, :how_are_you, :fine, :thank_you, :please, :excuse_me, :sorry, :yes, :no, :goodbye, :see_you_later, :where, :from] -> "introduction"
+      type when type in [:one, :two, :three, :four, :five, :six, :seven, :eight, :nine, :ten] -> "numbers"
+      type when type in [:croissant, :bagel, :pretzel, :baguette, :cake, :cupcake, :donut, :cookie, :pie] -> "bakery"
+      type when type in [:dog, :cat, :rabbit, :bear, :panda, :lion, :tiger, :elephant, :monkey, :horse, :cow, :pig] -> "animals"
+      type when type in [:menu, :pizza, :burger, :fries, :pasta, :salad, :soup, :coffee, :water, :bill] -> "restaurant"
+      type when type in [:mother, :father, :sister, :brother, :grandmother, :grandfather, :baby, :family, :aunt, :uncle] -> "family"
+      type when type in [:taiwan, :france, :germany, :japan, :usa, :uk, :italy, :spain, :china, :canada] -> "countries"
+      _ -> "fruits"
     end
   end
 end

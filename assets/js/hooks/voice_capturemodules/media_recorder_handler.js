@@ -56,7 +56,10 @@ export const MediaRecorderHandler = {
 
       this.mediaRecorder.onerror = (error) => {
         console.error('MediaRecorderHandler: Error:', error);
-        this.voiceCapture.pushEvent('voice_error', { error: `Recording failed: ${error.error}` });
+        // Don't cause page refresh on recording errors
+        this.voiceCapture.isRecording = false;
+        this.voiceCapture.buttonStateManager.updateRecordingState(false);
+        this.voiceCapture.safePushEvent('voice_error', { error: `Recording failed: ${error.error}` });
       };
 
       // Start recording
@@ -103,7 +106,7 @@ export const MediaRecorderHandler = {
       }
       
       // Cycle through progress messages
-      this.voiceCapture.pushEvent('voice_interim', { 
+      this.voiceCapture.safePushEvent('voice_interim', { 
         text: progressMessages[messageIndex % progressMessages.length] 
       });
       messageIndex++;
@@ -146,7 +149,7 @@ export const MediaRecorderHandler = {
         });
 
         // Send to Phoenix backend for Deepgram processing
-        this.voiceCapture.pushEvent('voice_audio', {
+        this.voiceCapture.safePushEvent('voice_audio', {
           audio: base64Audio,
           mime_type: audioBlob.type,
           size: audioBlob.size
@@ -155,14 +158,14 @@ export const MediaRecorderHandler = {
 
       reader.onerror = (error) => {
         console.error('MediaRecorderHandler: Failed to convert audio to base64:', error);
-        this.voiceCapture.pushEvent('voice_error', { error: 'Failed to process recorded audio' });
+        this.voiceCapture.safePushEvent('voice_error', { error: 'Failed to process recorded audio' });
       };
 
       reader.readAsDataURL(audioBlob);
 
     } catch (error) {
       console.error('MediaRecorderHandler: Error processing recorded audio:', error);
-      this.voiceCapture.pushEvent('voice_error', { error: `Audio processing failed: ${error.message}` });
+      this.voiceCapture.safePushEvent('voice_error', { error: `Audio processing failed: ${error.message}` });
     } finally {
       // Clean up
       this.audioChunks = [];

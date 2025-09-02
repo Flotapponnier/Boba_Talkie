@@ -13,17 +13,16 @@
     <%= if BobaTalkie.Game.World.game_completed?(@world) do %>
       <div class="fixed inset-0 bg-black/80 backdrop-blur-lg z-50 flex items-center justify-center">
         <div class="card-cute p-8 text-center max-w-md mx-4 bounce-cute">
-          <div class="text-6xl mb-4">Trophy</div>
-          <h2 class="text-3xl font-bold text-cute mb-4">Congratulations!</h2>
+          <div class="text-6xl mb-4"><%= gettext("Trophy") %></div>
+          <h2 class="text-3xl font-bold text-cute mb-4"><%= gettext("Congratulations!") %></h2>
           <p class="text-cute mb-6">
-            You completed all <%= length(@world.cards || []) %> cards! 
-            Your pronunciation score: <%= Float.round(@player.stats.pronunciation_score * 100, 1) %>%
+            <%= gettext("You completed all") %> <%= length(@world.cards || []) %> <%= gettext("cards! Your pronunciation score:") %> <%= Float.round(@player.stats.pronunciation_score * 100, 1) %>%
           </p>
           <button 
-            onclick="window.location.reload()"
+            phx-click="reset_game"
             class="btn-cute py-3 px-8"
           >
-            Play Again
+            <%= gettext("Play Again") %>
           </button>
         </div>
       </div>
@@ -46,25 +45,84 @@
         <div class="card-cute p-3">
           <h4 class="text-sm font-bold text-cute mb-2"><%= gettext("Quick Commands:") %></h4>
           <div class="space-y-1 text-xs text-cute">
-            <div>"<%= gettext("north") %>" / "<%= gettext("up") %>"</div>
-            <div>"<%= gettext("south") %>" / "<%= gettext("down") %>"</div>
-            <div>"<%= gettext("east") %>" / "<%= gettext("right") %>"</div>
-            <div>"<%= gettext("west") %>" / "<%= gettext("left") %>"</div>
-            <div>"3 <%= gettext("right") %>"</div>
-            <div>"2 <%= gettext("down") %>"</div>
+            <%= case @learning_language do %>
+              <% "fr" -> %>
+                <div>"nord" / "haut"</div>
+                <div>"sud" / "bas"</div>
+                <div>"est" / "droite"</div>
+                <div>"ouest" / "gauche"</div>
+                <div>"3 droites"</div>
+                <div>"2 bas"</div>
+              <% "es" -> %>
+                <div>"norte" / "arriba"</div>
+                <div>"sur" / "abajo"</div>
+                <div>"este" / "derecha"</div>
+                <div>"oeste" / "izquierda"</div>
+                <div>"3 derechas"</div>
+                <div>"2 abajo"</div>
+              <% "zh" -> %>
+                <div>"北 (běi)" / "上 (shàng)"</div>
+                <div>"南 (nán)" / "下 (xià)"</div>
+                <div>"东 (dōng)" / "右 (yòu)"</div>
+                <div>"西 (xī)" / "左 (zuǒ)"</div>
+                <div>"3个右"</div>
+                <div>"2个下"</div>
+              <% "ru" -> %>
+                <div>"север" / "вверх"</div>
+                <div>"юг" / "вниз"</div>
+                <div>"восток" / "вправо"</div>
+                <div>"запад" / "влево"</div>
+                <div>"3 вправо"</div>
+                <div>"2 вниз"</div>
+              <% "ja" -> %>
+                <div>"北 (kita)" / "上 (ue)"</div>
+                <div>"南 (minami)" / "下 (shita)"</div>
+                <div>"東 (higashi)" / "右 (migi)"</div>
+                <div>"西 (nishi)" / "左 (hidari)"</div>
+                <div>"3回右"</div>
+                <div>"2回下"</div>
+              <% "it" -> %>
+                <div>"nord" / "su"</div>
+                <div>"sud" / "giù"</div>
+                <div>"est" / "destra"</div>
+                <div>"ovest" / "sinistra"</div>
+                <div>"3 destra"</div>
+                <div>"2 giù"</div>
+              <% "ar" -> %>
+                <div>"شمال" / "فوق"</div>
+                <div>"جنوب" / "تحت"</div>
+                <div>"شرق" / "يمين"</div>
+                <div>"غرب" / "يسار"</div>
+                <div>"3 يمين"</div>
+                <div>"2 تحت"</div>
+              <% "pt" -> %>
+                <div>"norte" / "cima"</div>
+                <div>"sul" / "baixo"</div>
+                <div>"leste" / "direita"</div>
+                <div>"oeste" / "esquerda"</div>
+                <div>"3 direitas"</div>
+                <div>"2 baixo"</div>
+              <% _ -> %>
+                <div>"north" / "up"</div>
+                <div>"south" / "down"</div>
+                <div>"east" / "right"</div>
+                <div>"west" / "left"</div>
+                <div>"3 right"</div>
+                <div>"2 down"</div>
+            <% end %>
           </div>
         </div>
 
         <!-- Player Stats -->
         <div class="card-cute p-3">
-          <h3 class="text-sm font-bold text-cute mb-2">Stats</h3>
+          <h3 class="text-sm font-bold text-cute mb-2"><%= gettext("Stats") %></h3>
           <div class="space-y-2 text-xs">
             <div class="flex justify-between text-cute">
-              <span>Commands:</span>
+              <span><%= gettext("Commands:") %></span>
               <span class="font-bold"><%= @player.stats.commands_spoken %></span>
             </div>
             <div class="flex justify-between text-cute">
-              <span>Score:</span>
+              <span><%= gettext("Score:") %></span>
               <span class="font-bold text-boba-orange"><%= Float.round(@player.stats.pronunciation_score * 100, 1) %>%</span>
             </div>
           </div>
@@ -72,7 +130,7 @@
 
         <!-- Messages -->
         <div class="card-cute p-3">
-          <h3 class="text-sm font-bold text-cute mb-2">Messages</h3>
+          <h3 class="text-sm font-bold text-cute mb-2"><%= gettext("Messages") %></h3>
           <div class="space-y-1 text-xs max-h-24 overflow-y-auto custom-scrollbar">
             <%= for message <- Enum.take(@game_messages, 2) do %>
               <div class="text-cute text-xs leading-tight">
@@ -91,22 +149,22 @@
             <div class="speech-bubble p-4 text-center w-full">
               <div class="flex items-center justify-center space-x-2 mb-2">
                 <div class="w-4 h-4 bg-boba-orange rounded-full animate-pulse"></div>
-                <span class="text-boba-orange font-semibold">Listening...</span>
+                <span class="text-boba-orange font-semibold"><%= gettext("Listening...") %></span>
               </div>
               <%= if @interim_text do %>
                 <div class="text-cute font-mono text-lg">
                   "<%= @interim_text %>"
                 </div>
               <% else %>
-                <div class="text-cute opacity-60 italic">Speak a command...</div>
+                <div class="text-cute opacity-60 italic"><%= gettext("Speak a command...") %></div>
               <% end %>
             </div>
           <% else %>
             <div class="speech-bubble p-4 text-center w-full">
-              <div class="text-cute">Voice Recognition Ready</div>
+              <div class="text-cute"><%= gettext("Voice Recognition Ready") %></div>
               <%= if @last_command do %>
                 <div class="text-boba-orange font-mono text-sm mt-1">
-                  Last: "<%= @last_command %>"
+                  <%= gettext("Last:") %> "<%= @last_command %>"
                 </div>
               <% end %>
             </div>
@@ -167,10 +225,10 @@
             <%= if @listening do %>
               <div class="flex items-center justify-center space-x-3">
                 <div class="w-4 h-4 bg-white rounded-full animate-ping"></div>
-                <span>Recording... (Release to stop)</span>
+                <span><%= gettext("Recording... (Release to stop)") %></span>
               </div>
             <% else %>
-              Hold to Speak (or R)
+              <%= gettext("Hold to Speak (or R)") %>
             <% end %>
           </button>
         </div>
@@ -180,13 +238,13 @@
       <div class="col-span-4 space-y-2">
         <!-- Challenge Cards -->
         <div class="card-cute p-4 h-full flex flex-col">
-          <h3 class="text-sm font-bold text-cute mb-3 text-center">Challenges</h3>
+          <h3 class="text-sm font-bold text-cute mb-3 text-center"><%= gettext("Challenges") %></h3>
           
           <!-- Compact Cards Display -->
           <div class="space-y-2 flex-1 overflow-y-auto">
             <%= for card <- (@world.cards || []) do %>
               <div class={[
-                "card-cute p-3 cursor-pointer transition-all text-xs",
+                "card-cute p-3 transition-all text-xs",
                 if card.completed do
                   "opacity-60 bg-boba-green/20"
                 else
@@ -197,15 +255,13 @@
                   end
                 end
               ]}
-              phx-click={unless card.completed, do: "select_card"}
-              phx-value-card_id={card.id}
               >
                 <div class="flex items-center mb-1">
                   <span class="text-base mr-2">
                     <%= if card.completed do %>[✓]<% else %><%= if card.selected, do: "[▶]", else: "[◯]" %><% end %>
                   </span>
                   <%= if card.selected do %>
-                    <span class="text-blue-300 text-xs font-bold">ACTIVE</span>
+                    <span class="text-blue-300 text-xs font-bold"><%= gettext("ACTIVE") %></span>
                   <% end %>
                 </div>
                 <div class="text-cute font-semibold text-sm mb-1">
@@ -223,7 +279,7 @@
             <% nil -> %>
               <div class="mt-3 p-2 bg-boba-orange/20 border border-boba-orange rounded-lg text-center">
                 <div class="text-boba-orange text-xs font-bold">
-                  Select a card!
+                  <%= gettext("Select a card!") %>
                 </div>
               </div>
             <% selected_card -> %>
@@ -248,14 +304,14 @@
                     <!-- Pronunciation -->
                     <%= if Map.has_key?(vocab_item, :pronunciation) do %>
                       <div class="text-xs">
-                        <span class="font-semibold text-blue-600">Show Pronunciation</span>
+                        <span class="font-semibold text-blue-600"><%= gettext("Show Pronunciation") %></span>
                       </div>
                     <% end %>
                     
                     <!-- Example Usage -->
                     <%= if Map.has_key?(vocab_item, :example) do %>
                       <div class="text-xs space-y-1">
-                        <div class="font-semibold text-blue-600">Example Usage:</div>
+                        <div class="font-semibold text-blue-600"><%= gettext("Example Usage") %>:</div>
                         <div class="text-blue-700 italic">"<%= vocab_item.example %>"</div>
                         <%= if vocab_item.translation && vocab_item.translation.example do %>
                           <div class="text-blue-600 italic text-xs opacity-80">(<%= vocab_item.translation.example %>)</div>

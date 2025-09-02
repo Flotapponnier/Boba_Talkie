@@ -42,45 +42,68 @@ msgstr "学习语言"
 msgid "Select the language you want to learn"
 msgstr "选择您想学习的语言"
 
-#: lib/boba_talkie_web/live/game_live.html.heex:47
+#: lib/boba_talkie_web/live/game_live.html.heex:46
 #, elixir-autogen
 msgid "Quick Commands:"
 msgstr "快速命令："
 
+#: lib/boba_talkie_web/live/game_live.html.heex:118
+#, elixir-autogen
 msgid "Stats"
 msgstr "统计"
 
-#, fuzzy
+#: lib/boba_talkie_web/live/game_live.html.heex:121
+#, elixir-autogen, fuzzy
 msgid "Commands:"
 msgstr "快速命令："
 
+#: lib/boba_talkie_web/live/game_live.html.heex:125
+#, elixir-autogen
 msgid "Score:"
 msgstr "得分："
 
+#: lib/boba_talkie_web/live/game_live.html.heex:133
+#, elixir-autogen
 msgid "Messages"
 msgstr "消息"
 
+#: lib/boba_talkie_web/live/game_live.html.heex:164
+#, elixir-autogen
 msgid "Voice Recognition Ready"
 msgstr "语音识别就绪"
 
+#: lib/boba_talkie_web/live/game_live.html.heex:152
+#, elixir-autogen
 msgid "Listening..."
 msgstr "正在收听..."
 
+#: lib/boba_talkie_web/live/game_live.html.heex:159
+#, elixir-autogen
 msgid "Speak a command..."
 msgstr "说一个命令..."
 
+#: lib/boba_talkie_web/live/game_live.html.heex:167
+#, elixir-autogen
 msgid "Last:"
 msgstr "最后："
 
+#: lib/boba_talkie_web/live/game_live.html.heex:228
+#, elixir-autogen
 msgid "Recording... (Release to stop)"
 msgstr "正在录音...（松开停止）"
 
+#: lib/boba_talkie_web/live/game_live.html.heex:231
+#, elixir-autogen
 msgid "Hold to Speak (or R)"
 msgstr "按住说话（或R键）"
 
+#: lib/boba_talkie_web/live/game_live.html.heex:241
+#, elixir-autogen
 msgid "Challenges"
 msgstr "挑战"
 
+#: lib/boba_talkie_web/live/game_live.html.heex:284
+#, elixir-autogen
 msgid "Select a card!"
 msgstr "选择一张卡片！"
 
@@ -102,15 +125,23 @@ msgstr "继续游戏"
 msgid "Skip Tutorial"
 msgstr "跳过教程"
 
+#: lib/boba_talkie_web/live/game_live.html.heex:17
+#, elixir-autogen
 msgid "Congratulations!"
 msgstr "恭喜！"
 
+#: lib/boba_talkie_web/live/game_live.html.heex:19
+#, elixir-autogen
 msgid "You completed all"
 msgstr "你完成了所有"
 
+#: lib/boba_talkie_web/live/game_live.html.heex:19
+#, elixir-autogen
 msgid "cards! Your pronunciation score:"
 msgstr "卡片！你的发音得分："
 
+#: lib/boba_talkie_web/live/game_live.html.heex:25
+#, elixir-autogen
 msgid "Play Again"
 msgstr "再玩一次"
 
@@ -288,6 +319,7 @@ msgstr "词汇："
 msgid "Back to Maps"
 msgstr "返回地图"
 
+#: lib/boba_talkie_web/live/game_live.html.heex:316
 #: lib/boba_talkie_web/live/tutorial_live.html.heex:81
 #, elixir-autogen, elixir-format
 msgid "Example Usage"
@@ -330,6 +362,7 @@ msgstr "进度"
 msgid "Romanization"
 msgstr "拼音"
 
+#: lib/boba_talkie_web/live/game_live.html.heex:309
 #: lib/boba_talkie_web/live/tutorial_live.html.heex:63
 #, elixir-autogen, elixir-format
 msgid "Show Pronunciation"
@@ -431,44 +464,12 @@ msgstr "餐厅"
 msgid "Self-Introduction"
 msgstr "自我介绍"
 
-#: lib/boba_talkie_web/live/game_live.html.heex:50
-#: lib/boba_talkie_web/live/game_live.html.heex:54
+#: lib/boba_talkie_web/live/game_live.html.heex:266
 #, elixir-autogen, elixir-format
-msgid "down"
-msgstr "下"
+msgid "ACTIVE"
+msgstr "活跃"
 
-#: lib/boba_talkie_web/live/game_live.html.heex:51
+#: lib/boba_talkie_web/live/game_live.html.heex:16
 #, elixir-autogen, elixir-format
-msgid "east"
-msgstr "东"
-
-#: lib/boba_talkie_web/live/game_live.html.heex:52
-#, elixir-autogen, elixir-format
-msgid "left"
-msgstr "左"
-
-#: lib/boba_talkie_web/live/game_live.html.heex:49
-#, elixir-autogen, elixir-format, fuzzy
-msgid "north"
-msgstr "北"
-
-#: lib/boba_talkie_web/live/game_live.html.heex:51
-#: lib/boba_talkie_web/live/game_live.html.heex:53
-#, elixir-autogen, elixir-format
-msgid "right"
-msgstr "右"
-
-#: lib/boba_talkie_web/live/game_live.html.heex:50
-#, elixir-autogen, elixir-format
-msgid "south"
-msgstr "南"
-
-#: lib/boba_talkie_web/live/game_live.html.heex:49
-#, elixir-autogen, elixir-format
-msgid "up"
-msgstr "上"
-
-#: lib/boba_talkie_web/live/game_live.html.heex:52
-#, elixir-autogen, elixir-format
-msgid "west"
-msgstr "西"
+msgid "Trophy"
+msgstr "奖杯"

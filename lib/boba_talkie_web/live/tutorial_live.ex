@@ -95,12 +95,25 @@ defmodule BobaTalkieWeb.TutorialLive do
 
   @impl true
   def handle_event("change_interface_language", %{"value" => language_code}, socket) do
-    # Use JavaScript to store and reload with new language
-    socket = push_event(socket, "store_and_reload", %{
+    # Store in localStorage via JavaScript hook
+    socket = push_event(socket, "store_language", %{
       interface_language: language_code, 
       learning_language: socket.assigns.learning_language
     })
     
+    # Update locale and socket assigns in real-time (no page reload)
+    socket = LanguageSession.set_locale_and_assign(socket, language_code, socket.assigns.learning_language)
+    
+    # Force re-render by updating a timestamp
+    socket = assign(socket, :language_updated_at, System.system_time(:millisecond))
+    
+    {:noreply, socket}
+  end
+  
+  @impl true
+  def handle_event("restore_languages", %{"interface_language" => interface_language, "learning_language" => learning_language}, socket) do
+    # Restore languages from localStorage after page refresh
+    socket = LanguageSession.set_locale_and_assign(socket, interface_language, learning_language)
     {:noreply, socket}
   end
 

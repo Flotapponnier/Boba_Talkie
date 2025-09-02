@@ -345,7 +345,8 @@ defmodule BobaTalkie.Game.Card do
   ]
 
   @doc """
-  Generate a deck of cards based on the actual objects in the world
+  Generate a deck of cards based on the actual objects in the world.
+  Creates exactly one card per emoji present, ensuring every card can be completed.
   """
   def generate_deck(items, topic \\ "fruits", learning_language \\ "en") do
     # Get unique object types from the world
@@ -357,57 +358,84 @@ defmodule BobaTalkie.Game.Card do
     # Get learning content from ContentManager
     content = BobaTalkie.ContentManager.get_learning_content(topic, learning_language)
     
-    # Get appropriate card templates based on topic (fallback to English if content not available)
-    card_templates = if Enum.empty?(content.cards) do
-      case topic do
-        "introduction" -> @introduction_card_templates
-        "fruits" -> @fruit_card_templates
-        "numbers" -> @numbers_card_templates
-        "colors" -> @colors_card_templates
-        "bakery" -> @bakery_card_templates
-        "animals" -> @animals_card_templates
-        "restaurant" -> @restaurant_card_templates
-        "family" -> @family_card_templates
-        "countries" -> @countries_card_templates
-        _ -> @fruit_card_templates
+    # Generate one card per object present in the world
+    object_types
+    |> Enum.with_index()
+    |> Enum.map(fn {object_type, index} ->
+      # Try to find a card template from learning content first
+      # Handle both singular and plural topic names (fruits -> fruit)
+      singular_topic = case topic do
+        "fruits" -> "fruit"
+        "animals" -> "animal"
+        "countries" -> "country"
+        other -> other
       end
-    else
-      # Convert content cards to template format
-      Enum.map(content.cards, fn card ->
-        %{
-          template: card.template,
-          description: card.description,
-          applicable_objects: object_types,  # Apply to all available objects for now
-          type: :learning_content
-        }
+      
+      learning_card = Enum.find(content.cards, fn card ->
+        card.id == "#{singular_topic}_#{object_type}" or 
+        card.id == "#{topic}_#{object_type}" or 
+        String.contains?(card.id, Atom.to_string(object_type))
       end)
+      
+      case learning_card do
+        # Use learning language card if available
+        card_content when not is_nil(card_content) ->
+          %__MODULE__{
+            id: "card_#{index}",
+            template: card_content.template,
+            description: card_content.description,
+            applicable_objects: [object_type],  # Only applies to this specific object
+            completed: false,
+            selected: false
+          }
+        
+        # Fallback to English templates if no learning content
+        nil ->
+          fallback_template = get_fallback_template_for_object(object_type, topic)
+          case fallback_template do
+            nil ->
+              # Generic fallback card
+              %__MODULE__{
+                id: "card_#{index}",
+                template: "This is a _",
+                description: "Identify the object",
+                applicable_objects: [object_type],
+                completed: false,
+                selected: false
+              }
+            
+            template ->
+              %__MODULE__{
+                id: "card_#{index}",
+                template: template.template,
+                description: template.description,
+                applicable_objects: [object_type],
+                completed: false,
+                selected: false
+              }
+          end
+      end
+    end)
+  end
+  
+  # Get fallback template for a specific object type
+  defp get_fallback_template_for_object(object_type, topic) do
+    templates = case topic do
+      "introduction" -> @introduction_card_templates
+      "fruits" -> @fruit_card_templates
+      "numbers" -> @numbers_card_templates
+      "colors" -> @colors_card_templates
+      "bakery" -> @bakery_card_templates
+      "animals" -> @animals_card_templates
+      "restaurant" -> @restaurant_card_templates
+      "family" -> @family_card_templates
+      "countries" -> @countries_card_templates
+      _ -> @fruit_card_templates
     end
     
-    # Create cards that match the available objects
-    available_cards = card_templates
-    |> Enum.filter(fn template ->
-      # Only include cards that can be completed with available objects
-      Enum.any?(template.applicable_objects, fn obj_type ->
-        obj_type in object_types
-      end)
-    end)
-    
-    # Take as many cards as we have objects (minimum 2, maximum available)
-    num_cards = min(max(length(object_types), 2), length(available_cards))
-    
-    available_cards
-    |> Enum.shuffle()
-    |> Enum.take(num_cards)
-    |> Enum.with_index()
-    |> Enum.map(fn {template, index} ->
-      %__MODULE__{
-        id: "card_#{index}",
-        template: template.template,
-        description: template.description,
-        applicable_objects: template.applicable_objects,
-        completed: false,
-        selected: false
-      }
+    # Find a template that can work with this object type
+    Enum.find(templates, fn template ->
+      object_type in template.applicable_objects
     end)
   end
 
@@ -419,62 +447,151 @@ defmodule BobaTalkie.Game.Card do
     if object_type not in card.applicable_objects do
       false
     else
-      # Clean the voice command and normalize spelling variations (British -> American)
+      # Clean the voice command - only remove periods and common punctuation
       clean_command = voice_command
       |> String.downcase()
       |> String.trim()
-      |> String.replace(~r/[^\w\s]/, "")
-      |> String.replace("colour", "color")
-      |> String.replace("favourite", "favorite") 
-      |> String.replace("centre", "center")
-      |> String.replace("grey", "gray")
-      |> String.replace("realise", "realize")
-      |> String.replace("organised", "organized")
-      # Normalize digit numbers to word numbers for consistency
-      |> String.replace(~r/\b1\b/, "one")
-      |> String.replace(~r/\b2\b/, "two")
-      |> String.replace(~r/\b3\b/, "three")
-      |> String.replace(~r/\b4\b/, "four")
-      |> String.replace(~r/\b5\b/, "five")
-      |> String.replace(~r/\b6\b/, "six")
-      |> String.replace(~r/\b7\b/, "seven")
-      |> String.replace(~r/\b8\b/, "eight")
-      |> String.replace(~r/\b9\b/, "nine")
-      |> String.replace(~r/\b10\b/, "ten")
+      |> String.replace(~r/[.!?,:;]/, "")  # Only remove basic punctuation, keep everything else
       
-      # Get object name in the learning language
-      object_name = get_object_name_in_language(object_type, learning_language)
+      # Get the card template in the learning language from ContentManager
+      learning_card = get_card_template_in_language(card.id, object_type, learning_language)
       
-      # Create expected sentence from template (template is in learning language)
-      expected_sentence = String.replace(card.template, "_", object_name)
-      |> String.downcase()
+      case learning_card do
+        nil ->
+          # Fallback to original template if no learning language template exists
+          fallback_match(card, clean_command, object_type, learning_language)
+        
+        learning_template ->
+          # Use the learning language template
+          object_name = get_object_name_in_language(object_type, learning_language)
+          expected_sentence = String.replace(learning_template, "_", object_name)
+          |> String.downcase()
+          
+          require Logger
+          Logger.info("🃏 Card Matching - Template: '#{learning_template}', Object: '#{object_name}', Expected: '#{expected_sentence}', Said: '#{clean_command}'")
+          Logger.info("🃏 Card Matching - Object type: #{object_type}, Learning language: #{learning_language}")
+          
+          # Check if the essential words are present in the command
+          essential_words = String.split(expected_sentence, " ")
+          |> Enum.reject(&(&1 == ""))
+          
+          Logger.info("🃏 Card Matching - Essential words: #{inspect(essential_words)}")
+          Logger.info("🃏 Card Matching - Clean command: '#{clean_command}'")
+          
+          # All essential words must be present (allows for extra words/mistakes)
+          result = Enum.all?(essential_words, fn word ->
+            basic_match = String.contains?(clean_command, word)
+            variation_match = handle_language_variations(word, clean_command, learning_language)
+            apostrophe_match1 = String.starts_with?(word, "l'") and String.contains?(clean_command, String.slice(word, 2..-1//-1))
+            apostrophe_match2 = not String.starts_with?(word, "l'") and String.contains?(clean_command, "l'" <> word)
+            
+            word_match = basic_match or variation_match or apostrophe_match1 or apostrophe_match2
+            
+            Logger.info("🃏 Card Matching - Word '#{word}': basic=#{basic_match}, variation=#{variation_match}, apos1=#{apostrophe_match1}, apos2=#{apostrophe_match2}, final=#{word_match}")
+            word_match
+          end)
+          
+          Logger.info("🃏 Card Matching - Final result: #{result}")
+          result
+      end
+    end
+  end
+  
+  # Get card template in specific learning language
+  defp get_card_template_in_language(_card_id, object_type, learning_language) do
+    # Determine topic from object type
+    topic = case object_type do
+      type when type in [:red, :blue, :green, :yellow, :orange, :purple, :pink, :brown, :black, :white, :gray] -> "colors"
+      type when type in [:apple, :banana, :orange, :grape, :strawberry, :cherry, :peach, :pineapple, :watermelon, :lemon, :avocado, :coconut, :mango, :kiwi, :tomato, :carrot, :bread, :milk, :cheese, :egg] -> "fruits"
+      type when type in [:hello, :name, :nice_to_meet, :how_are_you, :fine, :thank_you, :please, :excuse_me, :sorry, :yes, :no, :goodbye, :see_you_later, :where, :from] -> "introduction"
+      type when type in [:one, :two, :three, :four, :five, :six, :seven, :eight, :nine, :ten] -> "numbers"
+      type when type in [:bread, :croissant, :bagel, :pretzel, :baguette, :cake, :cupcake, :donut, :cookie, :pie] -> "bakery"
+      type when type in [:dog, :cat, :rabbit, :bear, :panda, :lion, :tiger, :elephant, :monkey, :horse, :cow, :pig] -> "animals"
+      type when type in [:menu, :pizza, :burger, :fries, :pasta, :salad, :soup, :coffee, :water, :bill] -> "restaurant"
+      type when type in [:mother, :father, :sister, :brother, :grandmother, :grandfather, :baby, :family, :aunt, :uncle] -> "family"
+      type when type in [:taiwan, :france, :germany, :japan, :usa, :uk, :italy, :spain, :china, :canada] -> "countries"
+      _ -> "colors"
+    end
+    
+    # Get learning content for the topic and language
+    content = BobaTalkie.ContentManager.get_learning_content(topic, learning_language)
+    
+    # Find the card that matches this object type
+    # Handle both singular and plural topic names
+    singular_topic = case topic do
+      "fruits" -> "fruit"
+      "animals" -> "animal" 
+      "countries" -> "country"
+      other -> other
+    end
+    
+    object_id = "#{singular_topic}_#{object_type}"
+    matching_card = Enum.find(content.cards, fn card_content ->
+      card_content.id == object_id or 
+      card_content.id == "#{topic}_#{object_type}" or
+      String.contains?(card_content.id, Atom.to_string(object_type))
+    end)
+    
+    case matching_card do
+      nil -> nil
+      card_content -> card_content.template
+    end
+  end
+  
+  # Handle language-specific variations
+  defp handle_language_variations(word, clean_command, learning_language) do
+    case learning_language do
+      "fr" ->
+        # French variations
+        (word == "verte" and String.contains?(clean_command, "vertes")) or
+        (word == "vertes" and String.contains?(clean_command, "verte")) or
+        (word == "rouge" and String.contains?(clean_command, "rouges")) or
+        (word == "rouges" and String.contains?(clean_command, "rouge")) or
+        (word == "bleu" and String.contains?(clean_command, "bleus")) or
+        (word == "bleus" and String.contains?(clean_command, "bleu")) or
+        (word == "jaune" and String.contains?(clean_command, "jaunes")) or
+        (word == "jaunes" and String.contains?(clean_command, "jaune")) or
+        # French synonyms
+        (word == "herbe" and String.contains?(clean_command, "arbre")) or
+        (word == "arbre" and String.contains?(clean_command, "herbe")) or
+        # Speech recognition errors
+        (word == "cette" and String.contains?(clean_command, "7")) or
+        (word == "cette" and String.contains?(clean_command, "cette"))  or
+        (word == "juteuse" and String.contains?(clean_command, "et juteuse"))
       
-      # Check if the essential words are present in the command
-      essential_words = String.split(expected_sentence, " ")
+      "es" ->
+        # Spanish variations
+        (word == "roja" and String.contains?(clean_command, "rojas")) or
+        (word == "rojas" and String.contains?(clean_command, "roja")) or
+        (word == "verde" and String.contains?(clean_command, "verdes")) or
+        (word == "verdes" and String.contains?(clean_command, "verde"))
       
-      # All essential words must be present (allows for extra words/mistakes)
-      # Handle common plural/singular variations
-      Enum.all?(essential_words, fn word ->
-        String.contains?(clean_command, word) or
-        # Handle plural/singular variations
+      _ ->
+        # English variations
         (word == "apples" and String.contains?(clean_command, "apple")) or
         (word == "apple" and String.contains?(clean_command, "apples")) or
         (word == "grapes" and String.contains?(clean_command, "grape")) or
-        (word == "grape" and String.contains?(clean_command, "grapes")) or
-        (word == "cherries" and String.contains?(clean_command, "cherry")) or
-        (word == "cherry" and String.contains?(clean_command, "cherries")) or
-        (word == "strawberries" and String.contains?(clean_command, "strawberry")) or
-        (word == "strawberry" and String.contains?(clean_command, "strawberries")) or
-        (word == "tomatoes" and String.contains?(clean_command, "tomato")) or
-        (word == "tomato" and String.contains?(clean_command, "tomatoes")) or
-        (word == "carrots" and String.contains?(clean_command, "carrot")) or
-        (word == "carrot" and String.contains?(clean_command, "carrots")) or
-        (word == "lemons" and String.contains?(clean_command, "lemon")) or
-        (word == "lemon" and String.contains?(clean_command, "lemons")) or
-        (word == "eggs" and String.contains?(clean_command, "egg")) or
-        (word == "egg" and String.contains?(clean_command, "eggs"))
-      end)
+        (word == "grape" and String.contains?(clean_command, "grapes"))
     end
+  end
+  
+  # Fallback matching for when no learning language template exists
+  defp fallback_match(card, clean_command, object_type, learning_language) do
+    # Get object name in the learning language
+    object_name = get_object_name_in_language(object_type, learning_language)
+    
+    # Create expected sentence from template (template is in English, object name in learning language)
+    expected_sentence = String.replace(card.template, "_", object_name)
+    |> String.downcase()
+    
+    # Check if the essential words are present
+    essential_words = String.split(expected_sentence, " ")
+    |> Enum.reject(&(&1 == ""))
+    
+    Enum.all?(essential_words, fn word ->
+      String.contains?(clean_command, word) or
+      handle_language_variations(word, clean_command, learning_language)
+    end)
   end
 
   @doc """

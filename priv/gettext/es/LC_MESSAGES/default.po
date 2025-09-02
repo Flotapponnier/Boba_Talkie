@@ -42,45 +42,68 @@ msgstr "Idioma de Aprendizaje"
 msgid "Select the language you want to learn"
 msgstr "Selecciona el idioma que quieres aprender"
 
-#: lib/boba_talkie_web/live/game_live.html.heex:47
+#: lib/boba_talkie_web/live/game_live.html.heex:46
 #, elixir-autogen
 msgid "Quick Commands:"
 msgstr "Comandos Rápidos:"
 
+#: lib/boba_talkie_web/live/game_live.html.heex:118
+#, elixir-autogen
 msgid "Stats"
 msgstr "Estadísticas"
 
-#, fuzzy
+#: lib/boba_talkie_web/live/game_live.html.heex:121
+#, elixir-autogen, fuzzy
 msgid "Commands:"
 msgstr "Comandos Rápidos:"
 
+#: lib/boba_talkie_web/live/game_live.html.heex:125
+#, elixir-autogen
 msgid "Score:"
 msgstr ""
 
+#: lib/boba_talkie_web/live/game_live.html.heex:133
+#, elixir-autogen
 msgid "Messages"
 msgstr ""
 
+#: lib/boba_talkie_web/live/game_live.html.heex:164
+#, elixir-autogen
 msgid "Voice Recognition Ready"
 msgstr ""
 
+#: lib/boba_talkie_web/live/game_live.html.heex:152
+#, elixir-autogen
 msgid "Listening..."
 msgstr ""
 
+#: lib/boba_talkie_web/live/game_live.html.heex:159
+#, elixir-autogen
 msgid "Speak a command..."
 msgstr ""
 
+#: lib/boba_talkie_web/live/game_live.html.heex:167
+#, elixir-autogen
 msgid "Last:"
 msgstr ""
 
+#: lib/boba_talkie_web/live/game_live.html.heex:228
+#, elixir-autogen
 msgid "Recording... (Release to stop)"
 msgstr ""
 
+#: lib/boba_talkie_web/live/game_live.html.heex:231
+#, elixir-autogen
 msgid "Hold to Speak (or R)"
 msgstr ""
 
+#: lib/boba_talkie_web/live/game_live.html.heex:241
+#, elixir-autogen
 msgid "Challenges"
 msgstr "Desafíos"
 
+#: lib/boba_talkie_web/live/game_live.html.heex:284
+#, elixir-autogen
 msgid "Select a card!"
 msgstr ""
 
@@ -102,15 +125,23 @@ msgstr "Continuar al Juego"
 msgid "Skip Tutorial"
 msgstr "Saltar Tutorial"
 
+#: lib/boba_talkie_web/live/game_live.html.heex:17
+#, elixir-autogen
 msgid "Congratulations!"
 msgstr "¡Felicitaciones!"
 
+#: lib/boba_talkie_web/live/game_live.html.heex:19
+#, elixir-autogen
 msgid "You completed all"
 msgstr "Completaste todas las"
 
+#: lib/boba_talkie_web/live/game_live.html.heex:19
+#, elixir-autogen
 msgid "cards! Your pronunciation score:"
 msgstr "cartas! Tu puntuación de pronunciación:"
 
+#: lib/boba_talkie_web/live/game_live.html.heex:25
+#, elixir-autogen
 msgid "Play Again"
 msgstr "Jugar de Nuevo"
 
@@ -288,6 +319,7 @@ msgstr "Palabras:"
 msgid "Back to Maps"
 msgstr "Volver a los Mapas"
 
+#: lib/boba_talkie_web/live/game_live.html.heex:316
 #: lib/boba_talkie_web/live/tutorial_live.html.heex:81
 #, elixir-autogen, elixir-format
 msgid "Example Usage"
@@ -330,6 +362,7 @@ msgstr "Progreso"
 msgid "Romanization"
 msgstr "Romanización"
 
+#: lib/boba_talkie_web/live/game_live.html.heex:309
 #: lib/boba_talkie_web/live/tutorial_live.html.heex:63
 #, elixir-autogen, elixir-format
 msgid "Show Pronunciation"
@@ -431,44 +464,12 @@ msgstr "Restaurante"
 msgid "Self-Introduction"
 msgstr "Autopresentación"
 
-#: lib/boba_talkie_web/live/game_live.html.heex:50
-#: lib/boba_talkie_web/live/game_live.html.heex:54
+#: lib/boba_talkie_web/live/game_live.html.heex:266
 #, elixir-autogen, elixir-format
-msgid "down"
-msgstr "abajo"
+msgid "ACTIVE"
+msgstr "ACTIVO"
 
-#: lib/boba_talkie_web/live/game_live.html.heex:51
+#: lib/boba_talkie_web/live/game_live.html.heex:16
 #, elixir-autogen, elixir-format
-msgid "east"
-msgstr "este"
-
-#: lib/boba_talkie_web/live/game_live.html.heex:52
-#, elixir-autogen, elixir-format
-msgid "left"
-msgstr "izquierda"
-
-#: lib/boba_talkie_web/live/game_live.html.heex:49
-#, elixir-autogen, elixir-format, fuzzy
-msgid "north"
-msgstr "norte"
-
-#: lib/boba_talkie_web/live/game_live.html.heex:51
-#: lib/boba_talkie_web/live/game_live.html.heex:53
-#, elixir-autogen, elixir-format
-msgid "right"
-msgstr "derecha"
-
-#: lib/boba_talkie_web/live/game_live.html.heex:50
-#, elixir-autogen, elixir-format
-msgid "south"
-msgstr "sur"
-
-#: lib/boba_talkie_web/live/game_live.html.heex:49
-#, elixir-autogen, elixir-format
-msgid "up"
-msgstr "arriba"
-
-#: lib/boba_talkie_web/live/game_live.html.heex:52
-#, elixir-autogen, elixir-format
-msgid "west"
-msgstr "oeste"
+msgid "Trophy"
+msgstr "Trofeo"

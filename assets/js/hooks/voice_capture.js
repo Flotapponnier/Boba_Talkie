@@ -5,9 +5,65 @@ import { WebSpeechHandler } from './voice_capturemodules/web_speech_handler.js';
 import { MediaRecorderHandler } from './voice_capturemodules/media_recorder_handler.js';
 
 export const VoiceCapture = {
+  // Safe wrapper for pushEvent to prevent LiveView crashes
+  safePushEvent(event, data) {
+    try {
+      console.log('🔵 VoiceCapture: PUSHING EVENT:', event, 'data:', data);
+      console.log('🔵 VoiceCapture: Recording state before push:', this.isRecording);
+      this.pushEvent(event, data);
+      console.log('✅ VoiceCapture: Event pushed successfully:', event);
+    } catch (error) {
+      console.error('🚨 VoiceCapture: CRITICAL ERROR pushing event:', event, 'data:', data, 'error:', error);
+      console.error('🚨 VoiceCapture: Error stack:', error.stack);
+      // Don't re-throw, just log - prevents page refresh
+    }
+  },
+
   mounted() {
     this.isRecording = false;
     this.deepgramSocket = null;
+    
+    // Add comprehensive event logging to track page refresh causes
+    window.addEventListener('error', (event) => {
+      console.error('🚨 VoiceCapture: JAVASCRIPT ERROR DETECTED - THIS MIGHT CAUSE REFRESH:', event.error);
+      console.error('VoiceCapture: Error details:', {
+        message: event.message,
+        filename: event.filename,
+        lineno: event.lineno,
+        colno: event.colno,
+        error: event.error,
+        stack: event.error?.stack
+      });
+      // Prevent default error handling which might refresh page
+      event.preventDefault();
+    });
+    
+    window.addEventListener('unhandledrejection', (event) => {
+      console.error('🚨 VoiceCapture: PROMISE REJECTION - THIS MIGHT CAUSE REFRESH:', event.reason);
+      console.error('VoiceCapture: Rejection stack:', event.reason?.stack);
+      // Prevent default handling
+      event.preventDefault();
+    });
+    
+    // Track navigation events to see what's causing refresh
+    window.addEventListener('beforeunload', (event) => {
+      console.warn('🚨 VoiceCapture: PAGE IS ABOUT TO REFRESH/UNLOAD!');
+      console.warn('VoiceCapture: Current recording state:', this.isRecording);
+    });
+    
+    // Track any location changes
+    const originalPushState = history.pushState;
+    const originalReplaceState = history.replaceState;
+    
+    history.pushState = function(state, title, url) {
+      console.log('🚨 VoiceCapture: HISTORY PUSHSTATE DETECTED:', url);
+      return originalPushState.apply(history, arguments);
+    };
+    
+    history.replaceState = function(state, title, url) {
+      console.log('🚨 VoiceCapture: HISTORY REPLACESTATE DETECTED:', url);
+      return originalReplaceState.apply(history, arguments);
+    };
     
     console.log('VoiceCapture mounted - Web Speech API with MediaRecorder fallback');
     
@@ -92,7 +148,8 @@ export const VoiceCapture = {
     
     this.isRecording = true;
     this.buttonStateManager.updateRecordingState(true);
-    this.pushEvent('start_listening', {});
+    
+    this.safePushEvent('start_listening', {});
     
     if (this.isBrave || !this.hasWebSpeech) {
       // Use MediaRecorder for Brave or browsers without Web Speech API
@@ -101,7 +158,7 @@ export const VoiceCapture = {
       if (!success) {
         this.isRecording = false;
         this.buttonStateManager.updateRecordingState(false);
-        this.pushEvent('voice_error', { error: 'Microphone access failed' });
+        this.safePushEvent('voice_error', { error: 'Microphone access failed' });
       }
     } else {
       // Use Web Speech API for Chrome/others (fast, real-time)
@@ -110,7 +167,7 @@ export const VoiceCapture = {
       if (!success) {
         this.isRecording = false;
         this.buttonStateManager.updateRecordingState(false);
-        this.pushEvent('voice_error', { error: 'Failed to start speech recognition' });
+        this.safePushEvent('voice_error', { error: 'Failed to start speech recognition' });
       }
     }
   },
@@ -134,7 +191,7 @@ export const VoiceCapture = {
     }
     
     // Always notify the server that we stopped listening
-    this.pushEvent('stop_listening', {});
+    this.safePushEvent('stop_listening', {});
   },
 
   async startDeepgramStreaming() {
@@ -153,13 +210,13 @@ export const VoiceCapture = {
       });
 
       // Send streaming request to Phoenix backend
-      this.pushEvent('start_deepgram_stream', {});
+      this.safePushEvent('start_deepgram_stream', {});
       
     } catch (error) {
       console.error('Failed to start Deepgram streaming:', error);
       this.isRecording = false;
       this.buttonStateManager.updateRecordingState(false);
-      this.pushEvent('voice_error', { error: `Microphone access denied: ${error.message}` });
+      this.safePushEvent('voice_error', { error: `Microphone access denied: ${error.message}` });
     }
   },
 

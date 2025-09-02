@@ -43,7 +43,9 @@ defmodule BobaTalkie.ContentManagerModules.FruitsContent do
         %{id: "fruit_orange", emoji: "🍊", word: "Orange", pronunciation: "or-inj"},
         %{id: "fruit_grape", emoji: "🍇", word: "Grape", pronunciation: "grayp"},
         %{id: "fruit_strawberry", emoji: "🍓", word: "Strawberry", pronunciation: "straw-ber-ee"},
-        %{id: "fruit_watermelon", emoji: "🍉", word: "Watermelon", pronunciation: "waw-ter-mel-uhn"}
+        %{id: "fruit_watermelon", emoji: "🍉", word: "Watermelon", pronunciation: "waw-ter-mel-uhn"},
+        %{id: "fruit_cheese", emoji: "🧀", word: "Cheese", pronunciation: "cheez"},
+        %{id: "fruit_egg", emoji: "🥚", word: "Egg", pronunciation: "eg"}
       ],
       cards: [
         %{id: "fruit_apple", template: "Eat the _", answer: "apple", description: "Enjoying a healthy snack"},
@@ -140,7 +142,17 @@ defmodule BobaTalkie.ContentManagerModules.FruitsContent do
         %{id: "fruit_peach", word: "Pêche", emoji: "🍑", pronunciation: "pehsh", meaning: "Un fruit orange duveteux", example: "La pêche est mûre"},
         %{id: "fruit_pineapple", word: "Ananas", emoji: "🍍", pronunciation: "ah-nah-NAH", meaning: "Un fruit tropical", example: "L'ananas est sucré"},
         %{id: "fruit_watermelon", word: "Pastèque", emoji: "🍉", pronunciation: "pahs-TEHK", meaning: "Un gros fruit vert", example: "La pastèque rafraîchit en été"},
-        %{id: "fruit_lemon", word: "Citron", emoji: "🍋", pronunciation: "see-TROHN", meaning: "Un fruit jaune acide", example: "Ajoute du citron au thé"}
+        %{id: "fruit_lemon", word: "Citron", emoji: "🍋", pronunciation: "see-TROHN", meaning: "Un fruit jaune acide", example: "Ajoute du citron au thé"},
+        %{id: "fruit_avocado", word: "Avocat", emoji: "🥑", pronunciation: "ah-voh-KAH", meaning: "Un fruit vert crémeux", example: "L'avocat est nutritif"},
+        %{id: "fruit_coconut", word: "Noix de coco", emoji: "🥥", pronunciation: "nwah duh koh-koh", meaning: "Un fruit tropical dur", example: "La noix de coco est exotique"},
+        %{id: "fruit_mango", word: "Mangue", emoji: "🥭", pronunciation: "mahn-guh", meaning: "Un fruit tropical sucré", example: "La mangue est délicieuse"},
+        %{id: "fruit_kiwi", word: "Kiwi", emoji: "🥝", pronunciation: "kee-wee", meaning: "Un petit fruit vert", example: "Le kiwi est acide"},
+        %{id: "fruit_tomato", word: "Tomate", emoji: "🍅", pronunciation: "toh-MAHT", meaning: "Un légume rouge", example: "La tomate est juteuse"},
+        %{id: "fruit_carrot", word: "Carotte", emoji: "🥕", pronunciation: "kah-ROHT", meaning: "Un légume orange", example: "La carotte est croquante"},
+        %{id: "fruit_bread", word: "Pain", emoji: "🍞", pronunciation: "pan", meaning: "Aliment de base", example: "Le pain est frais"},
+        %{id: "fruit_milk", word: "Lait", emoji: "🥛", pronunciation: "leh", meaning: "Boisson blanche", example: "Le lait est nutritif"},
+        %{id: "fruit_cheese", word: "Fromage", emoji: "🧀", pronunciation: "froh-MAHZH", meaning: "Produit laitier", example: "Le fromage est savoureux"},
+        %{id: "fruit_egg", word: "Œuf", emoji: "🥚", pronunciation: "uhf", meaning: "Produit de poule", example: "L'œuf est frais"}
       ],
       game_objects: [
         %{id: "fruit_apple", emoji: "🍎", word: "Pomme", pronunciation: "pom"},
@@ -148,13 +160,31 @@ defmodule BobaTalkie.ContentManagerModules.FruitsContent do
         %{id: "fruit_orange", emoji: "🍊", word: "Orange", pronunciation: "oh-RAHNZH"},
         %{id: "fruit_grape", emoji: "🍇", word: "Raisin", pronunciation: "ray-ZAN"},
         %{id: "fruit_strawberry", emoji: "🍓", word: "Fraise", pronunciation: "frehz"},
-        %{id: "fruit_watermelon", emoji: "🍉", word: "Pastèque", pronunciation: "pahs-TEHK"}
+        %{id: "fruit_watermelon", emoji: "🍉", word: "Pastèque", pronunciation: "pahs-TEHK"},
+        %{id: "fruit_cheese", emoji: "🧀", word: "Fromage", pronunciation: "froh-MAHZH"},
+        %{id: "fruit_egg", emoji: "🥚", word: "Œuf", pronunciation: "uhf"}
       ],
       cards: [
         %{id: "fruit_apple", template: "Mange la _", answer: "pomme", description: "Action avec fruit"},
         %{id: "fruit_banana", template: "La _ est jaune", answer: "banane", description: "Décrire la couleur du fruit"},
         %{id: "fruit_orange", template: "Cette _ est juteuse", answer: "orange", description: "Décrire la texture du fruit"},
-        %{id: "fruit_grape", template: "J'aime les _ violets", answer: "raisins", description: "Exprimer une préférence"}
+        %{id: "fruit_grape", template: "J'aime les _ violets", answer: "raisins", description: "Exprimer une préférence"},
+        %{id: "fruit_strawberry", template: "La _ est rouge", answer: "fraise", description: "Décrire la couleur du fruit"},
+        %{id: "fruit_cherry", template: "Cette _ est sucrée", answer: "cerise", description: "Décrire le goût du fruit"},
+        %{id: "fruit_peach", template: "La _ est mûre", answer: "pêche", description: "Décrire l'état du fruit"},
+        %{id: "fruit_pineapple", template: "L'_ est tropical", answer: "ananas", description: "Décrire l'origine du fruit"},
+        %{id: "fruit_watermelon", template: "La _ est rafraîchissante", answer: "pastèque", description: "Décrire l'effet du fruit"},
+        %{id: "fruit_lemon", template: "Le _ est acide", answer: "citron", description: "Décrire le goût du fruit"},
+        %{id: "fruit_avocado", template: "L'_ est vert", answer: "avocat", description: "Décrire la couleur du fruit"},
+        %{id: "fruit_coconut", template: "La _ est dur", answer: "noix de coco", description: "Décrire la texture du fruit"},
+        %{id: "fruit_mango", template: "La _ est exotique", answer: "mangue", description: "Décrire l'origine du fruit"},
+        %{id: "fruit_kiwi", template: "Le _ est vert", answer: "kiwi", description: "Décrire la couleur du fruit"},
+        %{id: "fruit_tomato", template: "La _ est rouge", answer: "tomate", description: "Décrire la couleur du légume"},
+        %{id: "fruit_carrot", template: "La _ est orange", answer: "carotte", description: "Décrire la couleur du légume"},
+        %{id: "fruit_bread", template: "Le _ est frais", answer: "pain", description: "Décrire l'état du pain"},
+        %{id: "fruit_milk", template: "Le _ est blanc", answer: "lait", description: "Décrire la couleur du lait"},
+        %{id: "fruit_cheese", template: "Le _ est délicieux", answer: "fromage", description: "Décrire le goût du fromage"},
+        %{id: "fruit_egg", template: "L'_ est blanc", answer: "œuf", description: "Décrire la couleur de l'œuf"}
       ]
     }
   end

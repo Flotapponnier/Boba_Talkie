@@ -56,15 +56,27 @@ defmodule BobaTalkieWeb.GameLive do
 
   @impl true
   def handle_event("voice_command", %{"command" => command, "confidence" => confidence}, socket) do
-    # Process voice command directly (Web Speech API result)
-    socket = VoiceHandlers.handle_voice_result(
-      socket, 
-      command, 
-      confidence,
-      socket.assigns.world, 
-      socket.assigns.player
-    )
-    {:noreply, socket}
+    require Logger
+    Logger.info("GameLive: Processing voice_command event: #{command}")
+    
+    try do
+      # Process voice command directly (Web Speech API result)
+      socket = VoiceHandlers.handle_voice_result(
+        socket, 
+        command, 
+        confidence,
+        socket.assigns.world, 
+        socket.assigns.player
+      )
+      Logger.info("GameLive: voice_command processed successfully: #{command}")
+      {:noreply, socket}
+    rescue
+      e ->
+        Logger.error("GameLive: CRITICAL ERROR in voice_command handler: #{inspect(e)} for command: #{command}")
+        Logger.error("GameLive: Stacktrace: #{Exception.format_stacktrace(__STACKTRACE__)}")
+        socket = StateManager.add_game_message(socket, "Voice command error: #{command}")
+        {:noreply, socket}
+    end
   end
 
   @impl true
@@ -90,15 +102,27 @@ defmodule BobaTalkieWeb.GameLive do
 
   @impl true
   def handle_event("text_command", %{"command" => command}, socket) do
-    # Process text command the same way as voice commands
-    socket = VoiceHandlers.handle_voice_result(
-      socket, 
-      command, 
-      1.0,  # Max confidence for typed commands
-      socket.assigns.world, 
-      socket.assigns.player
-    )
-    {:noreply, socket}
+    require Logger
+    Logger.info("GameLive: Processing text_command event: #{command}")
+    
+    try do
+      # Process text command the same way as voice commands
+      socket = VoiceHandlers.handle_voice_result(
+        socket, 
+        command, 
+        1.0,  # Max confidence for typed commands
+        socket.assigns.world, 
+        socket.assigns.player
+      )
+      Logger.info("GameLive: text_command processed successfully: #{command}")
+      {:noreply, socket}
+    rescue
+      e ->
+        Logger.error("GameLive: CRITICAL ERROR in text_command handler: #{inspect(e)} for command: #{command}")
+        Logger.error("GameLive: Stacktrace: #{Exception.format_stacktrace(__STACKTRACE__)}")
+        socket = StateManager.add_game_message(socket, "Text command error: #{command}")
+        {:noreply, socket}
+    end
   end
 
 
@@ -110,34 +134,63 @@ defmodule BobaTalkieWeb.GameLive do
     end
   end
 
-  @impl true
-  def handle_event("select_card", %{"card_id" => card_id}, socket) do
-    new_world = BobaTalkie.Game.World.select_card(socket.assigns.world, card_id)
-    updated_socket = Phoenix.Component.assign(socket, :world, new_world)
-    {:noreply, updated_socket}
-  end
 
   @impl true
   def handle_event("change_interface_language", %{"value" => language_code}, socket) do
-    # Use JavaScript to store and reload with new language
-    socket = push_event(socket, "store_and_reload", %{
+    # Store in localStorage via JavaScript hook
+    socket = push_event(socket, "store_language", %{
       interface_language: language_code, 
       learning_language: socket.assigns.learning_language
     })
     
+    # Update locale and socket assigns in real-time (no page reload)
+    socket = LanguageSession.set_locale_and_assign(socket, language_code, socket.assigns.learning_language)
+    
+    # Force re-render by updating a timestamp
+    socket = assign(socket, :language_updated_at, System.system_time(:millisecond))
+    
+    {:noreply, socket}
+  end
+  
+  @impl true
+  def handle_event("restore_languages", %{"interface_language" => interface_language, "learning_language" => learning_language}, socket) do
+    # Restore languages from localStorage after page refresh
+    socket = LanguageSession.set_locale_and_assign(socket, interface_language, learning_language)
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("reset_game", _params, socket) do
+    # Reset game state without page refresh
+    topic = socket.assigns.topic
+    learning_language = socket.assigns.learning_language
+    
+    socket = StateManager.initialize_game_state(socket, topic, learning_language)
     {:noreply, socket}
   end
 
   @impl true
   def handle_info({:voice_result, command, confidence}, socket) do
-    socket = VoiceHandlers.handle_voice_result(
-      socket, 
-      command, 
-      confidence, 
-      socket.assigns.world, 
-      socket.assigns.player
-    )
-    {:noreply, socket}
+    require Logger
+    Logger.info("GameLive: Processing async voice_result: #{command}")
+    
+    try do
+      socket = VoiceHandlers.handle_voice_result(
+        socket, 
+        command, 
+        confidence, 
+        socket.assigns.world, 
+        socket.assigns.player
+      )
+      Logger.info("GameLive: async voice_result processed successfully: #{command}")
+      {:noreply, socket}
+    rescue
+      e ->
+        Logger.error("GameLive: CRITICAL ERROR in async voice_result handler: #{inspect(e)} for command: #{command}")
+        Logger.error("GameLive: Stacktrace: #{Exception.format_stacktrace(__STACKTRACE__)}")
+        socket = StateManager.add_game_message(socket, "Async voice error: #{command}")
+        {:noreply, socket}
+    end
   end
 
   # Template helper functions (delegate to UIHelpers)
