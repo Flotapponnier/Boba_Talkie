@@ -226,8 +226,18 @@ defmodule BobaTalkie.Game.World do
       _ -> place_random_items(grid, width, height, player_pos, @all_fruits_items)  # Default to fruits
     end
     
-    # Generate cards based on actual items in world and learning language
-    cards = BobaTalkie.Game.Card.generate_deck(items, topic, learning_language)
+    # Generate cards from ContentManager (proper language-specific content)
+    content = BobaTalkie.ContentManager.get_learning_content(topic, learning_language)
+    cards = content.cards |> Enum.map(fn card ->
+      %BobaTalkie.Game.Card{
+        id: card.id,
+        template: card.template,
+        description: card.description,
+        applicable_objects: [], # Will be determined by position
+        completed: false,
+        selected: false
+      }
+    end)
     
     %__MODULE__{
       grid: grid_with_items,

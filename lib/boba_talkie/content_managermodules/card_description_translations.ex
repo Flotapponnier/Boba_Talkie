@@ -1013,6 +1013,76 @@ defmodule BobaTalkie.ContentManagerModules.CardDescriptionTranslations do
         "it" => "Il/La _ vive nella giungla",
         "ar" => "الـ_ يعيش في الأدغال",
         "pt" => "O/A _ vive na selva"
+      },
+
+      # Russian bakery templates
+      "Я хочу свежий _" => %{
+        "en" => "I want fresh _",
+        "fr" => "Je veux du/de la _ frais/fraîche",
+        "es" => "Quiero _ fresco/a",
+        "zh" => "我要新鲜的_",
+        "ru" => "Я хочу свежий _",
+        "ja" => "新鮮な_がほしいです",
+        "it" => "Voglio _ fresco/a",
+        "ar" => "أريد _ طازج/طازجة",
+        "pt" => "Eu quero _ fresco/a"
+      },
+      "Масляный _" => %{
+        "en" => "Buttery _",
+        "fr" => "_ au beurre",
+        "es" => "_ con mantequilla", 
+        "zh" => "黄油_",
+        "ru" => "Масляный _",
+        "ja" => "バター_",
+        "it" => "_ al burro",
+        "ar" => "_ بالزبدة",
+        "pt" => "_ com manteiga"
+      },
+      "_ на день рождения со свечами" => %{
+        "en" => "Birthday _ with candles",
+        "fr" => "_ d'anniversaire avec des bougies",
+        "es" => "_ de cumpleaños con velas",
+        "zh" => "带蜡烛的生日_",
+        "ru" => "_ на день рождения со свечами", 
+        "ja" => "ろうそく付きの誕生日_",
+        "it" => "_ di compleanno con candeline",
+        "ar" => "_ عيد الميلاد مع الشموع",
+        "pt" => "_ de aniversário com velas"
+      },
+
+      # Italian bakery templates
+      "Voglio _ fresco" => %{
+        "en" => "I want fresh _",
+        "fr" => "Je veux du/de la _ frais/fraîche",
+        "es" => "Quiero _ fresco/a",
+        "zh" => "我要新鲜的_",
+        "ru" => "Я хочу свежий _",
+        "ja" => "新鮮な_がほしいです",
+        "it" => "Voglio _ fresco",
+        "ar" => "أريد _ طازج/طازجة",
+        "pt" => "Eu quero _ fresco/a"
+      },
+      "Un _ al burro" => %{
+        "en" => "A buttery _",
+        "fr" => "Un _ au beurre",
+        "es" => "Un _ con mantequilla",
+        "zh" => "一个黄油_",
+        "ru" => "Масляный _",
+        "ja" => "バター_",
+        "it" => "Un _ al burro",
+        "ar" => "_ بالزبدة",
+        "pt" => "Um _ com manteiga"
+      },
+      "_ di compleanno con candeline" => %{
+        "en" => "Birthday _ with candles",
+        "fr" => "_ d'anniversaire avec des bougies",
+        "es" => "_ de cumpleaños con velas",
+        "zh" => "带蜡烛的生日_",
+        "ru" => "_ на день рождения со свечами",
+        "ja" => "ろうそく付きの誕生日_",
+        "it" => "_ di compleanno con candeline",
+        "ar" => "_ عيد الميلاد مع الشموع",
+        "pt" => "_ de aniversário com velas"
       }
     }
   end
