@@ -112,7 +112,7 @@ msgstr "Удерживайте для речи (или R)"
 msgid "Challenges"
 msgstr "Вызовы"
 
-#: lib/boba_talkie_web/live/game_live.html.heex:284
+#: lib/boba_talkie_web/live/game_live.html.heex:302
 #, elixir-autogen
 msgid "Select a card!"
 msgstr "Выберите карточку!"
@@ -185,7 +185,7 @@ msgstr "Изучите словарь животных и описания"
 msgid "Practice ordering food and restaurant phrases"
 msgstr "Потренируйте заказ еды и ресторанные фразы"
 
-#: lib/boba_talkie_web/live/tutorial_live.ex:168
+#: lib/boba_talkie_web/live/tutorial_live.ex:181
 #, elixir-autogen
 msgid "Learn family relationships and descriptions"
 msgstr "Освойте семейные отношения и описания"
@@ -330,7 +330,7 @@ msgstr "Слова:"
 msgid "Back to Maps"
 msgstr "Назад к картам"
 
-#: lib/boba_talkie_web/live/game_live.html.heex:316
+#: lib/boba_talkie_web/live/game_live.html.heex:334
 #: lib/boba_talkie_web/live/tutorial_live.html.heex:81
 #, elixir-autogen, elixir-format
 msgid "Example Usage"
@@ -373,7 +373,7 @@ msgstr "Прогресс"
 msgid "Romanization"
 msgstr "Романизация"
 
-#: lib/boba_talkie_web/live/game_live.html.heex:309
+#: lib/boba_talkie_web/live/game_live.html.heex:327
 #: lib/boba_talkie_web/live/tutorial_live.html.heex:63
 #, elixir-autogen, elixir-format
 msgid "Show Pronunciation"
@@ -389,93 +389,93 @@ msgstr "Начать игру"
 msgid "Tip"
 msgstr "Совет"
 
-#: lib/boba_talkie_web/live/tutorial_live.ex:150
+#: lib/boba_talkie_web/live/tutorial_live.ex:163
 #, elixir-autogen, elixir-format
 msgid "Animals"
 msgstr "Животные"
 
-#: lib/boba_talkie_web/live/tutorial_live.ex:142
+#: lib/boba_talkie_web/live/tutorial_live.ex:155
 #, elixir-autogen, elixir-format
 msgid "Bakery"
 msgstr "Пекарня"
 
-#: lib/boba_talkie_web/live/tutorial_live.ex:134
+#: lib/boba_talkie_web/live/tutorial_live.ex:147
 #, elixir-autogen, elixir-format
 msgid "Colors"
 msgstr "Цвета"
 
-#: lib/boba_talkie_web/live/tutorial_live.ex:174
+#: lib/boba_talkie_web/live/tutorial_live.ex:187
 #, elixir-autogen, elixir-format
 msgid "Countries"
 msgstr "Страны"
 
-#: lib/boba_talkie_web/live/tutorial_live.ex:152
+#: lib/boba_talkie_web/live/tutorial_live.ex:165
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Discover animal vocabulary and their characteristics"
 msgstr "Изучите словарь животных и описания"
 
-#: lib/boba_talkie_web/live/tutorial_live.ex:120
+#: lib/boba_talkie_web/live/tutorial_live.ex:133
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Discover delicious fruits and food vocabulary"
 msgstr "Изучите словарь фруктов и продуктов"
 
-#: lib/boba_talkie_web/live/tutorial_live.ex:176
+#: lib/boba_talkie_web/live/tutorial_live.ex:189
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Explore countries, nationalities, and cultural expressions"
 msgstr "Исследуйте страны, национальности и культуры"
 
-#: lib/boba_talkie_web/live/tutorial_live.ex:136
+#: lib/boba_talkie_web/live/tutorial_live.ex:149
 #, elixir-autogen, elixir-format
 msgid "Explore vibrant colors and color descriptions"
 msgstr "Исследуйте яркие цвета и их описания"
 
-#: lib/boba_talkie_web/live/tutorial_live.ex:166
+#: lib/boba_talkie_web/live/tutorial_live.ex:179
 #, elixir-autogen, elixir-format
 msgid "Family"
 msgstr "Семья"
 
-#: lib/boba_talkie_web/live/tutorial_live.ex:118
+#: lib/boba_talkie_web/live/tutorial_live.ex:131
 #, elixir-autogen, elixir-format
 msgid "Fruits & Food"
 msgstr "Фрукты и Еда"
 
-#: lib/boba_talkie_web/live/tutorial_live.ex:144
+#: lib/boba_talkie_web/live/tutorial_live.ex:157
 #, elixir-autogen, elixir-format
 msgid "Learn essential bakery vocabulary and ordering phrases"
 msgstr "Освойте основной словарь пекарни и фразы для заказа"
 
 # Level descriptions
-#: lib/boba_talkie_web/live/tutorial_live.ex:112
+#: lib/boba_talkie_web/live/tutorial_live.ex:125
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Learn essential phrases to introduce yourself"
 msgstr "Освойте базовые фразы для представления"
 
-#: lib/boba_talkie_web/live/tutorial_live.ex:128
+#: lib/boba_talkie_web/live/tutorial_live.ex:141
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Master counting and number vocabulary"
 msgstr "Потренируйте счёт и числовую лексику"
 
-#: lib/boba_talkie_web/live/tutorial_live.ex:160
+#: lib/boba_talkie_web/live/tutorial_live.ex:173
 #, elixir-autogen, elixir-format
 msgid "Master restaurant vocabulary and ordering phrases"
 msgstr "Овладейте ресторанным словарем и фразами для заказа"
 
-#: lib/boba_talkie_web/live/tutorial_live.ex:126
+#: lib/boba_talkie_web/live/tutorial_live.ex:139
 #, elixir-autogen, elixir-format
 msgid "Numbers"
 msgstr "Числа"
 
-#: lib/boba_talkie_web/live/tutorial_live.ex:158
+#: lib/boba_talkie_web/live/tutorial_live.ex:171
 #, elixir-autogen, elixir-format
 msgid "Restaurant"
 msgstr "Ресторан"
 
-#: lib/boba_talkie_web/live/tutorial_live.ex:110
+#: lib/boba_talkie_web/live/tutorial_live.ex:123
 #, elixir-autogen, elixir-format
 msgid "Self-Introduction"
 msgstr "Самопредставление"
 
-#: lib/boba_talkie_web/live/game_live.html.heex:266
+#: lib/boba_talkie_web/live/game_live.html.heex:264
 #, elixir-autogen, elixir-format
 msgid "ACTIVE"
 msgstr "АКТИВНЫЙ"

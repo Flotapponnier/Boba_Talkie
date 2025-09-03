@@ -53,6 +53,7 @@ defmodule BobaTalkieWeb.GameLive.StateManager do
     |> assign(:last_command, nil)
     |> assign(:interim_text, nil)
     |> assign(:text_input_mode, false)
+    |> assign(:expanded_descriptions, MapSet.new())
   end
 
   @doc """

@@ -263,13 +263,33 @@
                   <%= if card.selected do %>
                     <span class="text-blue-300 text-xs font-bold"><%= gettext("ACTIVE") %></span>
                   <% end %>
+                  
+                  <!-- Toggle Description Button -->
+                  <div class="ml-auto">
+                    <button 
+                      phx-click="toggle_card_description" 
+                      phx-value-card_id={card.id}
+                      class="w-5 h-5 bg-blue-100 hover:bg-blue-200 rounded-full flex items-center justify-center text-blue-600 font-bold text-xs transition-colors"
+                    >
+                      <%= if MapSet.member?(@expanded_descriptions || MapSet.new(), card.id) do %>
+                        -
+                      <% else %>
+                        +
+                      <% end %>
+                    </button>
+                  </div>
                 </div>
+                
                 <div class="text-cute font-semibold text-sm mb-1">
                   <%= card.template %>
                 </div>
-                <div class="text-cute opacity-70 text-xs">
-                  <%= String.slice(card.description, 0, 40) %>...
-                </div>
+                
+                <!-- Expandable Description -->
+                <%= if MapSet.member?(@expanded_descriptions || MapSet.new(), card.id) do %>
+                  <div class="text-cute opacity-70 text-xs mt-2 p-2 bg-blue-50/50 rounded border-l-2 border-blue-200">
+                    <%= BobaTalkie.ContentManager.get_card_description_translation(card.template, @interface_language) %>
+                  </div>
+                <% end %>
               </div>
             <% end %>
           </div>

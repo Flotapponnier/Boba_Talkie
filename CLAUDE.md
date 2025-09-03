@@ -562,3 +562,75 @@ GAME_DEBUG=true             # Game logic debugging
 - ✅ **Tutorial System**: Interactive vocabulary learning with pronunciations
 - ✅ **Topic-Aware Architecture**: Modular system supporting unlimited topics
 - ✅ **Card Challenge System**: Dynamic sentence completion challenges per topic
+
+## Latest Technical Improvements ✅
+
+### Auto-Card Challenge System (December 2024)
+**Problem**: Players had to manually click cards before speaking, interrupting game flow.
+**Solution**: Implemented automatic card detection and completion system.
+
+**Key Changes**:
+- **Removed card click requirement**: Modified `game_live.html.heex` to remove `phx-click="select_card"` handlers
+- **Auto-detection logic**: Added `complete_card_challenge_auto/3` in `world.ex` for automatic card matching
+- **Priority command parsing**: Enhanced `movement_handlers.ex` to detect card challenges before movement commands
+
+### Multi-Language Voice Detection ✅
+**Problem**: French phrases like "la pomme est verte" triggered movement ("est" = "east") instead of card validation.
+**Solution**: Implemented language-specific detection patterns with priority system.
+
+**Technical Implementation**:
+```elixir
+# In movement_handlers.ex:parse_voice_command/2
+defp is_potential_card_sentence?(command, learning_language) do
+  case learning_language do
+    "fr" -> String.contains?(command, "est") or String.starts_with?(command, "j'aime") or 
+            String.starts_with?(command, "cette") or String.contains?(command, "saute") or
+            String.contains?(command, "se balance") or String.contains?(command, "arbres")
+    "es" -> String.contains?(command, "es") or String.starts_with?(command, "me gusta")
+    "zh" -> String.contains?(command, "是") or String.contains?(command, "很") 
+    # ... patterns for all 9 languages
+  end
+end
+```
+
+### Unicode Character Preservation ✅
+**Problem**: Accented characters (é, è, ê, î, ç) were stripped from voice commands, breaking card matching.
+**Solution**: Updated regex patterns to preserve international characters.
+
+**Fix Applied**:
+```elixir
+# Before: ~r/[^\w\s]/  (stripped accented characters)
+# After: ~r/[.!?,:;]/   (preserves Unicode letters)
+clean_command = voice_command
+|> String.downcase()
+|> String.trim()
+|> String.replace(~r/[.!?,:;]/, "")  # Only remove basic punctuation
+```
+
+### Adaptive Card-Object Matching ✅
+**Problem**: Mismatched number of cards vs objects, making some games uncompletable.
+**Solution**: Dynamic card generation system that creates exactly one card per object present.
+
+**Implementation**:
+- **Dynamic deck generation**: `card.ex:generate_deck/3` now creates one card per emoji in world
+- **Content structure fix**: Updated `content.vocabulary` access pattern (was `content.tutorial`)
+- **Missing objects fix**: Added missing game objects to content modules for complete coverage
+- **Template matching**: Improved card template selection for available objects
+
+### French Language-Specific Improvements ✅
+**Problem**: French cards weren't being detected properly due to language complexity.
+**Solution**: Enhanced French pattern detection and content expansion.
+
+**Specific Fixes**:
+- **Apostrophe handling**: Added support for French contractions ("l'herbe", "l'œuf")
+- **Gender/number variations**: Handles "verte/vertes", "rouge/rouges" variations
+- **Extended French content**: Added complete French card templates for all fruit items
+- **Speech recognition errors**: Added patterns for common speech-to-text mistakes ("7 carottes" -> "cette carotte")
+
+**Files Modified**:
+- `lib/boba_talkie/game/card.ex`: Enhanced matching logic and Unicode support
+- `lib/boba_talkie/game/world.ex`: Added auto-card completion system
+- `lib/boba_talkie_web/live/game_live.ex`: Removed manual card selection handlers
+- `lib/boba_talkie_web/live/game_live.html.heex`: Removed card click interfaces
+- `lib/boba_talkie_web/live/game_livemodules/movement_handlers.ex`: Added priority detection and language patterns
+- `lib/boba_talkie/content_managermodules/fruits_content.ex`: Expanded French content and fixed missing objects

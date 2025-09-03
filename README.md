@@ -179,19 +179,25 @@ Collaborative language learning:
 - "turn left/right"
 - "move two steps east" (numbered movement)
 
-**Challenge Commands**:
-- Stand on object + speak sentence from challenge card
+**Challenge Commands (Auto-Activated)**:
+- Stand on object + speak sentence from challenge card (no click required)
 - "Eat the apple", "The sky is blue", "My name is Sarah"
-- Topic-specific vocabulary challenges
+- Topic-specific vocabulary challenges with automatic detection
+- Smart priority system: card challenges detected before movement commands
+- Multi-language support: French, Spanish, Chinese, Russian, Japanese, Italian, Arabic, Portuguese, English
 
 **System Commands**:
 - "look around" - Describe surroundings
 - "help" - Show available commands
 
 ### Learning System
+- **Auto-Card System**: Cards activate automatically when player is on correct object and speaks matching sentence
+- **Smart Detection**: Language-specific pattern recognition prevents conflicts (e.g., French "est" vs English "east")
+- **Adaptive Cards**: Each game generates exactly one card per object present in the world
+- **Unicode Support**: Full support for accented characters and international typography
+- **Multi-Language Templates**: Cards translate to match selected learning language
 - Real-time pronunciation feedback with visual indicators
 - Command recognition confidence scoring
-- Adaptive difficulty based on pronunciation accuracy
 - Vocabulary progression through contextual gameplay
 - Achievement system for pronunciation milestones
 

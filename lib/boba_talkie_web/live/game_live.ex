@@ -170,6 +170,21 @@ defmodule BobaTalkieWeb.GameLive do
   end
 
   @impl true
+  def handle_event("toggle_card_description", %{"card_id" => card_id}, socket) do
+    # Toggle the expanded state for a specific card
+    expanded_descriptions = socket.assigns[:expanded_descriptions] || MapSet.new()
+    
+    new_expanded = if MapSet.member?(expanded_descriptions, card_id) do
+      MapSet.delete(expanded_descriptions, card_id)
+    else
+      MapSet.put(expanded_descriptions, card_id)
+    end
+    
+    socket = assign(socket, :expanded_descriptions, new_expanded)
+    {:noreply, socket}
+  end
+
+  @impl true
   def handle_info({:voice_result, command, confidence}, socket) do
     require Logger
     Logger.info("GameLive: Processing async voice_result: #{command}")

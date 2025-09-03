@@ -9,7 +9,8 @@ defmodule BobaTalkie.ContentManager do
 
   alias BobaTalkie.ContentManagerModules.{
     TopicFactory,
-    VocabularyTranslations
+    VocabularyTranslations,
+    CardDescriptionTranslations
   }
 
   @doc """
@@ -34,6 +35,13 @@ defmodule BobaTalkie.ContentManager do
   """
   def get_vocabulary_translations do
     VocabularyTranslations.get_all_translations()
+  end
+
+  @doc """
+  Get translated card description for a template in the specified interface language.
+  """
+  def get_card_description_translation(template, interface_language) do
+    CardDescriptionTranslations.get_card_description_translation(template, interface_language)
   end
 
   @doc """
