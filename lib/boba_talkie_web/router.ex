@@ -23,6 +23,12 @@ defmodule BobaTalkieWeb.Router do
     live "/tutorial/:topic", TutorialLive, :show
     live "/game", GameLive, :show
     live "/game/:topic", GameLive, :show
+    
+    # Multiplayer routes
+    live "/multiplayer", MultiplayerLobbyLive, :index
+    live "/multiplayer/:room_id", MultiplayerLobbyLive, :join
+    live "/multiplayer_game/:topic", MultiplayerGameLive, :show
+    
     get "/health", PageController, :home
   end
 

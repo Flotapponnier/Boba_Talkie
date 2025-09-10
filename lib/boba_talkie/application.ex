@@ -15,6 +15,8 @@ defmodule BobaTalkie.Application do
       BobaTalkieWeb.Telemetry,
       {DNSCluster, query: Application.get_env(:boba_talkie, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: BobaTalkie.PubSub},
+      # Multiplayer room management
+      BobaTalkie.MultiplayerRoom,
       # Start a worker by calling: BobaTalkie.Worker.start_link(arg)
       # {BobaTalkie.Worker, arg},
       # Start to serve requests, typically the last entry

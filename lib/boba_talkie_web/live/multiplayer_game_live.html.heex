@@ -1,0 +1,320 @@
+<div class="bg-euphoric min-h-screen relative">
+  <!-- Language Persistence Hook -->
+  <div phx-hook="LanguagePersistence" id="language-persistence" style="display: none;"></div>
+  
+  <!-- WebRTC Video Hook for peer-to-peer video conferencing -->
+  <div phx-hook="WebRTCVideo" id="webrtc-video" 
+       data-room-id={@room_id} 
+       data-player-id={@player_id || "unknown"} 
+       style="display: none;"></div>
+
+  <!-- Voice Capture Hook for voice commands (same as single-player) -->
+  <div phx-hook="VoiceCapture" id="voice-capture" 
+       data-learning-language={@learning_language}
+       style="display: none;"></div>
+
+  <!-- Header with game info and controls -->
+  <div class="flex justify-between items-center p-4 bg-white/90 backdrop-blur-sm shadow-sm">
+    <!-- Left: Game Info -->
+    <div class="flex items-center space-x-4">
+      <h1 class="text-xl font-bold text-cute">
+        👥 <%= gettext("Multiplayer Game") %> • <%= String.capitalize(@topic || "Game") %>
+      </h1>
+      <div class="text-sm text-cute">
+        <%= gettext("Learning:") %> <span class="font-bold"><%= String.upcase(@learning_language) %></span>
+      </div>
+    </div>
+    
+    <!-- Center: Connection Status -->
+    <div class="flex items-center space-x-2">
+      <%= if assigns[:other_player_connected] != false do %>
+        <div class="flex items-center text-green-600">
+          <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse mr-1"></div>
+          <%= gettext("Partner Connected") %>
+        </div>
+      <% else %>
+        <div class="flex items-center text-orange-600">
+          <div class="w-2 h-2 bg-orange-500 rounded-full mr-1"></div>
+          <%= gettext("Partner Disconnected") %>
+        </div>
+      <% end %>
+    </div>
+    
+    <!-- Right: Leave Game -->
+    <div class="flex items-center space-x-2">
+      <.compact_language_selector interface_language={@interface_language} />
+      <button 
+        phx-click="leave_game" 
+        class="btn-cute-secondary px-4 py-2"
+        data-confirm={gettext("Are you sure you want to leave the multiplayer game?")}
+      >
+        🚪 <%= gettext("Leave Game") %>
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Game Area -->
+  <div class="flex h-[calc(100vh-80px)]">
+    <!-- Video Chat Panel - Two side-by-side videos -->
+    <div class="w-96 bg-black/90 flex flex-col">
+      <!-- Video Container -->
+      <div class="flex-1 flex flex-col p-2 space-y-2">
+        <!-- Local Player Video (Left/Top) -->
+        <div class="flex-1 relative bg-gray-900 rounded-lg">
+          <video id="local-video" autoplay playsinline muted class="w-full h-full object-cover rounded-lg"></video>
+          <div class="absolute bottom-2 left-2 bg-black/70 text-white px-2 py-1 rounded text-sm">
+            <%= gettext("You") %>
+            <%= if @video_enabled == false do %>
+              <span class="text-red-400">(📹❌)</span>
+            <% end %>
+            <%= if @audio_enabled == false do %>
+              <span class="text-red-400">(🎤❌)</span>
+            <% end %>
+          </div>
+        </div>
+        
+        <!-- Partner Video (Right/Bottom) -->
+        <div class="flex-1 relative bg-gray-900 rounded-lg">
+          <div id="partner-video-container" class="w-full h-full rounded-lg overflow-hidden relative">
+            <video id="partner-video" autoplay playsinline class="w-full h-full object-cover rounded-lg"></video>
+            <!-- Placeholder when no video -->
+            <div id="partner-video-placeholder" class="absolute inset-0 flex items-center justify-center bg-gray-800 text-white">
+              <div class="text-center">
+                <div class="text-4xl mb-2">👤</div>
+                <div class="text-sm"><%= gettext("Waiting for partner...") %></div>
+              </div>
+            </div>
+            <div class="absolute bottom-2 left-2 bg-black/70 text-white px-2 py-1 rounded text-sm">
+              <%= gettext("Partner") %>
+              <%= if assigns[:other_player_video] == false do %>
+                <span class="text-red-400">(📹❌)</span>
+              <% end %>
+              <%= if assigns[:other_player_audio] == false do %>
+                <span class="text-red-400">(🎤❌)</span>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Video/Audio Controls -->
+      <div class="p-4 space-y-2">
+        <div class="flex space-x-2">
+          <button 
+            phx-click="toggle_video"
+            class={"btn-cute-secondary flex-1 py-2 " <> if(@video_enabled, do: "bg-green-500 text-white", else: "bg-red-500 text-white")}
+          >
+            <%= if @video_enabled do %>📹 <%= gettext("Video On") %><% else %>📹❌ <%= gettext("Video Off") %><% end %>
+          </button>
+          <button 
+            phx-click="toggle_audio"
+            class={"btn-cute-secondary flex-1 py-2 " <> if(@audio_enabled, do: "bg-green-500 text-white", else: "bg-red-500 text-white")}
+          >
+            <%= if @audio_enabled do %>🎤 <%= gettext("Mic On") %><% else %>🎤❌ <%= gettext("Mic Off") %><% end %>
+          </button>
+        </div>
+        
+        <!-- Voice Recording Status -->
+        <div class="text-center">
+          <%= if @other_player_recording do %>
+            <div class="text-orange-400 text-sm font-semibold animate-pulse">
+              🎤 <%= gettext("Partner is speaking...") %>
+            </div>
+          <% else %>
+            <div class="text-gray-400 text-sm">
+              <%= gettext("Ready to speak") %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Game Board Area -->
+    <div class="flex-1 p-4 space-y-4">
+      <!-- Game World Grid -->
+      <div class="bg-white/90 backdrop-blur-sm rounded-lg p-4">
+        <h3 class="text-lg font-bold text-cute mb-4 text-center">
+          <%= gettext("Game World") %>
+        </h3>
+        <%= if assigns[:world] && Map.has_key?(@world, :grid) do %>
+          <div class="grid grid-cols-6 gap-2 max-w-md mx-auto">
+            <%= for {row, y} <- Enum.with_index(@world.grid) do %>
+              <%= for {cell, x} <- Enum.with_index(row) do %>
+                <div class={[
+                  "grid-cell w-12 h-12 flex items-center justify-center text-xl font-bold rounded-lg relative overflow-visible",
+                  BobaTalkieWeb.GameLive.UIHelpers.cell_class(cell, @world, {x, y})
+                ]} title={"(#{x}, #{y})"}>
+                  <%= if {x, y} == @player.position do %>
+                    <img src="/images/character/boba.png" alt="Player" class="character-sprite w-8 h-8 relative z-10">
+                  <% else %>
+                    <span class="text-2xl relative z-10 transform hover:scale-110 transition-transform duration-200">
+                      <%= BobaTalkieWeb.GameLive.UIHelpers.cell_icon(cell, @world, {x, y}) %>
+                    </span>
+                  <% end %>
+                </div>
+              <% end %>
+            <% end %>
+          </div>
+          
+          <!-- Player Position Info -->
+          <div class="mt-4 text-center text-sm text-cute">
+            <%= gettext("Position:") %> <%= elem(@player.position, 0) + 1 %>, <%= elem(@player.position, 1) + 1 %>
+          </div>
+
+          <!-- Discovery Message -->
+          <%= if assigns[:world] && assigns[:player] do %>
+            <%
+              discovery_msg = BobaTalkieWeb.GameLive.UIHelpers.get_discovery_message(@world, @interface_language)
+            %>
+            <%= if discovery_msg do %>
+              <div class="mt-2 text-center text-sm text-green-600 font-semibold animate-pulse">
+                <%= discovery_msg %>
+              </div>
+            <% end %>
+          <% end %>
+        <% else %>
+          <div class="text-center text-gray-500">
+            <%= gettext("Loading game world...") %>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Voice Control Interface -->
+      <div class="bg-white/90 backdrop-blur-sm rounded-lg p-4">
+        <div class="text-center space-y-4">
+          <!-- Voice Recording Button -->
+          <div class="relative">
+            <%= if @is_recording_blocked do %>
+              <button 
+                disabled
+                class="btn-cute-disabled w-48 h-16 text-lg opacity-50 cursor-not-allowed"
+              >
+                🚫 <%= gettext("Partner Speaking") %>
+              </button>
+            <% else %>
+              <button 
+                phx-click={if @listening, do: "stop_listening", else: "start_listening"}
+                class={if @listening do
+                  "btn-recording w-48 h-16 text-lg animate-pulse"
+                else
+                  "btn-cute w-48 h-16 text-lg"
+                end}
+              >
+                <%= if @listening do %>
+                  🎤 <%= gettext("Recording...") %> 
+                <% else %>
+                  🎤 <%= gettext("Hold to Speak") %>
+                <% end %>
+              </button>
+            <% end %>
+          </div>
+          
+          <!-- Current Feedback -->
+          <%= if assigns[:current_feedback] do %>
+            <div class="p-3 bg-blue-50 rounded-lg">
+              <p class="text-blue-800 font-medium"><%= @current_feedback %></p>
+            </div>
+          <% end %>
+
+          <!-- Game Messages (like single-player) -->
+          <%= if assigns[:game_messages] && length(@game_messages) > 0 do %>
+            <div class="space-y-2 max-h-32 overflow-y-auto">
+              <%= for message <- Enum.take(@game_messages, 3) do %>
+                <div class="p-2 bg-gray-50 rounded text-sm text-gray-700">
+                  <%= message %>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+
+          <!-- Interim Text Display -->
+          <%= if assigns[:interim_text] && @interim_text != "" do %>
+            <div class="p-3 bg-yellow-50 rounded-lg">
+              <p class="text-yellow-800 italic">Listening: "<%= @interim_text %>"</p>
+            </div>
+          <% end %>
+
+          <!-- Partner's Recent Action -->
+          <%= if assigns[:other_player_feedback] do %>
+            <div class="p-3 bg-purple-50 rounded-lg">
+              <div class="text-sm text-purple-600 font-semibold"><%= gettext("Partner's action:") %></div>
+              <p class="text-purple-800"><%= @other_player_feedback %></p>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Challenge Cards -->
+      <%= if assigns[:world] && length(@world.cards || []) > 0 do %>
+        <div class="bg-white/90 backdrop-blur-sm rounded-lg p-4">
+          <h3 class="text-lg font-bold text-cute mb-4 text-center">
+            <%= gettext("Challenge Cards") %> (<%= Enum.count(@world.cards, fn card -> !card.completed end) %> <%= gettext("remaining") %>)
+          </h3>
+          
+          <div class="grid gap-3">
+            <%= for card <- @world.cards do %>
+              <%= unless card.completed do %>
+                <div class="card-cute-secondary p-4 space-y-2">
+                  <div class="text-lg font-bold text-cute">
+                    <%= String.replace(card.template, "_", "______") %>
+                  </div>
+                  
+                  <%= if Map.has_key?(card, :romanization) && card.romanization do %>
+                    <div class="text-sm text-blue-600 font-mono">
+                      <%= gettext("Pronunciation:") %> <%= card.romanization %>
+                    </div>
+                  <% end %>
+                  
+                  <%= if Map.has_key?(card, :description) && card.description do %>
+                    <div class="text-sm text-gray-600 italic">
+                      <%= card.description %>
+                    </div>
+                  <% end %>
+                  
+                  <div class="text-xs text-gray-500">
+                    <%= gettext("Stand on the correct object and speak this sentence") %>
+                  </div>
+                </div>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- Game Progress -->
+      <div class="bg-white/90 backdrop-blur-sm rounded-lg p-4">
+        <div class="text-center">
+          <div class="text-sm text-cute font-semibold mb-2"><%= gettext("Progress") %></div>
+          <%= if assigns[:world] && length(@world.cards || []) > 0 do %>
+            <%
+              completed_count = Enum.count(@world.cards, fn card -> card.completed end)
+              total_count = length(@world.cards)
+              progress_percentage = if total_count == 0, do: 0, else: round(completed_count / total_count * 100)
+            %>
+            <div class="w-full bg-gray-200 rounded-full h-3">
+              <div 
+                class="bg-boba-orange h-3 rounded-full transition-all duration-300"
+                style={"width: #{progress_percentage}%"}
+              ></div>
+            </div>
+            <div class="text-xs text-gray-600 mt-1">
+              <%= completed_count %> / <%= total_count %> <%= gettext("completed") %>
+            </div>
+          <% else %>
+            <div class="text-gray-500 text-sm">
+              <%= gettext("Loading...") %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Helper functions available in template  
+  window.progressPercentage = function(completed, total) {
+    if (!total || total.length === 0) return 0;
+    return Math.round((completed.length / total.length) * 100);
+  };
+</script>

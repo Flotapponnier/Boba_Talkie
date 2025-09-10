@@ -8,12 +8,12 @@ This project uses Claude Code with automatic CLAUDE.md loading:
 - ✅ **Phoenix integration**: Understands Elixir/Phoenix toolchain
 - 🔄 **Self-updating**: This file evolves with the codebase
 
-## Current Status: MULTI-LANGUAGE VOICE LEARNING PLATFORM ✅
-**Phase 4 Complete**: Full Internationalization with Dual Language System
-**Ready for Production**: Complete tutorial and gameplay system with 9 interface languages and 9 learning languages
+## Current Status: COMPLETE MULTIPLAYER VOICE LEARNING PLATFORM ✅
+**Phase 6 Complete**: Full Multiplayer Implementation with Video Conferencing
+**Ready for Production**: Complete tutorial, single-player, and multiplayer system with 9 interface languages, 9 learning languages, language-specific voice command restrictions, and real-time 1vs1 multiplayer gaming with video chat
 
 ## Project Summary
-Multi-language voice-controlled language learning platform built with Phoenix LiveView. Players select their interface language and target learning language, choose from 9 different learning topics, complete tutorials, and play voice-controlled games where they navigate a 2D grid world to complete sentence challenges using proper pronunciation.
+Multi-language voice-controlled language learning platform built with Phoenix LiveView. Players select their interface language and target learning language, choose from 9 different learning topics, complete tutorials, and play voice-controlled games where they navigate a 2D grid world to complete sentence challenges using proper pronunciation. Features include both single-player learning and real-time multiplayer 1vs1 gaming with integrated video conferencing, language-based matching, and synchronized gameplay.
 
 ## Internationalization Architecture ✅
 
@@ -40,6 +40,19 @@ Multi-language voice-controlled language learning platform built with Phoenix Li
 - **Session Persistence**: Preferences survive page reloads and browser restarts
 - **Immediate Translation**: Text changes instantly when language is selected
 - **LocalePlug Integration**: Server-side locale management with Phoenix sessions
+
+### Language-Restricted Voice Commands ✅
+- **Learning Language Only**: Movement commands only work in the selected learning language
+- **Complete Restriction**: If learning French, English commands like "two times down" are blocked
+- **Multi-Language Support**: All 9 languages have complete numbered movement patterns
+  - **French**: "3 bas", "deux fois à droite", "va en haut"
+  - **Russian**: "три север", "два вправо", "один раз влево"
+  - **Italian**: "3 giù", "due volte destra", "uno su"
+  - **Spanish**: "3 abajo", "dos derechas", "una vez izquierda"
+  - **Chinese**: "三下", "二右", "一个左"
+  - **Japanese**: "三北", "二右回", "一回左"
+  - **Arabic**: "ثلاثة شمال", "اثنان يمين", "واحد مرة يسار"
+  - **Portuguese**: "3 baixo", "duas direitas", "uma vez esquerda"
 
 ## Multi-Language System Architecture 🏗️
 
@@ -343,10 +356,12 @@ lib/boba_talkie/
 
 lib/boba_talkie_web/
 ├── live/
-│   ├── index_live.ex           # Landing page with interface language selector
+│   ├── index_live.ex           # Landing page with single-player and multiplayer options
 │   ├── map_selection_live.ex   # 9-topic selection with dual language selectors
 │   ├── tutorial_live.ex        # Multi-language vocabulary tutorials
-│   ├── game_live.ex            # Learning language-aware gameplay
+│   ├── game_live.ex            # Single-player learning gameplay
+│   ├── multiplayer_lobby_live.ex # Multiplayer matchmaking and private party system
+│   ├── multiplayer_game_live.ex # 1vs1 multiplayer with video conferencing
 │   └── game_livemodules/       # Modular game components
 │       ├── state_manager.ex    # Multi-language state management
 │       ├── voice_handlers.ex   # Voice event processing
@@ -354,8 +369,94 @@ lib/boba_talkie_web/
 │       └── ui_helpers.ex       # Template utilities
 ├── components/
 │   └── language_selector.ex   # Dual language selection components
-└── router.ex                   # Multi-language routing
+└── router.ex                   # Multi-language routing with multiplayer routes
 ```
+
+## Multiplayer System Architecture ✅
+
+### Core Multiplayer Components
+
+#### 1. MultiplayerRoom GenServer (`lib/boba_talkie/multiplayer_room.ex`)
+**Central hub for multiplayer game session management**
+
+**Key Functions:**
+- `find_or_create_match/2` - Language-based player matching
+- `create_private_room/3` - Private party with shareable links  
+- `join_room/3` - Join existing rooms with language validation
+- `set_recording_state/3` - Voice recording mutex management
+
+**Room State Structure:**
+```elixir
+%{
+  id: room_id,
+  type: :random | :private,
+  learning_language: "fr",
+  topic: "fruits" | :random,
+  players: [player_id1, player_id2],
+  status: :waiting | :ready | :in_game,
+  host: player_id, # for private rooms
+  recording_player: nil | player_id, # voice mutex
+  created_at: DateTime
+}
+```
+
+#### 2. MultiplayerLobbyLive (`lib/boba_talkie_web/live/multiplayer_lobby_live.ex`)
+**Matchmaking and room creation interface**
+
+**Features:**
+- **Random Matching**: Auto-match players by learning language
+- **Private Parties**: Generate shareable room links with custom topic selection
+- **Language Validation**: Only match French learners with French learners, etc.
+- **Real-time Updates**: Phoenix PubSub for instant match notifications
+
+#### 3. MultiplayerGameLive (`lib/boba_talkie_web/live/multiplayer_game_live.ex`)
+**1vs1 gameplay with integrated video conferencing**
+
+**WebRTC Integration:**
+- Peer-to-peer video/audio using `WebRTCVideo` JavaScript hook
+- STUN servers for NAT traversal
+- Real-time connection state management
+
+**Voice Recording Mutex:**
+- Only one player can record at a time
+- Visual indicators for recording state
+- Automatic blocking/unblocking system
+
+#### 4. Multiplayer Navigation Flow
+```
+Index Page → Multiplayer Lobby → Matched Room → 1vs1 Game
+     ↓              ↓                ↓           ↓
+Select Mode    Find Match/Create    Wait/Join   Video Chat + Voice Game
+             Private Party
+```
+
+### WebRTC Video Conferencing System
+
+**Frontend Components:**
+```
+assets/js/hooks/
+├── webrtc_video.js           # WebRTC peer connection management
+├── clipboard_copy.js         # Room link sharing
+└── language_persistence.js   # Session management
+```
+
+**Key Features:**
+- **Direct P2P Connection**: No server video processing required
+- **Camera/Mic Controls**: Toggle video and audio independently  
+- **Connection Recovery**: Automatic reconnection on network issues
+- **Cross-Browser Support**: Works on Chrome, Firefox, Safari, Edge
+
+### Multiplayer Game Synchronization
+
+**Real-time Features:**
+- **Shared Game State**: Synchronized 2D world between players
+- **Turn-Based Voice**: Mutex prevents overlapping speech
+- **Progress Sharing**: Card completion visible to both players
+- **Partner Feedback**: See your partner's recent actions
+
+**PubSub Topics:**
+- `multiplayer_room:#{room_id}` - Room lifecycle events
+- `multiplayer_game:#{room_id}` - Game state synchronization
 
 ### Voice Commands & Gameplay
 **Movement Commands:**
@@ -387,15 +488,28 @@ lib/boba_talkie_web/
 - ✅ Complete navigation flow: Index → Maps → Tutorial → Game
 - ✅ **Chinese Pinyin Support**: Integrated pronunciation guide system
 - ✅ **Content Management**: Separated interface translations from learning content
+- ✅ **Complete Multiplayer System**: 1vs1 real-time gaming with video conferencing
+- ✅ **WebRTC Video Chat**: Peer-to-peer video and audio communication
+- ✅ **Voice Recording Mutex**: Only one player can speak at a time
+- ✅ **Language-Based Matching**: Players matched by learning language
+- ✅ **Private Party System**: Shareable room links for friends
+- ✅ **Random Topic Selection**: Automatic topic assignment for matchmaking
 - 🔄 **Ready for Voice Integration**: Deepgram ASR integration
-- ⏳ **Future**: Voice recognition in multiple languages, multiplayer modes
+- ⏳ **Future**: Voice recognition in multiple languages, advanced multiplayer features
 
 ## Ready to Test
 Run `mix phx.server` and visit:
-- **http://localhost:4000** → Landing page with interface language selector
+
+### Single Player Mode
+- **http://localhost:4000** → Landing page with single-player and multiplayer options
 - **http://localhost:4000/maps** → Choose learning language + 9 topics
 - **http://localhost:4000/tutorial/[topic]?interface_language=[lang]&learning_language=[lang]** → Multi-language tutorials
-- **http://localhost:4000/game/[topic]?interface_language=[lang]&learning_language=[lang]** → Localized gameplay
+- **http://localhost:4000/game/[topic]?interface_language=[lang]&learning_language=[lang]** → Solo gameplay
+
+### Multiplayer Mode  
+- **http://localhost:4000/multiplayer** → Multiplayer lobby with matchmaking and private party options
+- **http://localhost:4000/multiplayer/[room_id]** → Join specific private room via shared link
+- **http://localhost:4000/multiplayer_game/[topic]?room_id=[id]&player_id=[id]** → 1vs1 gameplay with video chat
 
 **Available Topics**: introduction, fruits, numbers, colors, bakery, animals, restaurant, family, countries
 **Interface Languages**: en, fr, es, zh, ru, ja, it, ar, pt (interface/navigation)
@@ -562,6 +676,9 @@ GAME_DEBUG=true             # Game logic debugging
 - ✅ **Tutorial System**: Interactive vocabulary learning with pronunciations
 - ✅ **Topic-Aware Architecture**: Modular system supporting unlimited topics
 - ✅ **Card Challenge System**: Dynamic sentence completion challenges per topic
+- ✅ **Language-Restricted Commands**: Movement commands only work in the selected learning language
+- ✅ **Expandable Card Descriptions**: +/- buttons to show/hide interface language translations
+- ✅ **Complete Multi-Language Movement**: All 9 languages support numbered movement patterns
 
 ## Latest Technical Improvements ✅
 
@@ -627,9 +744,36 @@ clean_command = voice_command
 - **Extended French content**: Added complete French card templates for all fruit items
 - **Speech recognition errors**: Added patterns for common speech-to-text mistakes ("7 carottes" -> "cette carotte")
 
+### Language-Restricted Movement Commands ✅ (Latest Update)
+**Problem**: Players could use English movement commands ("two times down") regardless of learning language.
+**Solution**: Complete language restriction system - commands only work in the selected learning language.
+
+**Key Improvements**:
+- **English Pattern Removal**: Eliminated all English movement/card patterns when learning other languages
+- **Language-Specific Parsing**: Commands parsed only in current learning language
+  ```elixir
+  # Before: English commands worked in any learning language
+  String.match?(command, ~r/^\s*(2|two)\s+(south|down)\s*$/) -> {:move, :south, 2}
+  
+  # After: Only learning language commands work
+  case learning_language do
+    "fr" -> parse_french_numbered_movement(command)   # Only French patterns
+    "ru" -> parse_russian_numbered_movement(command)  # Only Russian patterns
+    "it" -> parse_italian_numbered_movement(command)  # Only Italian patterns
+    _ -> :unknown  # No cross-language commands allowed
+  end
+  ```
+- **Complete Multi-Language Movement Support**: All 9 languages now support full numbered movement patterns
+  - **Pattern Examples**: "три север" (Russian), "3 giù" (Italian), "trois bas" (French), "三北" (Japanese)
+- **Help & Look Commands**: Restricted to learning language ("aide" in French, "aiuto" in Italian, "помощь" in Russian)
+- **Card Challenge Detection**: Language-specific sentence pattern recognition only
+
 **Files Modified**:
-- `lib/boba_talkie/game/card.ex`: Enhanced matching logic and Unicode support
-- `lib/boba_talkie/game/world.ex`: Added auto-card completion system
+- `lib/boba_talkie_web/live/game_livemodules/movement_handlers.ex` - Complete language restriction implementation
+- `lib/boba_talkie/game/world.ex` - Fixed card loading to use ContentManager instead of hardcoded English templates
+- `lib/boba_talkie/content_managermodules/card_description_translations.ex` - Added missing templates for Russian/Italian
+- Movement parsers for all 9 languages with numbered patterns (1-3 steps)
+- Language-specific command detection functions for authentic immersion
 - `lib/boba_talkie_web/live/game_live.ex`: Removed manual card selection handlers
 - `lib/boba_talkie_web/live/game_live.html.heex`: Removed card click interfaces
 - `lib/boba_talkie_web/live/game_livemodules/movement_handlers.ex`: Added priority detection and language patterns

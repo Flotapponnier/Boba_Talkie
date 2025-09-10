@@ -25,6 +25,12 @@ defmodule BobaTalkieWeb.IndexLive do
     {:noreply, push_navigate(socket, to: ~p"/maps?#{params}")}
   end
 
+  @impl true
+  def handle_event("start_multiplayer", _params, socket) do
+    params = LanguageSession.build_language_params(socket.assigns.interface_language, socket.assigns.learning_language)
+    {:noreply, push_navigate(socket, to: ~p"/multiplayer?#{params}")}
+  end
+
 
   @impl true
   def handle_event("change_interface_language", %{"value" => language_code}, socket) do

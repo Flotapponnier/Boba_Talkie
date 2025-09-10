@@ -30,6 +30,8 @@ import { MicrophoneTest } from "./hooks/microphone_test.js"
 import { VoiceCapture } from "./hooks/voice_capture.js"
 import { LanguagePersistence } from "./hooks/language_persistence.js"
 import FloatingClouds from "./hooks/floating_clouds.js"
+import { ClipboardCopy } from "./hooks/clipboard_copy.js"
+import { WebRTCVideo } from "./hooks/webrtc_video.js"
 
 const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 const liveSocket = new LiveSocket("/live", Socket, {
@@ -40,7 +42,9 @@ const liveSocket = new LiveSocket("/live", Socket, {
     MicrophoneTest,
     VoiceCapture,
     LanguagePersistence,
-    FloatingClouds
+    FloatingClouds,
+    ClipboardCopy,
+    WebRTCVideo
   },
 })
 

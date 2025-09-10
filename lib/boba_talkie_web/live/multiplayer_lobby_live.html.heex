@@ -1,0 +1,269 @@
+<div class="bg-euphoric min-h-screen p-4" phx-hook="FloatingClouds" id="multiplayer-lobby">
+  <!-- Language Persistence Hook -->
+  <div phx-hook="LanguagePersistence" id="language-persistence" style="display: none;"></div>
+  
+  <!-- Clipboard Copy Hook -->
+  <div phx-hook="ClipboardCopy" id="clipboard-copy" style="display: none;"></div>
+  
+  <!-- Language Selector in top-right corner -->
+  <div class="absolute top-4 right-4 z-20">
+    <.compact_language_selector interface_language={@interface_language} />
+  </div>
+
+  <!-- Back button -->
+  <div class="absolute top-4 left-4">
+    <a href="/" class="btn-cute-secondary px-4 py-2">
+      ← <%= gettext("Back to Home") %>
+    </a>
+  </div>
+
+  <div class="max-w-4xl mx-auto pt-20">
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <h1 class="text-4xl font-bold text-cute mb-2">
+        👥 <%= gettext("Multiplayer Lobby") %>
+      </h1>
+      <p class="text-lg text-cute">
+        <%= gettext("Learning language:") %> <span class="font-bold"><%= String.upcase(@learning_language) %></span>
+      </p>
+    </div>
+
+    <%= if @mode == :lobby do %>
+      <!-- Lobby Mode: Choose Game Type -->
+      <div class="card-cute p-8 space-y-6">
+        <h2 class="text-2xl font-bold text-cute text-center">
+          <%= gettext("Choose Game Mode") %>
+        </h2>
+        
+        <!-- Random Match -->
+        <div class="space-y-4">
+          <h3 class="text-xl font-semibold text-cute">
+            🎲 <%= gettext("Find Random Match") %>
+          </h3>
+          <p class="text-cute">
+            <%= gettext("Match with another player learning %{language}", language: String.capitalize(@learning_language)) %>
+          </p>
+          <p class="text-sm text-cute opacity-80">
+            <%= gettext("Topic will be selected randomly from available tutorials") %>
+          </p>
+          <button 
+            phx-click="find_random_match"
+            class="btn-cute w-full py-3 text-lg"
+            disabled={@waiting_for_match}
+          >
+            <%= if @waiting_for_match do %>
+              ⏳ <%= gettext("Finding match...") %>
+            <% else %>
+              🎲 <%= gettext("Find Random Match") %>
+            <% end %>
+          </button>
+        </div>
+        
+        <div class="border-t border-boba-orange pt-6">
+          <!-- Private Party -->
+          <div class="space-y-4">
+            <h3 class="text-xl font-semibold text-cute">
+              🔐 <%= gettext("Create Private Party") %>
+            </h3>
+            <p class="text-cute">
+              <%= gettext("Create a private room and share the link with a friend") %>
+            </p>
+            
+            <!-- Topic Selection -->
+            <div class="space-y-3">
+              <label class="block text-sm font-semibold text-cute">
+                <%= gettext("Choose Topic:") %>
+              </label>
+              <div class="grid grid-cols-3 gap-2">
+                <%= for topic <- @available_topics do %>
+                  <button
+                    phx-click="create_private_party"
+                    phx-value-topic={topic}
+                    class="btn-cute-secondary p-3 text-sm hover:bg-boba-orange hover:text-white"
+                    disabled={@waiting_for_match}
+                  >
+                    <%= topic_emoji(topic) %> 
+                    <%= topic_display_name(topic) %>
+                  </button>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    <% else %>
+      <!-- Waiting/Hosting Mode -->
+      <div class="card-cute p-8 space-y-6 text-center">
+        <%= if @mode == :hosting do %>
+          <h2 class="text-2xl font-bold text-cute">
+            🔐 <%= gettext("Private Room Created") %>
+          </h2>
+          <p class="text-cute">
+            <%= gettext("Share this link with your friend:") %>
+          </p>
+          
+          <!-- Room Link -->
+          <div class="bg-white/90 p-4 rounded-lg border">
+            <div class="flex items-center space-x-2">
+              <input 
+                type="text" 
+                value={@room_link} 
+                readonly 
+                class="flex-1 px-3 py-2 border border-gray-300 rounded bg-gray-50"
+              />
+              <button
+                phx-click="copy_room_link"
+                class="btn-cute-secondary px-4 py-2"
+              >
+                📋 <%= gettext("Copy") %>
+              </button>
+            </div>
+          </div>
+          
+          <div class="text-cute">
+            ⏳ <%= gettext("Waiting for your friend to join...") %>
+          </div>
+          
+        <% else %>
+          <h2 class="text-2xl font-bold text-cute">
+            <%= if @mode == :joining do %>
+              🚪 <%= gettext("Joining Room...") %>
+            <% else %>
+              🎲 <%= gettext("Finding Match...") %>
+            <% end %>
+          </h2>
+          
+          <div class="text-cute">
+            <%= if @mode == :joining do %>
+              <%= gettext("Connecting to private room...") %>
+            <% else %>
+              <%= gettext("Matching you with another %{language} learner...", language: String.capitalize(@learning_language)) %>
+            <% end %>
+          </div>
+        <% end %>
+        
+        <!-- Loading animation -->
+        <div class="flex justify-center">
+          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-boba-orange"></div>
+        </div>
+        
+        <!-- Cancel button -->
+        <button
+          phx-click="leave_room"
+          class="btn-cute-secondary px-6 py-2"
+        >
+          <%= gettext("Cancel") %>
+        </button>
+      </div>
+    <% end %>
+
+    <!-- Language Selection -->
+    <div class="mt-8 card-cute p-6">
+      <h3 class="text-lg font-bold text-cute mb-4">
+        <%= gettext("Language Settings") %>
+      </h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-semibold text-cute mb-2">
+            <%= gettext("Interface Language:") %>
+          </label>
+          <.compact_language_selector interface_language={@interface_language} />
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-cute mb-2">
+            <%= gettext("Learning Language:") %>
+          </label>
+          <.learning_language_selector 
+            learning_language={@learning_language}
+            class="bg-white/90 backdrop-blur-sm rounded-lg p-2 border border-white/30"
+          />
+        </div>
+      </div>
+      
+      <div class="mt-4 p-3 bg-blue-50 rounded-lg">
+        <p class="text-sm text-blue-800">
+          <span class="font-semibold">ℹ️ <%= gettext("Note:") %></span>
+          <%= gettext("You can only be matched with players learning the same language as you.") %>
+        </p>
+      </div>
+    </div>
+
+    <!-- Debug Information -->
+    <%= if Application.get_env(:boba_talkie, :dev_routes, false) do %>
+      <div class="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+        <h4 class="font-bold text-yellow-800 mb-2">🐛 Debug Info</h4>
+        <div class="text-sm text-yellow-700 space-y-1">
+          <div><strong>Player ID:</strong> <%= @debug_info.player_id %></div>
+          <div><strong>Learning Language:</strong> <%= @debug_info.learning_language %></div>
+          <div><strong>Current Room:</strong> <%= @current_room || "None" %></div>
+          <div><strong>Mode:</strong> <%= @mode %></div>
+          <div><strong>Waiting for Match:</strong> <%= @waiting_for_match %></div>
+        </div>
+      </div>
+    <% end %>
+
+    <!-- How Multiplayer Works -->
+    <div class="mt-8 card-cute p-6">
+      <h3 class="text-lg font-bold text-cute mb-4">
+        🎮 <%= gettext("How Multiplayer Works") %>
+      </h3>
+      
+      <div class="grid md:grid-cols-2 gap-6">
+        <div class="space-y-3">
+          <h4 class="font-semibold text-cute">
+            📹 <%= gettext("Video Chat") %>
+          </h4>
+          <p class="text-sm text-cute">
+            <%= gettext("See and hear your partner through built-in video conferencing") %>
+          </p>
+        </div>
+        
+        <div class="space-y-3">
+          <h4 class="font-semibold text-cute">
+            🎤 <%= gettext("Voice Controls") %>
+          </h4>
+          <p class="text-sm text-cute">
+            <%= gettext("Take turns speaking - only one player can record at a time") %>
+          </p>
+        </div>
+        
+        <div class="space-y-3">
+          <h4 class="font-semibold text-cute">
+            🌍 <%= gettext("Same Language") %>
+          </h4>
+          <p class="text-sm text-cute">
+            <%= gettext("Both players must be learning the same language") %>
+          </p>
+        </div>
+        
+        <div class="space-y-3">
+          <h4 class="font-semibold text-cute">
+            👥 <%= gettext("1vs1 Mode") %>
+          </h4>
+          <p class="text-sm text-cute">
+            <%= gettext("Two players collaborate on the same game board") %>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Define topic emoji helper function
+  window.topicEmoji = function(topic) {
+    const emojis = {
+      'introduction': '👋',
+      'fruits': '🍎',
+      'numbers': '1️⃣',
+      'colors': '🌈',
+      'bakery': '🥐',
+      'animals': '🐶',
+      'restaurant': '🍕',
+      'family': '👨‍👩‍👧‍👦',
+      'countries': '🇹🇼'
+    };
+    return emojis[topic] || '📚';
+  };
+</script>

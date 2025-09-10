@@ -1,18 +1,37 @@
-# BobaTalkie - Voice-Controlled Language Learning Game
+# BobaTalkie - Multi-Language Voice Learning Platform
 
 ## Introduction
-BobaTalkie is a voice-controlled language learning game that transforms vocabulary acquisition into an interactive gaming experience. Players navigate through different learning topics by speaking commands and completing pronunciation challenges. The game combines 2D grid navigation with topic-specific vocabulary learning, making language acquisition engaging and effective.
+BobaTalkie is a comprehensive multi-language voice-controlled learning platform that transforms vocabulary acquisition into an interactive gaming experience. Players can choose from **solo or multiplayer modes**, navigate through 9 different learning topics by speaking commands, and complete pronunciation challenges with real-time feedback. The platform supports **9 interface languages** and **9 learning languages**, with integrated **video conferencing** for multiplayer collaboration.
 
 ## Project Overview
 
-BobaTalkie features a **9-level learning system** where players choose from different topics (Self-Introduction, Fruits & Food, Numbers, Colors, Bakery, Animals, Restaurant, Family, Countries), complete interactive tutorials, and then play voice-controlled games. Each level includes topic-specific vocabulary, pronunciation guides, and challenge cards that players complete by standing on objects and speaking sentences correctly.
+BobaTalkie features a **complete dual-language learning system** with both **single-player** and **multiplayer (1vs1)** modes:
+
+### Learning System
+- **9 Topics**: Self-Introduction, Fruits & Food, Numbers, Colors, Bakery, Animals, Restaurant, Family, Countries
+- **9 Interface Languages**: English, French, Spanish, Chinese, Russian, Japanese, Italian, Arabic, Portuguese
+- **9 Learning Languages**: Complete content in all supported languages with pronunciation guides
+- **Interactive Tutorials**: Multi-language vocabulary learning with romanization support (Chinese pinyin, etc.)
+- **Challenge Cards**: Language-specific sentence completion challenges
+
+### Game Modes
+- **Solo Mode**: Individual learning with voice navigation and challenge completion
+- **Multiplayer Mode (NEW)**: 1vs1 collaborative learning with integrated video chat
+  - **Language Matching**: Players matched by learning language (French learners only match with French learners)
+  - **Video Conferencing**: Built-in WebRTC peer-to-peer video calling
+  - **Voice Recording Mutex**: Turn-based speaking system - only one player can record at a time
+  - **Private Parties**: Create shareable room links with custom topic selection
+  - **Random Matching**: Automatic matchmaking with random topic selection
 
 ## Architecture
 
 ### Tech Stack
 - **Backend**: Elixir/Phoenix with LiveView for real-time UI updates
-- **Real-time Communication**: Phoenix Channels over WebSockets for <500ms voice processing latency
+- **Real-time Communication**: Phoenix Channels + PubSub for game state synchronization
+- **Multiplayer**: GenServer-based room management with WebRTC peer-to-peer video
 - **Speech Recognition**: Deepgram API for streaming ASR (Automatic Speech Recognition)
+- **Video Conferencing**: WebRTC with STUN servers for direct peer connection
+- **Internationalization**: Phoenix Gettext with complete 9-language support
 - **Frontend**: Phoenix LiveView with PWA capabilities for mobile-first design
 - **Deployment**: Fly.io for global edge deployment
 
@@ -21,20 +40,27 @@ BobaTalkie features a **9-level learning system** where players choose from diff
 #### Backend Architecture (lib/)
 ```
 lib/boba_talkie/
-├── game/               # Topic-aware game logic
-│   ├── world.ex       # Topic-specific 2D grid system  
-│   ├── player.ex      # Player state and actions
-│   └── card.ex        # Challenge card system with topic templates
-└── application.ex     # Application supervision tree
+├── game/                    # Topic-aware game logic
+│   ├── world.ex            # Topic-specific 2D grid system  
+│   ├── player.ex           # Player state and actions
+│   └── card.ex             # Challenge card system with topic templates
+├── multiplayer_room.ex     # GenServer for room management and player matching
+├── content_manager.ex      # Multi-language learning content system
+├── language_manager.ex     # Interface language definitions and flags
+└── application.ex          # Application supervision tree
 
 lib/boba_talkie_web/
 ├── live/
-│   ├── index_live.ex           # Landing page with mic setup
-│   ├── map_selection_live.ex   # 4-level topic selection
-│   ├── tutorial_live.ex        # Interactive vocabulary tutorials
-│   ├── game_live.ex            # Topic-aware gameplay
+│   ├── index_live.ex           # Landing page with solo/multiplayer selection
+│   ├── map_selection_live.ex   # 9-topic selection with dual language system
+│   ├── tutorial_live.ex        # Multi-language vocabulary tutorials
+│   ├── game_live.ex            # Single-player gameplay
+│   ├── multiplayer_lobby_live.ex    # Multiplayer matchmaking and room creation
+│   ├── multiplayer_game_live.ex     # 1vs1 gameplay with video chat integration
 │   └── game_livemodules/       # Modular game components
-└── router.ex                   # Multi-topic routing system
+├── components/
+│   └── language_selector.ex   # Dual language selection components
+└── router.ex                   # Multi-mode routing system
 ```
 
 #### Frontend Architecture (assets/)
@@ -48,9 +74,12 @@ assets/
 │   │   │   ├── button_state_manager.js # UI state management
 │   │   │   ├── web_speech_handler.js   # Web Speech API integration
 │   │   │   └── media_recorder_handler.js # MediaRecorder fallback
+│   │   ├── webrtc_video.js            # WebRTC peer-to-peer video conferencing
+│   │   ├── clipboard_copy.js          # Room link sharing functionality
+│   │   ├── language_persistence.js    # Language preference storage
 │   │   ├── floating_clouds.js         # Background animations
 │   │   └── microphone_test.js         # Mic permission testing
-│   └── app.js                         # Main application entry
+│   └── app.js                         # Main application entry with multiplayer hooks
 ├── css/               # Tailwind CSS styling with game-specific modules
 ├── images/            # Game sprites and UI assets
 └── audio/             # Sound effects and audio feedback
@@ -113,52 +142,70 @@ priv/static/
 
 ## Real-time Architecture
 
-### Phoenix Channels
-- `VoiceChannel`: Handles audio streaming and ASR communication
-- `GameChannel`: Manages game state synchronization and multiplayer features
-- `PresenceChannel`: Tracks online players for multiplayer mode
+### Phoenix Channels & PubSub
+- **Phoenix PubSub**: Room-based communication for multiplayer state synchronization
+- **WebRTC**: Direct peer-to-peer video/audio communication
+- **LiveView**: Real-time UI updates for game state changes
+- **GenServer**: Centralized room management and player matching
+
+### Multiplayer Communication Flow
+1. **Room Creation**: GenServer manages room state and player matching
+2. **WebRTC Signaling**: LiveView handles ICE candidates and session descriptions
+3. **Game Synchronization**: PubSub broadcasts game state changes between players
+4. **Voice Mutex**: Server-side recording state management for turn-based speaking
 
 ### Latency Optimization
-- WebSocket connection with persistent channels
+- WebSocket connection with persistent channels (<100ms game updates)
+- Direct peer-to-peer WebRTC for video/audio (bypasses server)
 - Streaming ASR for partial results
 - Optimistic UI updates with rollback capability
 - Edge deployment for geographic proximity
 
 ## Game Modes
 
-### Solo Mode (Primary Focus)
-Single-player experience focusing on:
-- Tutorial and onboarding with basic voice commands
-- Progressive vocabulary introduction through gameplay
-- Personal pronunciation improvement tracking
-- Offline-capable PWA for mobile learning
+### Solo Mode
+Complete single-player experience:
+- **Tutorial System**: Interactive vocabulary learning with pronunciation guides
+- **Voice Navigation**: Navigate 6x6 grid worlds using voice commands
+- **Challenge Cards**: Complete sentence templates by speaking while on objects
+- **Progress Tracking**: Real-time feedback and completion statistics
+- **Multi-Language Support**: Learn in any of 9 supported languages
+- **Language Restriction**: Movement commands only work in selected learning language
 
-### Multiplayer Mode (Future)
-Collaborative language learning:
-- Real-time voice chat with other learners
-- Cooperative quests requiring communication
-- Language exchange partnerships
-- Competitive pronunciation challenges
+### Multiplayer Mode (1vs1) ✅
+Real-time collaborative language learning:
+- **Video Conferencing**: Built-in WebRTC peer-to-peer video calling with camera/mic controls
+- **Language Matching**: Players automatically matched by learning language
+- **Voice Recording Mutex**: Turn-based speaking system prevents conflicts
+- **Shared Game World**: Both players collaborate on the same 6x6 game grid
+- **Real-time Synchronization**: Game state updates broadcast instantly between players
+- **Private Rooms**: Create shareable room links with custom topic selection
+- **Random Matching**: Automatic matchmaking with random topic selection
+- **Room Management**: Join/leave functionality with proper cleanup
+- **Connection Status**: Visual indicators for partner connection state
 
-## Development Priority
+## Development Status
 
-### Phase 1: Core Solo Experience
-1. **Index/Landing Page**: Game introduction and voice setup
-2. **Solo Tutorial**: First 5-10 voice commands with immediate feedback
-3. **Basic Game Loop**: Simple world navigation using voice
-4. **Voice Pipeline**: Reliable <500ms voice-to-action latency
+### ✅ Phase 1: Complete Multi-Language Platform (COMPLETE)
+1. **Multi-Mode Landing Page**: Choose between Solo and Multiplayer (1vs1) modes
+2. **Complete Internationalization**: 9 interface languages + 9 learning languages
+3. **Solo Tutorial System**: Interactive vocabulary learning with multi-language content
+4. **Multi-Language Game System**: 9 complete topics with language-specific content
+5. **Advanced Voice Pipeline**: Language-restricted commands, auto-card detection
 
-### Phase 2: Enhanced Solo Features
-1. **Expanded Vocabulary**: 50+ commands across different categories
-2. **Game Progression**: Multiple levels/worlds
-3. **Learning Analytics**: Progress tracking and pronunciation scoring
+### ✅ Phase 2: Full Multiplayer Integration (COMPLETE)
+1. **1vs1 Video Conferencing**: WebRTC peer-to-peer video calling
+2. **Room Management**: GenServer-based multiplayer room system
+3. **Language-Based Matching**: Players matched by learning language preference
+4. **Voice Recording Mutex**: Turn-based speaking system with server-side state management
+5. **Private Party System**: Shareable room links with custom topic selection
+6. **Real-time Game Synchronization**: PubSub-based state broadcasting
+
+### 🔄 Phase 3: Advanced Features (READY FOR EXPANSION)
+1. **Voice Integration**: Complete Deepgram ASR implementation
+2. **Phoenix.Presence**: Advanced online player tracking (optional)
+3. **Learning Analytics**: Pronunciation scoring and progress tracking
 4. **PWA Features**: Offline mode and mobile optimization
-
-### Phase 3: Multiplayer Integration
-1. **Real-time Communication**: Voice chat between players
-2. **Presence System**: Online player tracking
-3. **Cooperative Gameplay**: Multi-player voice-controlled quests
-4. **Social Features**: Friends, leaderboards, challenges
 
 ## Game Mechanics
 
@@ -233,12 +280,20 @@ mix phx.server
 Visit http://localhost:4000 to start playing!
 
 ### Available Routes
-- **/** - Landing page with microphone setup
-- **/maps** - Choose from 9 learning topics  
-- **/tutorial/[topic]** - Interactive vocabulary tutorials
-- **/game/[topic]** - Voice-controlled gameplay
 
-**Topics**: introduction, fruits, numbers, colors, bakery, animals, restaurant, family, countries
+#### Solo Mode
+- **/** - Landing page with solo/multiplayer mode selection
+- **/maps** - Choose from 9 learning topics with dual language selection
+- **/tutorial/[topic]** - Interactive multi-language vocabulary tutorials
+- **/game/[topic]** - Single-player voice-controlled gameplay
+
+#### Multiplayer Mode ✅
+- **/multiplayer** - Multiplayer lobby with matchmaking and room creation
+- **/multiplayer/[room_id]** - Join specific private room via shareable link
+- **/multiplayer_game/[topic]** - 1vs1 collaborative gameplay with video chat
+
+**Available Topics**: introduction, fruits, numbers, colors, bakery, animals, restaurant, family, countries
+**Languages**: en, fr, es, zh, ru, ja, it, ar, pt (both interface and learning)
 
 ### Testing
 ```bash
@@ -258,28 +313,63 @@ npm test --prefix assets   # Frontend tests
 - `DEEPGRAM_API_KEY`: Speech recognition service
 - `SECRET_KEY_BASE`: Phoenix session encryption
 - `DATABASE_URL`: PostgreSQL connection (future)
+- `WEBRTC_STUN_SERVERS`: WebRTC STUN server configuration for peer connections
 
 ## Performance Targets
 
+### Single-Player Mode
 - Voice-to-action latency: <500ms end-to-end
 - Audio streaming: 200-300ms chunks for real-time processing
 - Game state updates: <100ms via Phoenix PubSub
 - PWA loading: <2s initial load on 3G networks
 
+### Multiplayer Mode ✅
+- Room creation/joining: <200ms
+- Video call establishment: <3s WebRTC peer connection
+- Game state synchronization: <100ms via PubSub broadcast
+- Voice recording mutex: <50ms server-side state updates
+- Player matching: <1s for language-based matchmaking
+
 ## Security Considerations
 
+### General Security
 - Voice data processing in memory only, no persistent storage
 - WebSocket authentication via Phoenix tokens
 - Rate limiting for API calls to prevent abuse
 - CSP headers for XSS protection
 
+### Multiplayer Security ✅
+- Room ID generation using cryptographically secure random bytes
+- Server-side room state validation and player authentication
+- WebRTC peer-to-peer connections (media bypasses server)
+- PubSub topic isolation per room for secure communication
+- Automatic room cleanup after 30 minutes of inactivity
+
 ## Scaling Strategy
 
+### Current Architecture
 1. **Horizontal Scaling**: Phoenix clustering with distributed state
-2. **Voice Processing**: Queue system for high-volume ASR requests
+2. **Voice Processing**: Queue system for high-volume ASR requests  
 3. **CDN**: Geographic distribution of static assets
 4. **Caching**: Redis for frequently accessed game data
 
-This architecture enables real-time voice-controlled gameplay while maintaining sub-500ms latency requirements essential for immersive language learning experiences.
+### Multiplayer Scaling ✅
+1. **GenServer Distribution**: Room management distributed across nodes
+2. **WebRTC Direct Connection**: Peer-to-peer media reduces server load
+3. **PubSub Clustering**: Phoenix PubSub supports multi-node broadcasting
+4. **Room Lifecycle Management**: Automatic cleanup prevents memory leaks
+5. **Regional Deployment**: STUN servers distributed globally for WebRTC optimization
 
-BobaTalkie is built with Elixir and Phoenix framework.
+## Summary
+
+BobaTalkie is now a **complete multi-language voice learning platform** featuring:
+
+### ✅ **Solo Mode**: Full single-player experience with 9 languages and 9 topics
+### ✅ **Multiplayer Mode**: 1vs1 collaborative learning with integrated video conferencing
+### ✅ **Multi-Language System**: Interface and learning language separation with complete internationalization  
+### ✅ **Advanced Voice Features**: Language-restricted commands, auto-card detection, multi-language support
+### ✅ **Production Ready**: Full WebRTC integration, room management, and real-time synchronization
+
+This architecture enables both solo and collaborative real-time voice-controlled gameplay while maintaining sub-500ms latency requirements and <100ms multiplayer synchronization essential for immersive language learning experiences.
+
+**Built with Elixir, Phoenix LiveView, WebRTC, and comprehensive multi-language support.**
