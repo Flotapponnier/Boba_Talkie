@@ -327,12 +327,12 @@ defmodule BobaTalkieWeb.GameLive.MovementHandlers do
   defp get_direction_words(:east, learning_language) do
     case learning_language do
       "en" -> ["east", "right"]
-      "fr" -> ["droite"]  # Removed "est" to avoid conflict with French verb "est" (is)
+      "fr" -> ["est", "droite"]  # "est" now safe since cards no longer use "est" verb
       "es" -> ["este", "derecha"]
       "zh" -> ["东", "右", "dong", "you"]
       "ru" -> ["восток", "вправо", "vostok", "vpravo"]
       "ja" -> ["東", "右", "higashi", "migi"]
-      "it" -> ["destra"]  # Removed "est" to avoid conflict with Italian verb "est" (is)
+      "it" -> ["est", "destra"]  # "est" now safe since cards no longer use "est" verb
       "ar" -> ["شرق", "يمين", "sharq", "yameen"]
       "pt" -> ["leste", "direita"]
       _ -> ["east", "right"]
@@ -378,16 +378,45 @@ defmodule BobaTalkieWeb.GameLive.MovementHandlers do
 
   defp parse_english_numbered_movement(command) do
     require Logger
+    Logger.info("🔥 parse_english_numbered_movement: Testing command '#{command}'")
     cond do
-      # Pattern: "two right" / "three left" etc. 
-      String.match?(command, ~r/^\s*(2|two)\s+(right|east)\s*$/) -> {:move, :east, 2}
-      String.match?(command, ~r/^\s*(3|three)\s+(right|east)\s*$/) -> {:move, :east, 3}
-      String.match?(command, ~r/^\s*(2|two)\s+(left|west)\s*$/) -> {:move, :west, 2}
-      String.match?(command, ~r/^\s*(3|three)\s+(left|west)\s*$/) -> {:move, :west, 3}
-      String.match?(command, ~r/^\s*(2|two)\s+(up|north)\s*$/) -> {:move, :north, 2}
-      String.match?(command, ~r/^\s*(3|three)\s+(up|north)\s*$/) -> {:move, :north, 3}
-      String.match?(command, ~r/^\s*(2|two)\s+(down|south)\s*$/) -> {:move, :south, 2}
-      String.match?(command, ~r/^\s*(3|three)\s+(down|south)\s*$/) -> {:move, :south, 3}
+      # Pattern: "one right" / "two right" / "three left" etc. 
+      String.match?(command, ~r/\b(1|one)\s+(right|east)\b/) -> 
+        Logger.info("🔥 parse_english_numbered_movement: MATCHED one right/east")
+        {:move, :east, 1}
+      String.match?(command, ~r/\b(2|two)\s+(right|east)\b/) -> 
+        Logger.info("🔥 parse_english_numbered_movement: MATCHED two right/east")
+        {:move, :east, 2}
+      String.match?(command, ~r/\b(3|three)\s+(right|east)\b/) -> 
+        Logger.info("🔥 parse_english_numbered_movement: MATCHED three right/east")
+        {:move, :east, 3}
+      String.match?(command, ~r/\b(1|one)\s+(left|west)\b/) -> 
+        Logger.info("🔥 parse_english_numbered_movement: MATCHED one left/west")
+        {:move, :west, 1}
+      String.match?(command, ~r/\b(2|two)\s+(left|west)\b/) -> 
+        Logger.info("🔥 parse_english_numbered_movement: MATCHED two left/west")
+        {:move, :west, 2}
+      String.match?(command, ~r/\b(3|three)\s+(left|west)\b/) -> 
+        Logger.info("🔥 parse_english_numbered_movement: MATCHED three left/west")
+        {:move, :west, 3}
+      String.match?(command, ~r/\b(1|one)\s+(up|north)\b/) -> 
+        Logger.info("🔥 parse_english_numbered_movement: MATCHED one up/north")
+        {:move, :north, 1}
+      String.match?(command, ~r/\b(2|two)\s+(up|north)\b/) -> 
+        Logger.info("🔥 parse_english_numbered_movement: MATCHED two up/north")
+        {:move, :north, 2}
+      String.match?(command, ~r/\b(3|three)\s+(up|north)\b/) -> 
+        Logger.info("🔥 parse_english_numbered_movement: MATCHED three up/north")
+        {:move, :north, 3}
+      String.match?(command, ~r/\b(1|one)\s+(down|south)\b/) -> 
+        Logger.info("🔥 parse_english_numbered_movement: MATCHED one down/south")
+        {:move, :south, 1}
+      String.match?(command, ~r/\b(2|two)\s+(down|south)\b/) -> 
+        Logger.info("🔥 parse_english_numbered_movement: MATCHED two down/south")
+        {:move, :south, 2}
+      String.match?(command, ~r/\b(3|three)\s+(down|south)\b/) -> 
+        Logger.info("🔥 parse_english_numbered_movement: MATCHED three down/south")
+        {:move, :south, 3}
       
       # Pattern: "go right two times" / "move left three times"
       String.match?(command, ~r/\b(go|move)\s+(right|east)\s+(two|2)\s*(times?)?\b/) -> {:move, :east, 2}

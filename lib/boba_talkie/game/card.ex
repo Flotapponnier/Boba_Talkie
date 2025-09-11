@@ -482,12 +482,15 @@ defmodule BobaTalkie.Game.Card do
           result = Enum.all?(essential_words, fn word ->
             basic_match = String.contains?(clean_command, word)
             variation_match = handle_language_variations(word, clean_command, learning_language)
+            # Handle French apostrophes - both "L'" and "l'" should match
             apostrophe_match1 = String.starts_with?(word, "l'") and String.contains?(clean_command, String.slice(word, 2..-1//-1))
             apostrophe_match2 = not String.starts_with?(word, "l'") and String.contains?(clean_command, "l'" <> word)
+            apostrophe_match3 = String.starts_with?(word, "l'") and String.contains?(clean_command, String.replace(word, "l'", "l "))
+            apostrophe_match4 = String.downcase(word) != word and String.contains?(clean_command, String.downcase(word))
             
-            word_match = basic_match or variation_match or apostrophe_match1 or apostrophe_match2
+            word_match = basic_match or variation_match or apostrophe_match1 or apostrophe_match2 or apostrophe_match3 or apostrophe_match4
             
-            Logger.info("🃏 Card Matching - Word '#{word}': basic=#{basic_match}, variation=#{variation_match}, apos1=#{apostrophe_match1}, apos2=#{apostrophe_match2}, final=#{word_match}")
+            Logger.info("🃏 Card Matching - Word '#{word}': basic=#{basic_match}, variation=#{variation_match}, apos1=#{apostrophe_match1}, apos2=#{apostrophe_match2}, apos3=#{apostrophe_match3}, apos4=#{apostrophe_match4}, final=#{word_match}")
             word_match
           end)
           
@@ -571,7 +574,15 @@ defmodule BobaTalkie.Game.Card do
         (word == "apples" and String.contains?(clean_command, "apple")) or
         (word == "apple" and String.contains?(clean_command, "apples")) or
         (word == "grapes" and String.contains?(clean_command, "grape")) or
-        (word == "grape" and String.contains?(clean_command, "grapes"))
+        (word == "grape" and String.contains?(clean_command, "grapes")) or
+        # English restaurant phrase variations
+        (word == "can" and (String.contains?(clean_command, "could") or String.contains?(clean_command, "may"))) or
+        (word == "i" and String.contains?(clean_command, "we")) or
+        (word == "have" and String.contains?(clean_command, "get")) or
+        # Allow "get" to match "have" 
+        (word == "get" and String.contains?(clean_command, "have")) or
+        # Allow "we" to match "i"
+        (word == "we" and String.contains?(clean_command, "i"))
     end
   end
   

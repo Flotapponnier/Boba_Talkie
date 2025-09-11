@@ -29,7 +29,7 @@ defmodule BobaTalkieWeb.Router do
     live "/multiplayer/:room_id", MultiplayerLobbyLive, :join
     live "/multiplayer_game/:topic", MultiplayerGameLive, :show
     
-    get "/health", PageController, :home
+    get "/health", HealthController, :check
   end
 
   # Other scopes may use custom stacks.

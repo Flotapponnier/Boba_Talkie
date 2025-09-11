@@ -207,18 +207,18 @@ defmodule BobaTalkie.ContentManagerModules.AnimalsContent do
         %{id: "animal_pig", emoji: "🐷", word: "Cochon", pronunciation: "ko-shon"}
       ],
       cards: [
-        %{id: "animal_dog", template: "Le _ est fidèle", answer: "chien", description: "Décrire les caractéristiques des animaux"},
+        %{id: "animal_dog", template: "Le _ reste fidèle", answer: "chien", description: "Décrire les caractéristiques des animaux"},
         %{id: "animal_cat", template: "Le _ dort au soleil", answer: "chat", description: "Décrire le comportement animal"},
         %{id: "animal_rabbit", template: "Le _ saute rapidement", answer: "lapin", description: "Décrire les mouvements des animaux"},
         %{id: "animal_bear", template: "L'_ vit dans la forêt", answer: "ours", description: "Décrire l'habitat animal"},
         %{id: "animal_panda", template: "Le _ mange du bambou", answer: "panda", description: "Décrire le régime animal"},
-        %{id: "animal_lion", template: "Le _ est le roi de la jungle", answer: "lion", description: "Décrire les caractéristiques animales"},
+        %{id: "animal_lion", template: "Le _ règne sur la jungle", answer: "lion", description: "Décrire les caractéristiques animales"},
         %{id: "animal_tiger", template: "Le _ a des rayures", answer: "tigre", description: "Décrire les caractéristiques animales"},
         %{id: "animal_elephant", template: "L'_ a une longue trompe", answer: "éléphant", description: "Décrire les caractéristiques animales"},
         %{id: "animal_monkey", template: "Le _ se balance dans les arbres", answer: "singe", description: "Décrire le comportement animal"},
         %{id: "animal_horse", template: "Le _ peut courir vite", answer: "cheval", description: "Décrire les capacités animales"},
         %{id: "animal_cow", template: "La _ donne du lait", answer: "vache", description: "Décrire les produits animaux"},
-        %{id: "animal_pig", template: "Le _ est rose", answer: "cochon", description: "Décrire l'apparence animale"}
+        %{id: "animal_pig", template: "Le _ paraît rose", answer: "cochon", description: "Décrire l'apparence animale"}
       ]
     }
   end

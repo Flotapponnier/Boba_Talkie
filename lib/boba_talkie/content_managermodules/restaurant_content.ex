@@ -55,7 +55,7 @@ defmodule BobaTalkie.ContentManagerModules.RestaurantContent do
         %{id: "restaurant_burger", template: "The _ is delicious", answer: "burger", description: "Describing food"},
         %{id: "restaurant_fries", template: "Can I have _ with that", answer: "fries", description: "Adding sides to order"},
         %{id: "restaurant_pasta", template: "The _ is ready", answer: "pasta", description: "Food status"},
-        %{id: "restaurant_salad", template: "I'll have a Caesar _", answer: "salad", description: "Specific food orders"},
+        %{id: "restaurant_salad", template: "Can we get the _", answer: "salad", description: "Requesting food items"},
         %{id: "restaurant_soup", template: "What _ do you have today", answer: "soup", description: "Asking about daily specials"},
         %{id: "restaurant_coffee", template: "I need a _ please", answer: "coffee", description: "Ordering beverages"},
         %{id: "restaurant_water", template: "Could I have some _", answer: "water", description: "Requesting drinks"},

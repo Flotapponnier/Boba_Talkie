@@ -193,16 +193,16 @@ defmodule BobaTalkie.ContentManagerModules.ColorsContent do
         %{id: "color_gray", emoji: "🩶", word: "Gris", pronunciation: "gree"}
       ],
       cards: [
-        %{id: "color_red", template: "La pomme est _", answer: "Rouge", description: "Décrire les couleurs d'objets"},
-        %{id: "color_blue", template: "Le ciel est _", answer: "Bleu", description: "Association couleur naturelle"},
-        %{id: "color_green", template: "L'herbe est _", answer: "Verte", description: "Couleur de la nature"},
-        %{id: "color_yellow", template: "Le soleil est _", answer: "Jaune", description: "Couleur céleste"},
-        %{id: "color_orange", template: "L'_ est orange", answer: "Orange", description: "Fruit et couleur correspondent"},
-        %{id: "color_purple", template: "Le raisin est _", answer: "Violet", description: "Couleur de fruit"},
-        %{id: "color_pink", template: "La fleur est _", answer: "Rose", description: "Couleur de fleur"},
-        %{id: "color_brown", template: "L'arbre est _", answer: "Brun", description: "Couleur d'arbre"},
-        %{id: "color_black", template: "La nuit est _", answer: "Noire", description: "Couleur du temps"},
-        %{id: "color_white", template: "La neige est _", answer: "Blanche", description: "Couleur du temps"}
+        %{id: "color_red", template: "La pomme devient _", answer: "Rouge", description: "Décrire les couleurs d'objets"},
+        %{id: "color_blue", template: "Le ciel paraît _", answer: "Bleu", description: "Association couleur naturelle"},
+        %{id: "color_green", template: "L'herbe pousse _", answer: "Verte", description: "Couleur de la nature"},
+        %{id: "color_yellow", template: "Le soleil brille _", answer: "Jaune", description: "Couleur céleste"},
+        %{id: "color_orange", template: "L'_ mûrit orange", answer: "Orange", description: "Fruit et couleur correspondent"},
+        %{id: "color_purple", template: "Le raisin devient _", answer: "Violet", description: "Couleur de fruit"},
+        %{id: "color_pink", template: "La fleur fleurit _", answer: "Rose", description: "Couleur de fleur"},
+        %{id: "color_brown", template: "L'arbre vieillit _", answer: "Brun", description: "Couleur d'arbre"},
+        %{id: "color_black", template: "La nuit tombe _", answer: "Noire", description: "Couleur du temps"},
+        %{id: "color_white", template: "La neige tombe _", answer: "Blanche", description: "Couleur du temps"}
       ]
     }
   end
