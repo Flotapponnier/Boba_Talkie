@@ -1,5 +1,6 @@
 defmodule BobaTalkieWeb.MultiplayerGameLive do
   use BobaTalkieWeb, :live_view
+  require Logger
   import BobaTalkieWeb.LanguageSelector
   alias BobaTalkieWeb.LanguageSession
   alias BobaTalkie.MultiplayerRoom
@@ -47,6 +48,9 @@ defmodule BobaTalkieWeb.MultiplayerGameLive do
             |> assign(:other_player_recording, false)
             |> assign(:video_enabled, true)
             |> assign(:audio_enabled, true)
+            |> assign(:other_player_connected, true)
+            |> assign(:other_player_video, true)
+            |> assign(:other_player_audio, true)
             |> assign(:page_title, "BobaTalkie - Multiplayer Game: #{String.capitalize(topic)}")
           
           {:ok, socket}
@@ -93,6 +97,9 @@ defmodule BobaTalkieWeb.MultiplayerGameLive do
     Logger.info("MultiplayerGameLive: Processing voice_command: #{command}")
     
     try do
+      # Store last command for display - same as single player
+      socket = assign(socket, :last_command, command)
+      
       # Process voice command using the same logic as single-player
       socket = VoiceHandlers.handle_voice_result(
         socket, 
@@ -239,7 +246,10 @@ defmodule BobaTalkieWeb.MultiplayerGameLive do
   # Video/Audio controls
   @impl true
   def handle_event("toggle_video", _params, socket) do
-    new_video_state = !socket.assigns.video_enabled
+    current_state = socket.assigns.video_enabled
+    new_video_state = !current_state
+    Logger.info("🎥 Toggle video: #{current_state} -> #{new_video_state}")
+    
     socket = assign(socket, :video_enabled, new_video_state)
     
     # Send toggle event to WebRTC hook
@@ -253,7 +263,10 @@ defmodule BobaTalkieWeb.MultiplayerGameLive do
 
   @impl true
   def handle_event("toggle_audio", _params, socket) do
-    new_audio_state = !socket.assigns.audio_enabled
+    current_state = socket.assigns.audio_enabled
+    new_audio_state = !current_state
+    Logger.info("🎤 Toggle audio: #{current_state} -> #{new_audio_state}")
+    
     socket = assign(socket, :audio_enabled, new_audio_state)
     
     # Send toggle event to WebRTC hook
@@ -275,6 +288,21 @@ defmodule BobaTalkieWeb.MultiplayerGameLive do
     
     # Redirect back to lobby
     {:noreply, redirect(socket, to: "/multiplayer")}
+  end
+
+  # Card description toggle handler - same as single player
+  @impl true
+  def handle_event("toggle_card_description", %{"card_id" => card_id}, socket) do
+    current_expanded = socket.assigns[:expanded_descriptions] || MapSet.new()
+    
+    updated_expanded = if MapSet.member?(current_expanded, card_id) do
+      MapSet.delete(current_expanded, card_id)
+    else
+      MapSet.put(current_expanded, card_id)
+    end
+    
+    socket = assign(socket, :expanded_descriptions, updated_expanded)
+    {:noreply, socket}
   end
 
   # Language change handlers

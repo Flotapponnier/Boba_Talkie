@@ -380,33 +380,6 @@ defmodule BobaTalkie.MultiplayerRoom do
     end
   end
 
-  defp notify_on_waiting_room_topics(rooms, player_ids, message) do
-    # Find rooms where these players might be waiting and broadcast to their topics
-    Enum.each(rooms, fn {waiting_room_id, room} ->
-      if room.status == :waiting && Enum.any?(player_ids, fn id -> id in room.players end) do
-        topic_name = "multiplayer_room:#{waiting_room_id}"
-        Logger.info("📢 Also broadcasting to waiting room topic: #{topic_name}")
-        PubSub.broadcast(BobaTalkie.PubSub, topic_name, message)
-      end
-    end)
-  end
-
-  defp notify_individual_players(rooms, player_ids, message) do
-    # Find each player's individual waiting room and broadcast to them
-    Enum.each(player_ids, fn player_id ->
-      # Find the room where this player is waiting
-      case Enum.find(rooms, fn {_room_id, room} -> 
-        room.status == :waiting && player_id in room.players 
-      end) do
-        {waiting_room_id, _room} ->
-          topic_name = "multiplayer_room:#{waiting_room_id}"
-          Logger.info("📢 Broadcasting to player #{player_id}'s waiting room: #{topic_name}")
-          PubSub.broadcast(BobaTalkie.PubSub, topic_name, message)
-        nil ->
-          Logger.info("📢 No waiting room found for player #{player_id}")
-      end
-    end)
-  end
 
   defp notify_players_joined(room_id, new_player_id, existing_player_ids) do
     Enum.each(existing_player_ids, fn _player_id ->

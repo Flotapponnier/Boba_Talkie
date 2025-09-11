@@ -49,14 +49,29 @@ export const WebRTCVideo = {
 
       console.log('🎥 Local media stream acquired:', this.localStream.getTracks().map(t => t.kind));
 
-      // Display local video
-      const localVideo = document.getElementById('local-video');
+      // Display local video (using unique ID based on player)
+      const localVideoId = `local-video-${this.playerId}`;
+      const localVideo = document.getElementById(localVideoId);
+      console.log('🎥 Looking for local video element with ID:', localVideoId);
+      
       if (localVideo) {
         localVideo.srcObject = this.localStream;
         localVideo.volume = 0; // Ensure local video is muted to prevent feedback
-        console.log('🎥 Local video element connected');
+        localVideo.muted = true; // Additional muting for safety
+        
+        // Ensure local video starts playing
+        localVideo.oncanplay = () => {
+          console.log('🎥 Local video can play, attempting to play...');
+          localVideo.play().catch(e => console.warn('⚠️ Local video autoplay prevented:', e));
+        };
+        
+        localVideo.onloadedmetadata = () => {
+          console.log('🎥 Local video metadata loaded, video dimensions:', localVideo.videoWidth, 'x', localVideo.videoHeight);
+        };
+        
+        console.log('🎥 Local video element connected with ID:', localVideoId);
       } else {
-        console.error('❌ Local video element not found');
+        console.error('❌ Local video element not found with ID:', localVideoId);
       }
 
       // Create peer connection
@@ -72,26 +87,47 @@ export const WebRTCVideo = {
       // Handle remote stream
       this.peerConnection.ontrack = (event) => {
         console.log('📨 Received remote stream event:', event);
+        console.log('📨 Event streams length:', event.streams.length);
+        console.log('📨 Event track kind:', event.track.kind);
+        
         const [remoteStream] = event.streams;
-        this.remoteStream = remoteStream;
-        
-        console.log('📨 Remote stream tracks:', remoteStream.getTracks().map(t => t.kind));
-        
-        const partnerVideo = document.getElementById('partner-video');
-        const placeholder = document.getElementById('partner-video-placeholder');
-        
-        if (partnerVideo && remoteStream) {
-          partnerVideo.srcObject = remoteStream;
-          partnerVideo.style.display = 'block';
+        if (remoteStream) {
+          this.remoteStream = remoteStream;
+          console.log('📨 Remote stream tracks:', remoteStream.getTracks().map(t => `${t.kind}:${t.enabled ? 'enabled' : 'disabled'}`));
           
-          // Hide placeholder when video is connected
-          if (placeholder) {
-            placeholder.style.display = 'none';
+          // Use unique IDs for partner video elements
+          const partnerVideoId = `partner-video-${this.playerId}`;
+          const placeholderId = `partner-video-placeholder-${this.playerId}`;
+          const partnerVideo = document.getElementById(partnerVideoId);
+          const placeholder = document.getElementById(placeholderId);
+          
+          console.log('🎥 Looking for partner video element with ID:', partnerVideoId);
+          
+          if (partnerVideo) {
+            console.log('🎥 Setting partner video srcObject...');
+            partnerVideo.srcObject = remoteStream;
+            partnerVideo.style.display = 'block';
+            
+            // Wait for video to be ready before hiding placeholder
+            partnerVideo.onloadedmetadata = () => {
+              console.log('🎥 Partner video metadata loaded, video dimensions:', partnerVideo.videoWidth, 'x', partnerVideo.videoHeight);
+              if (placeholder) {
+                placeholder.style.display = 'none';
+              }
+            };
+            
+            // Additional event to ensure video starts playing
+            partnerVideo.oncanplay = () => {
+              console.log('🎥 Partner video can play, attempting to play...');
+              partnerVideo.play().catch(e => console.warn('⚠️ Autoplay prevented:', e));
+            };
+            
+            console.log('🎥 Partner video stream connected successfully with ID:', partnerVideoId);
+          } else {
+            console.error('❌ Partner video element not found with ID:', partnerVideoId);
           }
-          
-          console.log('🎥 Partner video stream connected successfully');
         } else {
-          console.error('❌ Partner video element not found or no remote stream');
+          console.error('❌ No remote stream in event');
         }
       };
 
@@ -181,10 +217,16 @@ export const WebRTCVideo = {
       console.log('🤝 WebRTC peer joined:', player_id, 'My ID:', this.playerId);
       if (player_id !== this.playerId) {
         console.log('🚀 I am the initiator, creating offer...');
+        console.log('🚀 Peer connection state:', this.peerConnection?.connectionState);
+        console.log('🚀 Local stream tracks:', this.localStream?.getTracks().map(t => t.kind));
         this.isInitiator = true;
         // Add small delay to ensure peer connection is fully initialized
         setTimeout(() => {
-          this.createOffer();
+          if (this.peerConnection && this.localStream) {
+            this.createOffer();
+          } else {
+            console.error('❌ Cannot create offer: peer connection or local stream not ready');
+          }
         }, 100);
       }
     });
@@ -281,20 +323,30 @@ export const WebRTCVideo = {
   },
 
   toggleLocalVideo(enabled) {
+    console.log('🎥 Toggle local video called with enabled:', enabled);
     if (this.localStream) {
       const videoTracks = this.localStream.getVideoTracks();
-      videoTracks.forEach(track => {
+      console.log('🎥 Found video tracks:', videoTracks.length);
+      videoTracks.forEach((track, index) => {
+        console.log(`🎥 Setting video track ${index} enabled to:`, enabled);
         track.enabled = enabled;
       });
+    } else {
+      console.error('❌ No local stream available for video toggle');
     }
   },
 
   toggleLocalAudio(enabled) {
+    console.log('🎤 Toggle local audio called with enabled:', enabled);
     if (this.localStream) {
       const audioTracks = this.localStream.getAudioTracks();
-      audioTracks.forEach(track => {
+      console.log('🎤 Found audio tracks:', audioTracks.length);
+      audioTracks.forEach((track, index) => {
+        console.log(`🎤 Setting audio track ${index} enabled to:`, enabled);
         track.enabled = enabled;
       });
+    } else {
+      console.error('❌ No local stream available for audio toggle');
     }
   },
 
@@ -317,23 +369,27 @@ export const WebRTCVideo = {
       this.localStream = null;
     }
 
-    // Clear video elements
-    const localVideo = document.getElementById('local-video');
-    const partnerVideo = document.getElementById('partner-video');
-    const placeholder = document.getElementById('partner-video-placeholder');
+    // Clear video elements using unique IDs
+    const localVideoId = `local-video-${this.playerId}`;
+    const partnerVideoId = `partner-video-${this.playerId}`;
+    const placeholderId = `partner-video-placeholder-${this.playerId}`;
+    
+    const localVideo = document.getElementById(localVideoId);
+    const partnerVideo = document.getElementById(partnerVideoId);
+    const placeholder = document.getElementById(placeholderId);
     
     if (localVideo) {
       localVideo.srcObject = null;
-      console.log('🎥 Local video cleared');
+      console.log('🎥 Local video cleared:', localVideoId);
     }
     if (partnerVideo) {
       partnerVideo.srcObject = null;
       partnerVideo.style.display = 'none';
-      console.log('🎥 Partner video cleared');
+      console.log('🎥 Partner video cleared:', partnerVideoId);
     }
     if (placeholder) {
       placeholder.style.display = 'block';
-      console.log('👤 Partner placeholder restored');
+      console.log('👤 Partner placeholder restored:', placeholderId);
     }
 
     // Leave WebRTC room
