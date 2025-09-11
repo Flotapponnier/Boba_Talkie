@@ -51,6 +51,10 @@ defmodule BobaTalkieWeb.MultiplayerGameLive do
             |> assign(:other_player_connected, true)
             |> assign(:other_player_video, true)
             |> assign(:other_player_audio, true)
+            |> assign(:listening, false)
+            |> assign(:interim_text, "")
+            |> assign(:last_command, nil)
+            |> assign(:expanded_descriptions, MapSet.new())
             |> assign(:page_title, "BobaTalkie - Multiplayer Game: #{String.capitalize(topic)}")
           
           {:ok, socket}
@@ -61,14 +65,17 @@ defmodule BobaTalkieWeb.MultiplayerGameLive do
   # Voice recording events with multiplayer mutex
   @impl true
   def handle_event("start_listening", _params, socket) do
+    Logger.info("🎤 Start listening requested in multiplayer")
     room_id = socket.assigns.room_id
     player_id = get_player_id(socket)
     
     # Check if other player is recording
     if socket.assigns.is_recording_blocked do
+      Logger.info("🎤 Recording blocked - partner is speaking")
       socket = put_flash(socket, :info, gettext("Please wait - your partner is speaking"))
       {:noreply, socket}
     else
+      Logger.info("🎤 Setting recording state and listening to true")
       # Set recording state in room
       MultiplayerRoom.set_recording_state(room_id, player_id, true)
       
@@ -124,6 +131,7 @@ defmodule BobaTalkieWeb.MultiplayerGameLive do
   
   @impl true
   def handle_event("voice_interim", %{"text" => text}, socket) do
+    Logger.info("🎤 Voice interim received: #{text}")
     socket = VoiceHandlers.handle_voice_interim(socket, text)
     {:noreply, socket}
   end
@@ -365,7 +373,14 @@ defmodule BobaTalkieWeb.MultiplayerGameLive do
 
   @impl true
   def handle_info({:media_state_update, player_id, media_type, enabled}, socket) do
-    if player_id == socket.assigns.other_player_id do
+    current_player = get_player_id(socket)
+    other_player = socket.assigns.other_player_id
+    
+    Logger.info("📡 Media state update: player=#{String.slice(player_id, 0, 4)}, type=#{media_type}, enabled=#{enabled}")
+    Logger.info("📡 Current player: #{String.slice(current_player, 0, 4)}, Other player: #{String.slice(other_player || "nil", 0, 4)}")
+    
+    if player_id == other_player do
+      Logger.info("📡 Updating other player's #{media_type} state to #{enabled}")
       case media_type do
         :video -> 
           socket = assign(socket, :other_player_video, enabled)
@@ -377,6 +392,7 @@ defmodule BobaTalkieWeb.MultiplayerGameLive do
           {:noreply, socket}
       end
     else
+      Logger.info("📡 Ignoring media update from non-partner player")
       {:noreply, socket}
     end
   end

@@ -4,6 +4,19 @@
  * Handles peer-to-peer video conferencing for multiplayer games
  * using WebRTC for direct player-to-player communication
  */
+
+// Helper function for string hashing
+String.prototype.hashCode = function() {
+  let hash = 0;
+  if (this.length === 0) return hash;
+  for (let i = 0; i < this.length; i++) {
+    const char = this.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32bit integer
+  }
+  return hash;
+};
+
 export const WebRTCVideo = {
   mounted() {
     this.roomId = this.el.dataset.roomId;
@@ -33,19 +46,56 @@ export const WebRTCVideo = {
     try {
       console.log('🎥 Initializing WebRTC for player:', this.playerId, 'in room:', this.roomId);
       
-      // Get local media stream with specific constraints
-      this.localStream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          width: { ideal: 640 },
-          height: { ideal: 480 },
-          frameRate: { ideal: 30 }
-        },
-        audio: {
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true
-        }
-      });
+      // Check if we should use fake video for local testing
+      const useFakeVideo = new URLSearchParams(window.location.search).get('fake_video') === 'true';
+      
+      if (useFakeVideo) {
+        console.log('🎥 Using fake video stream for testing');
+        // Create a canvas-based fake video stream
+        const canvas = document.createElement('canvas');
+        canvas.width = 640;
+        canvas.height = 480;
+        const ctx = canvas.getContext('2d');
+        
+        // Draw a colored background with player ID
+        ctx.fillStyle = `hsl(${Math.abs(this.playerId.hashCode() || 0) % 360}, 70%, 50%)`;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = 'white';
+        ctx.font = '48px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText(`Player: ${this.playerId.slice(0, 8)}`, canvas.width/2, canvas.height/2);
+        
+        // Create video stream from canvas
+        this.localStream = canvas.captureStream(30);
+        
+        // Add fake audio track
+        const audioContext = new AudioContext();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        gainNode.gain.value = 0; // Silent
+        oscillator.connect(gainNode);
+        const dest = audioContext.createMediaStreamDestination();
+        gainNode.connect(dest);
+        oscillator.start();
+        
+        // Add audio track to stream
+        this.localStream.addTrack(dest.stream.getAudioTracks()[0]);
+        
+      } else {
+        // Get real media stream with specific constraints
+        this.localStream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            width: { ideal: 640 },
+            height: { ideal: 480 },
+            frameRate: { ideal: 30 }
+          },
+          audio: {
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: true
+          }
+        });
+      }
 
       console.log('🎥 Local media stream acquired:', this.localStream.getTracks().map(t => t.kind));
 
@@ -331,6 +381,14 @@ export const WebRTCVideo = {
         console.log(`🎥 Setting video track ${index} enabled to:`, enabled);
         track.enabled = enabled;
       });
+      
+      // Also hide/show the local video element visually
+      const localVideoId = `local-video-${this.playerId}`;
+      const localVideo = document.getElementById(localVideoId);
+      if (localVideo) {
+        localVideo.style.opacity = enabled ? '1' : '0.3';
+        console.log('🎥 Local video opacity set to:', enabled ? '1' : '0.3');
+      }
     } else {
       console.error('❌ No local stream available for video toggle');
     }
@@ -345,6 +403,23 @@ export const WebRTCVideo = {
         console.log(`🎤 Setting audio track ${index} enabled to:`, enabled);
         track.enabled = enabled;
       });
+      
+      // Visual feedback for audio toggle (add a muted indicator)
+      const localVideoId = `local-video-${this.playerId}`;
+      const localVideo = document.getElementById(localVideoId);
+      if (localVideo) {
+        // Add/remove a visual muted indicator
+        const mutedIndicator = localVideo.parentElement.querySelector('.muted-indicator');
+        if (!enabled && !mutedIndicator) {
+          const indicator = document.createElement('div');
+          indicator.className = 'muted-indicator absolute top-1 right-1 bg-red-500 text-white px-2 py-1 rounded text-xs';
+          indicator.textContent = '🎤❌';
+          localVideo.parentElement.appendChild(indicator);
+        } else if (enabled && mutedIndicator) {
+          mutedIndicator.remove();
+        }
+        console.log('🎤 Audio mute indicator updated:', enabled ? 'removed' : 'added');
+      }
     } else {
       console.error('❌ No local stream available for audio toggle');
     }

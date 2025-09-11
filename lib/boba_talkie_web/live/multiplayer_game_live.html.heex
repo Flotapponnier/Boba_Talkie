@@ -8,10 +8,7 @@
        data-player-id={@player_id || "unknown"} 
        style="display: none;"></div>
 
-  <!-- Voice Capture Hook for voice commands (same as single-player) -->
-  <div phx-hook="VoiceCapture" id="voice-capture" 
-       data-learning-language={@learning_language}
-       style="display: none;"></div>
+  <!-- Voice Capture Hook attached only to the button, not here -->
 
   <!-- Header with game info and controls -->
   <div class="flex justify-between items-center p-4 bg-white/90 backdrop-blur-sm shadow-sm">
