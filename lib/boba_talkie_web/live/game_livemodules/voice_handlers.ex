@@ -160,7 +160,8 @@ defmodule BobaTalkieWeb.GameLive.VoiceHandlers do
           |> assign(:world, new_world)
           |> assign(:player, new_player)
           |> assign(:last_command, command)
-          |> assign(:interim_text, nil)
+          |> assign(:final_voice_command, command)
+          |> assign(:interim_text, command)  # Keep showing the final command
           |> add_game_message(message)
           |> assign(:listening, false)
         
@@ -168,7 +169,8 @@ defmodule BobaTalkieWeb.GameLive.VoiceHandlers do
           Logger.error("VoiceHandlers: Unexpected return from process_command: #{inspect(other_result)}")
           socket
           |> assign(:last_command, command)
-          |> assign(:interim_text, nil)
+          |> assign(:final_voice_command, command)
+          |> assign(:interim_text, command)  # Keep showing the final command even on error
           |> add_game_message("Command processing error: #{command}")
           |> assign(:listening, false)
       end

@@ -79,13 +79,34 @@
             <% else %>
               <div class="text-cute opacity-60 italic text-sm"><%= gettext("Speak a command...") %></div>
             <% end %>
+            
+            <!-- Show partner's command even while listening -->
+            <%= if assigns[:other_player_voice_command] && @other_player_voice_command do %>
+              <div class="text-purple-600 font-mono text-xs mt-2 opacity-80">
+                <span class="text-purple-600">👥</span> <%= gettext("Partner said:") %> "<%= @other_player_voice_command %>"
+              </div>
+            <% end %>
           </div>
         <% else %>
           <div class="bg-gray-100 rounded-lg p-2 text-center">
-            <div class="text-cute text-sm"><%= gettext("Voice Recognition Ready") %></div>
-            <%= if assigns[:last_command] && @last_command do %>
+            <!-- Show commands if they exist, otherwise show ready message -->
+            <%= if (assigns[:final_voice_command] && @final_voice_command) || (assigns[:other_player_voice_command] && @other_player_voice_command) do %>
+              <div class="text-cute text-xs font-semibold mb-1"><%= gettext("Voice Commands") %></div>
+            <% else %>
+              <div class="text-cute text-sm"><%= gettext("Voice Recognition Ready") %></div>
+            <% end %>
+            
+            <!-- Show your final voice command -->
+            <%= if assigns[:final_voice_command] && @final_voice_command do %>
               <div class="text-boba-orange font-mono text-xs mt-1">
-                <%= gettext("Last:") %> "<%= @last_command %>"
+                <span class="text-blue-600">🎤</span> <%= gettext("You said:") %> "<%= @final_voice_command %>"
+              </div>
+            <% end %>
+            
+            <!-- Show partner's voice command -->
+            <%= if assigns[:other_player_voice_command] && @other_player_voice_command do %>
+              <div class="text-purple-600 font-mono text-xs mt-1">
+                <span class="text-purple-600">👥</span> <%= gettext("Partner said:") %> "<%= @other_player_voice_command %>"
               </div>
             <% end %>
           </div>

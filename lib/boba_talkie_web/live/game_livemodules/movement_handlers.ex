@@ -363,6 +363,7 @@ defmodule BobaTalkieWeb.GameLive.MovementHandlers do
   # Parse numbered movement commands for all languages
   defp parse_numbered_movement(command, learning_language) do
     case learning_language do
+      "en" -> parse_english_numbered_movement(command)
       "fr" -> parse_french_numbered_movement(command)
       "es" -> parse_spanish_numbered_movement(command)
       "zh" -> parse_chinese_numbered_movement(command)
@@ -372,6 +373,33 @@ defmodule BobaTalkieWeb.GameLive.MovementHandlers do
       "ar" -> parse_arabic_numbered_movement(command)
       "pt" -> parse_portuguese_numbered_movement(command)
       _ -> :unknown
+    end
+  end
+
+  defp parse_english_numbered_movement(command) do
+    require Logger
+    cond do
+      # Pattern: "two right" / "three left" etc. 
+      String.match?(command, ~r/^\s*(2|two)\s+(right|east)\s*$/) -> {:move, :east, 2}
+      String.match?(command, ~r/^\s*(3|three)\s+(right|east)\s*$/) -> {:move, :east, 3}
+      String.match?(command, ~r/^\s*(2|two)\s+(left|west)\s*$/) -> {:move, :west, 2}
+      String.match?(command, ~r/^\s*(3|three)\s+(left|west)\s*$/) -> {:move, :west, 3}
+      String.match?(command, ~r/^\s*(2|two)\s+(up|north)\s*$/) -> {:move, :north, 2}
+      String.match?(command, ~r/^\s*(3|three)\s+(up|north)\s*$/) -> {:move, :north, 3}
+      String.match?(command, ~r/^\s*(2|two)\s+(down|south)\s*$/) -> {:move, :south, 2}
+      String.match?(command, ~r/^\s*(3|three)\s+(down|south)\s*$/) -> {:move, :south, 3}
+      
+      # Pattern: "go right two times" / "move left three times"
+      String.match?(command, ~r/\b(go|move)\s+(right|east)\s+(two|2)\s*(times?)?\b/) -> {:move, :east, 2}
+      String.match?(command, ~r/\b(go|move)\s+(right|east)\s+(three|3)\s*(times?)?\b/) -> {:move, :east, 3}
+      String.match?(command, ~r/\b(go|move)\s+(left|west)\s+(two|2)\s*(times?)?\b/) -> {:move, :west, 2}
+      String.match?(command, ~r/\b(go|move)\s+(left|west)\s+(three|3)\s*(times?)?\b/) -> {:move, :west, 3}
+      String.match?(command, ~r/\b(go|move)\s+(up|north)\s+(two|2)\s*(times?)?\b/) -> {:move, :north, 2}
+      String.match?(command, ~r/\b(go|move)\s+(up|north)\s+(three|3)\s*(times?)?\b/) -> {:move, :north, 3}
+      String.match?(command, ~r/\b(go|move)\s+(down|south)\s+(two|2)\s*(times?)?\b/) -> {:move, :south, 2}
+      String.match?(command, ~r/\b(go|move)\s+(down|south)\s+(three|3)\s*(times?)?\b/) -> {:move, :south, 3}
+      
+      true -> :unknown
     end
   end
 
@@ -679,10 +707,15 @@ defmodule BobaTalkieWeb.GameLive.MovementHandlers do
     case learning_language do
       "en" ->
         # English card sentence patterns - only when learning English
-        String.contains?(command, "is") or String.contains?(command, "the") or 
-        String.starts_with?(command, "my ") or String.starts_with?(command, "eat") or String.starts_with?(command, "i like") or
-        String.starts_with?(command, "i want") or String.starts_with?(command, "i have") or
-        String.starts_with?(command, "how much") or String.starts_with?(command, "count") or String.starts_with?(command, "say ")
+        # BUT exclude movement commands like "i want to move/go [direction]"
+        if String.contains?(command, "move") or String.contains?(command, "go") do
+          false  # These are movement commands, not card challenges
+        else
+          String.contains?(command, "is") or String.contains?(command, "the") or 
+          String.starts_with?(command, "my ") or String.starts_with?(command, "eat") or String.starts_with?(command, "i like") or
+          String.starts_with?(command, "i want") or String.starts_with?(command, "i have") or
+          String.starts_with?(command, "how much") or String.starts_with?(command, "count") or String.starts_with?(command, "say ")
+        end
       
       "fr" ->
         # French card sentence patterns

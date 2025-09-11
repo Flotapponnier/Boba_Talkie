@@ -54,6 +54,8 @@ defmodule BobaTalkieWeb.MultiplayerGameLive do
             |> assign(:listening, false)
             |> assign(:interim_text, "")
             |> assign(:last_command, nil)
+            |> assign(:final_voice_command, nil)
+            |> assign(:other_player_voice_command, nil)
             |> assign(:expanded_descriptions, MapSet.new())
             |> assign(:page_title, "BobaTalkie - Multiplayer Game: #{String.capitalize(topic)}")
           
@@ -79,8 +81,10 @@ defmodule BobaTalkieWeb.MultiplayerGameLive do
       # Set recording state in room
       MultiplayerRoom.set_recording_state(room_id, player_id, true)
       
-      # Set listening state
-      socket = assign(socket, :listening, true)
+      # Set listening state and clear previous command display
+      socket = socket
+      |> assign(:listening, true)
+      |> assign(:interim_text, "")  # Clear previous command when starting new recording
       {:noreply, socket}
     end
   end
@@ -118,6 +122,9 @@ defmodule BobaTalkieWeb.MultiplayerGameLive do
       
       # Broadcast game state update to other player
       broadcast_game_state_update(socket)
+      
+      # Also broadcast the voice command to the other player for display
+      broadcast_voice_command(socket, command)
       
       Logger.info("MultiplayerGameLive: voice_command processed successfully: #{command}")
       {:noreply, socket}
@@ -426,6 +433,18 @@ defmodule BobaTalkieWeb.MultiplayerGameLive do
     {:noreply, socket}
   end
 
+  # Handler for receiving voice commands from other player
+  @impl true
+  def handle_info({:voice_command_update, player_id, command}, socket) do
+    if player_id == socket.assigns.other_player_id do
+      Logger.info("📡 Received partner's voice command: #{command}")
+      socket = assign(socket, :other_player_voice_command, command)
+      {:noreply, socket}
+    else
+      {:noreply, socket}
+    end
+  end
+
   # Private helper functions
 
   defp get_other_player_id(players, current_player_id) do
@@ -449,10 +468,10 @@ defmodule BobaTalkieWeb.MultiplayerGameLive do
     game_state = %{
       world: socket.assigns.world,
       player: socket.assigns.player,
-      cards: socket.assigns.cards || socket.assigns.world.cards,
-      completed_cards: socket.assigns.completed_cards || [],
-      current_feedback: socket.assigns.current_feedback,
-      game_messages: socket.assigns.game_messages || [],
+      cards: socket.assigns.world.cards,
+      completed_cards: [],  # Cards completion is tracked in world.cards
+      current_feedback: socket.assigns[:current_feedback],
+      game_messages: socket.assigns[:game_messages] || [],
       player_id: player_id
     }
     
@@ -497,6 +516,17 @@ defmodule BobaTalkieWeb.MultiplayerGameLive do
       # This update is from ourselves, ignore to prevent loops
       socket
     end
+  end
+
+  defp broadcast_voice_command(socket, command) do
+    room_id = socket.assigns.room_id
+    player_id = get_player_id(socket)
+    
+    PubSub.broadcast(
+      BobaTalkie.PubSub,
+      "multiplayer_game:#{room_id}",
+      {:voice_command_update, player_id, command}
+    )
   end
 
 
