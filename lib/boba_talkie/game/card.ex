@@ -789,4 +789,30 @@ defmodule BobaTalkie.Game.Card do
     object_name = get_object_name_in_language(object_type, learning_language)
     String.replace(card.template, "_", object_name)
   end
+
+  @doc """
+  Check if all cards are completed
+  """
+  def all_cards_completed?(cards) when is_list(cards) do
+    cards
+    |> Enum.all?(fn card -> card.completed end)
+  end
+
+  @doc """
+  Get completion statistics for cards
+  """
+  def get_completion_stats(cards) when is_list(cards) do
+    total = length(cards)
+    completed = Enum.count(cards, fn card -> card.completed end)
+    remaining = total - completed
+    percentage = if total == 0, do: 0, else: round(completed / total * 100)
+    
+    %{
+      total: total,
+      completed: completed,
+      remaining: remaining,
+      percentage: percentage
+    }
+  end
+
 end

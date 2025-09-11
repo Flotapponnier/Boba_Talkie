@@ -280,12 +280,14 @@
                     "grid-cell w-16 h-16 flex items-center justify-center text-xl font-bold rounded-lg relative overflow-visible",
                     BobaTalkieWeb.GameLive.UIHelpers.cell_class(cell, @world, {x, y})
                   ]} title={"(#{x}, #{y})"}>
+                    <!-- Always show the object/emoji if it exists -->
+                    <span class="text-3xl absolute inset-0 transform hover:scale-110 transition-transform duration-200 flex items-center justify-center z-5">
+                      <%= BobaTalkieWeb.GameLive.UIHelpers.cell_icon(cell, @world, {x, y}) %>
+                    </span>
+                    
+                    <!-- Show shared boba character (cooperative gameplay) -->
                     <%= if {x, y} == @player.position do %>
-                      <img src="/images/character/boba.png" alt="Player" class="character-sprite w-12 h-12 relative z-10">
-                    <% else %>
-                      <span class="text-3xl relative z-10 transform hover:scale-110 transition-transform duration-200">
-                        <%= BobaTalkieWeb.GameLive.UIHelpers.cell_icon(cell, @world, {x, y}) %>
-                      </span>
+                      <img src="/images/character/boba.png" alt="Cooperative Boba" class="character-sprite w-12 h-12 relative z-10">
                     <% end %>
                   </div>
                 <% end %>

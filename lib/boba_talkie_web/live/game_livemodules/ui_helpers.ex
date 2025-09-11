@@ -33,34 +33,23 @@ defmodule BobaTalkieWeb.GameLive.UIHelpers do
   def cell_icon(cell, world \\ nil, position \\ nil)
   
   def cell_icon(cell, world, position) do
-    # Check if player is at this position and there's also an item
-    if world && position && world.player_pos == position do
-      case Map.get(world.items, position) do
-        %{emoji: emoji} -> 
-          # Player is on an item - show both
-          "🧑#{emoji}"
-        _ -> 
-          # Just player
-          "🧑"
-      end
-    else
-      # No player at this position, show normal cell content
-      case cell do
-        0 -> "⬛"  # Wall
-        1 -> ""   # Empty
-        2 -> "🧑"  # Player (shouldn't happen with new logic)
-        3 -> 
-          # Show specific fruit emoji if world and position provided
-          if world && position do
-            case Map.get(world.items, position) do
-              %{emoji: emoji} -> emoji
-              _ -> "🍎"  # Default fruit emoji
-            end
-          else
-            "🍎"  # Default fruit emoji
+    # Always show only the object/item, never the player emoji (boba image handles player display)
+    case cell do
+      0 -> "⬛"  # Wall
+      1 -> ""   # Empty
+      2 -> ""   # Player (handled by boba image in template)
+      3 -> 
+        # Show specific fruit emoji if world and position provided
+        if world && position do
+          case Map.get(world.items, position) do
+            %{emoji: emoji, completed: true} -> "✅#{emoji}"  # Completed item with checkmark
+            %{emoji: emoji} -> emoji
+            _ -> "🍎"  # Default fruit emoji
           end
-        _ -> "?"   # Unknown
-      end
+        else
+          "🍎"  # Default fruit emoji
+        end
+      _ -> "?"   # Unknown
     end
   end
 

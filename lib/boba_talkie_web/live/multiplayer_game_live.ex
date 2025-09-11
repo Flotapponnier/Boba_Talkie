@@ -44,6 +44,7 @@ defmodule BobaTalkieWeb.MultiplayerGameLive do
             |> assign(:room_state, room_state)
             |> assign(:player_id, player_id)
             |> assign(:other_player_id, get_other_player_id(room_state.players, player_id))
+            |> assign(:partner_position, {1, 1})  # Default partner position
             |> assign(:is_recording_blocked, false)
             |> assign(:other_player_recording, false)
             |> assign(:video_enabled, true)
@@ -56,6 +57,8 @@ defmodule BobaTalkieWeb.MultiplayerGameLive do
             |> assign(:last_command, nil)
             |> assign(:final_voice_command, nil)
             |> assign(:other_player_voice_command, nil)
+            |> assign(:game_completed, false)
+            |> assign(:partner_won, false)
             |> assign(:expanded_descriptions, MapSet.new())
             |> assign(:page_title, "BobaTalkie - Multiplayer Game: #{String.capitalize(topic)}")
           
@@ -119,6 +122,9 @@ defmodule BobaTalkieWeb.MultiplayerGameLive do
         socket.assigns.world, 
         socket.assigns.player
       )
+      
+      # Check if all cards are completed (victory condition)
+      socket = check_game_completion(socket)
       
       # Broadcast game state update to other player
       broadcast_game_state_update(socket)
@@ -445,6 +451,21 @@ defmodule BobaTalkieWeb.MultiplayerGameLive do
     end
   end
 
+  # Handler for receiving victory from other player
+  @impl true
+  def handle_info({:game_victory, player_id}, socket) do
+    if player_id == socket.assigns.other_player_id do
+      Logger.info("🎉 Partner completed the game!")
+      socket = 
+        socket
+        |> assign(:partner_won, true)
+        |> StateManager.add_game_message("🎉 Your partner completed all challenges!")
+      {:noreply, socket}
+    else
+      {:noreply, socket}
+    end
+  end
+
   # Private helper functions
 
   defp get_other_player_id(players, current_player_id) do
@@ -498,18 +519,24 @@ defmodule BobaTalkieWeb.MultiplayerGameLive do
     current_player_id = get_player_id(socket)
     
     if updated_state.player_id != current_player_id do
-      # Merge shared game elements like completed cards and world items
-      # But keep our own player position
+      # In cooperative mode, both players share the same boba character
+      # Update our world and player position to match partner's movement
       updated_world = if updated_state.world do
-        # Update world cards and items, but preserve our player position
-        current_world = socket.assigns.world
-        %{updated_state.world | player_pos: current_world.player_pos}
+        updated_state.world  # Use partner's world state completely
       else
         socket.assigns.world
       end
       
+      updated_player = if updated_state.player do
+        updated_state.player  # Use partner's player position
+      else
+        socket.assigns.player
+      end
+      
       socket
       |> assign(:world, updated_world)
+      |> assign(:player, updated_player)  # Sync our player position with partner
+      |> assign(:partner_position, updated_state.player.position)  # Store for display logic
       |> assign(:other_player_feedback, updated_state.current_feedback)
       |> StateManager.add_game_message("Partner: #{updated_state.current_feedback || "made a move"}")
     else
@@ -527,6 +554,36 @@ defmodule BobaTalkieWeb.MultiplayerGameLive do
       "multiplayer_game:#{room_id}",
       {:voice_command_update, player_id, command}
     )
+  end
+
+  defp check_game_completion(socket) do
+    cards = socket.assigns.world.cards
+    
+    if BobaTalkie.Game.Card.all_cards_completed?(cards) do
+      Logger.info("🎉 Game completed! All cards finished.")
+      
+      # Add victory message and set game completed state
+      socket
+      |> assign(:game_completed, true)
+      |> StateManager.add_game_message("🎉 Congratulations! You completed all challenges!")
+      |> broadcast_victory()
+    else
+      socket
+    end
+  end
+
+  defp broadcast_victory(socket) do
+    room_id = socket.assigns.room_id
+    player_id = get_player_id(socket)
+    
+    # Broadcast victory to other player
+    PubSub.broadcast(
+      BobaTalkie.PubSub,
+      "multiplayer_game:#{room_id}",
+      {:game_victory, player_id}
+    )
+    
+    socket
   end
 
 

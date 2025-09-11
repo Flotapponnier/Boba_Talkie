@@ -226,18 +226,8 @@ defmodule BobaTalkie.Game.World do
       _ -> place_random_items(grid, width, height, player_pos, @all_fruits_items)  # Default to fruits
     end
     
-    # Generate cards from ContentManager (proper language-specific content)
-    content = BobaTalkie.ContentManager.get_learning_content(topic, learning_language)
-    cards = content.cards |> Enum.map(fn card ->
-      %BobaTalkie.Game.Card{
-        id: card.id,
-        template: card.template,
-        description: card.description,
-        applicable_objects: [], # Will be determined by position
-        completed: false,
-        selected: false
-      }
-    end)
+    # Generate cards using Card.generate_deck to ensure exactly one card per object
+    cards = BobaTalkie.Game.Card.generate_deck(items, topic, learning_language)
     
     %__MODULE__{
       grid: grid_with_items,
@@ -360,30 +350,36 @@ defmodule BobaTalkie.Game.World do
         {:error, "No object here to interact with"}
       
       item ->
-        # Auto-select card that matches the current item
-        matching_card = find_card_for_item(world.cards, item.type)
-        
-        case matching_card do
-          nil ->
-            {:error, "No card available for this item"}
+        # Skip if item is already completed
+        if Map.get(item, :completed, false) do
+          {:error, "This challenge has already been completed"}
+        else
+          # Auto-select card that matches the current item
+          matching_card = find_card_for_item(world.cards, item.type)
           
-          card ->
-            # Auto-select the card and check if voice command matches
-            auto_selected_cards = BobaTalkie.Game.Card.select_card(world.cards, card.id)
+          case matching_card do
+            nil ->
+              {:error, "No card available for this item"}
             
-            if BobaTalkie.Game.Card.matches_card?(card, voice_command, item.type, learning_language) do
-              # Complete the card and remove the item
-              new_cards = BobaTalkie.Game.Card.complete_card(auto_selected_cards, card.id)
-              new_grid = set_cell(world.grid, current_pos, 1)  # Set back to walkable
-              new_items = Map.delete(world.items, current_pos)
+            card ->
+              # Auto-select the card and check if voice command matches
+              auto_selected_cards = BobaTalkie.Game.Card.select_card(world.cards, card.id)
               
-              new_world = %{world | grid: new_grid, items: new_items, cards: new_cards}
-              {:ok, new_world, card}
-            else
-              # Get the expected answer in the learning language
-              expected = BobaTalkie.Game.Card.get_expected_answer(card, item.type, learning_language)
-              {:error, "Try saying: '#{expected}' while standing on the #{item.emoji}"}
-            end
+              if BobaTalkie.Game.Card.matches_card?(card, voice_command, item.type, learning_language) do
+                # Complete the card and mark item as completed (keep item visible for cooperative play)
+                new_cards = BobaTalkie.Game.Card.complete_card(auto_selected_cards, card.id)
+                # Mark item as completed but keep it on the map
+                completed_item = Map.put(item, :completed, true)
+                new_items = Map.put(world.items, current_pos, completed_item)
+                
+                new_world = %{world | items: new_items, cards: new_cards}
+                {:ok, new_world, card}
+              else
+                # Get the expected answer in the learning language
+                expected = BobaTalkie.Game.Card.get_expected_answer(card, item.type, learning_language)
+                {:error, "Try saying: '#{expected}' while standing on the #{item.emoji}"}
+              end
+          end
         end
     end
   end
@@ -401,37 +397,43 @@ defmodule BobaTalkie.Game.World do
         {:error, "No object here to interact with"}
       
       item ->
-        # Find all available (not completed) cards that could match this item
-        available_cards = Enum.filter(world.cards, fn card -> 
-          not card.completed and item.type in card.applicable_objects
-        end)
+        # Skip if item is already completed
+        if Map.get(item, :completed, false) do
+          {:error, "This challenge has already been completed"}
+        else
+          # Find all available (not completed) cards that could match this item
+          available_cards = Enum.filter(world.cards, fn card -> 
+            not card.completed and item.type in card.applicable_objects
+          end)
         
-        case available_cards do
-          [] ->
-            {:error, "No available cards for this item"}
-          
-          cards ->
-            # Try to find a card that matches the voice command
-            matching_card = Enum.find(cards, fn card ->
-              BobaTalkie.Game.Card.matches_card?(card, voice_command, item.type, learning_language)
-            end)
+          case available_cards do
+            [] ->
+              {:error, "No available cards for this item"}
             
-            case matching_card do
-              nil ->
-                # No card matched, show hint for the first available card
-                first_card = hd(cards)
-                expected = BobaTalkie.Game.Card.get_expected_answer(first_card, item.type, learning_language)
-                {:error, "Try saying: '#{expected}' while standing on the #{item.emoji}"}
+            cards ->
+              # Try to find a card that matches the voice command
+              matching_card = Enum.find(cards, fn card ->
+                BobaTalkie.Game.Card.matches_card?(card, voice_command, item.type, learning_language)
+              end)
               
-              card ->
-                # Complete the matching card and remove the item
-                new_cards = BobaTalkie.Game.Card.complete_card(world.cards, card.id)
-                new_grid = set_cell(world.grid, current_pos, 1)  # Set back to walkable
-                new_items = Map.delete(world.items, current_pos)
+              case matching_card do
+                nil ->
+                  # No card matched, show hint for the first available card
+                  first_card = hd(cards)
+                  expected = BobaTalkie.Game.Card.get_expected_answer(first_card, item.type, learning_language)
+                  {:error, "Try saying: '#{expected}' while standing on the #{item.emoji}"}
                 
-                new_world = %{world | grid: new_grid, items: new_items, cards: new_cards}
-                {:ok, new_world, card}
-            end
+                card ->
+                  # Complete the matching card and mark item as completed (keep item visible for cooperative play)
+                  new_cards = BobaTalkie.Game.Card.complete_card(world.cards, card.id)
+                  # Mark item as completed but keep it on the map
+                  completed_item = Map.put(item, :completed, true)
+                  new_items = Map.put(world.items, current_pos, completed_item)
+                  
+                  new_world = %{world | items: new_items, cards: new_cards}
+                  {:ok, new_world, card}
+              end
+          end
         end
     end
   end

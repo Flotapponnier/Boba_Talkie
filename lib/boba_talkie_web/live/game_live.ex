@@ -68,6 +68,9 @@ defmodule BobaTalkieWeb.GameLive do
         socket.assigns.world, 
         socket.assigns.player
       )
+      
+      # Check if all cards are completed (victory condition)
+      socket = check_single_player_completion(socket)
       Logger.info("GameLive: voice_command processed successfully: #{command}")
       {:noreply, socket}
     rescue
@@ -208,6 +211,24 @@ defmodule BobaTalkieWeb.GameLive do
     end
   end
 
+  # Victory condition check
+  defp check_single_player_completion(socket) do
+    require Logger
+    cards = socket.assigns.world.cards
+    
+    if BobaTalkie.Game.Card.all_cards_completed?(cards) do
+      Logger.info("🎉 Single-player game completed! All cards finished.")
+      
+      # Add victory message and set game completed state
+      socket
+      |> assign(:game_completed, true)
+      |> StateManager.add_game_message("🎉 Congratulations! You completed all challenges!")
+      |> StateManager.add_game_message("🌟 Well done! You can now try another topic or challenge.")
+    else
+      socket
+    end
+  end
+  
   # Template helper functions (delegate to UIHelpers)
   
   defp cell_class(cell, world, position), do: UIHelpers.cell_class(cell, world, position)
