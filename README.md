@@ -1,5 +1,8 @@
 # BobaTalkie - Multi-Language Voice Learning Platform
 
+# important :
+This is a prototype made with elixir using phoenix as i was curious to learn it. I will working and rewrite it in go as is more my actual stake at the moment. You can test the prototype at https://boba-talkie.fly.dev/
+
 ## Introduction
 BobaTalkie is a comprehensive multi-language voice-controlled learning platform that transforms vocabulary acquisition into an interactive gaming experience. Players can choose from **solo or multiplayer modes**, navigate through 9 different learning topics by speaking commands, and complete pronunciation challenges with real-time feedback. The platform supports **9 interface languages** and **9 learning languages**, with integrated **video conferencing** for multiplayer collaboration.
 
